@@ -1,8 +1,7 @@
 <template>
     <div>
         <Header />
-        <nuxt />
-        <Footer />
+        <slot />
     </div>
 </template>
 
@@ -13,5 +12,4 @@ export default {
         Header
     }
 }
-
 </script>
