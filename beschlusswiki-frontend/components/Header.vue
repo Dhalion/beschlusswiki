@@ -1,5 +1,5 @@
 <template>
-    <nav class=" bg-white dark:bg-gray-900 
+    <nav class=" bg-jusorot-700
                 w-full z-20 top-0 left-0 justify-center items-center flex 
                 border-b shadow">
         <div class="flex items-center p-1">
@@ -8,7 +8,7 @@
             </NuxtLink>
 
             <!-- Navbar Heading "Jusos Beschlusswiki" centered, semi-bold -->
-            <NuxtLink href="#" class="text-2xl font-semibold flex-nowrap text-gray-800 dark:text-gray-200 no-underline">
+            <NuxtLink href="#" class="text-2xl font-extrabold flex-nowrap text-white">
                 Jusos Beschlusswiki
             </NuxtLink>
         </div>
