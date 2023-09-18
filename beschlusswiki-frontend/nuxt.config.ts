@@ -4,6 +4,13 @@ export default defineNuxtConfig({
 	components: true,
 	modules: ["@nuxt/ui"],
 
+	runtimeConfig: {
+		public: {
+			API_ENDPOINT: process.env.API_ENDPOINT,
+		},
+	},
+
+	// Tailwind and CD Theming stuff
 	tailwindcss: {
 		config: {
 			theme: {
