@@ -7,15 +7,19 @@
 
         <!-- Resolution Tag and Year -->
         <div class="w-1/12 flex flex-col text-center">
-            <span>A1</span>
-            <span>2022</span>
+            <span>{{ resolution.tag }}</span>
+            <span>{{ resolution.jahr }}</span>
         </div>
         <!-- Resolution Title -->
         <div class="flex w-full items-center pl-5 mr-2">
-            Arbeitsprogramm
+            {{ resolution.titel }}
         </div>
     </ULink>
 </template>
 
 <script setup>
+const { resolution } = defineProps({
+    resolution: String,
+});
+
 </script>

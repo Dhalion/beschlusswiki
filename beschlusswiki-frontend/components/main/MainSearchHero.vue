@@ -20,8 +20,8 @@
 const search = useSearch();
 
 const onSearchChange = (event) => {
-    console.log(event.target.value)
     search.value.searchQuery = event.target.value;
+    console.log(search.value.searchQuery)
 }
 
 

@@ -14,7 +14,7 @@
     <div class="bg-beere flex justify-between items-center p-1 px-3">
         <span class="text-xs font-sans text-white antialiased"> Kategorie / Unterkategorie </span>
         <span class="px-3 my-1 py-1 bg-hellrosa text-beere rounded-full text-sm tracking-wide"
-            v-for="applicant in resolution.antragsteller">{{ applicant }}</span>
+            v-for="applicant in resolution.antragsteller">Bayern</span>
     </div>
 </template>
 
