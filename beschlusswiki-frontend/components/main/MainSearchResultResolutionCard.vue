@@ -13,7 +13,6 @@
         <!-- Resolution Title -->
         <div class="flex w-full items-center pl-5 mr-2">
             {{ resolution.titel }}
-            {{ resolutionUrl }}
         </div>
     </NuxtLink>
 </template>
