@@ -11,7 +11,7 @@
         <input color="jusorot" class="mt-8 w-1/2 bg-white text-black p-3 rounded-xl shadow-xl border-cool-200 border-2 
         focus:outline-none hover:ring hover:ring-beere focus:ring focus:ring-beere focus:scale-105
         transition-transform hover:scale-105 duration-300 ease-in-out" placeholder="Titel oder Stichwort"
-            @input="onSearchChange" />
+            @input="onSearchChange" v-model="search.searchQuery" />
 
     </div>
 </template>

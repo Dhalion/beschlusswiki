@@ -32,7 +32,8 @@ const performSearch = async (query) => {
 
 // Initialisiere die Suche, wenn die Komponente montiert wird
 onMounted(() => {
-    performSearch(search.searchQuery);
+    console.log(`[MOUNTED] Search obj: ${search.value.searchQuery}`);
+    performSearch(search.value.searchQuery);
 });
 
 </script>

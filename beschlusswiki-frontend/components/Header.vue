@@ -3,7 +3,7 @@
                 w-full z-20 top-0 left-0 justify-center items-center flex 
                 border-b shadow">
         <div class="flex items-center p-1">
-            <NuxtLink href="#" class="">
+            <NuxtLink href="/" class="">
                 <img src="../assets/img/jusos_logo_WEISS.png" class="h-16 mr-5" alt="Jusos Logo">
             </NuxtLink>
 
