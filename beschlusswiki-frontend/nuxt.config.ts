@@ -1,3 +1,5 @@
+import pkg from "./package.json";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	devtools: {enabled: true},
@@ -6,7 +8,8 @@ export default defineNuxtConfig({
 
 	runtimeConfig: {
 		public: {
-			API_ENDPOINT: process.env.API_ENDPOINT,
+			apiEndpoint: process.env.API_ENDPOINT,
+			version: process.env.VERSION,
 		},
 	},
 
