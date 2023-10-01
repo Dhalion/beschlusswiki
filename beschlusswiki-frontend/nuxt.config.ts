@@ -4,7 +4,7 @@ import pkg from "./package.json";
 export default defineNuxtConfig({
 	devtools: {enabled: true},
 	components: true,
-	modules: ["@nuxt/ui"],
+	modules: ["@nuxt/ui", "@nuxt/content"],
 
 	runtimeConfig: {
 		public: {

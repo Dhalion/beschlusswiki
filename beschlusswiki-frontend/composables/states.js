@@ -5,3 +5,9 @@ export const useSearch = () =>
 			searchQuery: "",
 		};
 	});
+
+// Loaded Resolution State. Contains resolution object
+export const useLoadedResolution = () =>
+	useState("loadedResolution", () => {
+		return {};
+	});
