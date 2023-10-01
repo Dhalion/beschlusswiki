@@ -1,9 +1,5 @@
 <template>
-    <div class="flex flex-col items-center">
-        <div>
-            <h2 class=" text-2xl font-bold p-2 text-red-800">Kategorien</h2>
-            <h2 class=" text-2xl font-bold p-2 text-red-800">Search: {{ search.searchQuery }}</h2>
-        </div>
+    <div class="flex flex-col items-center mt-10">
         <!-- Category Cards Container -->
         <div class="bg-white h-full text-black w-3/4 items-center
             grid gap-4 grid-cols-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5
