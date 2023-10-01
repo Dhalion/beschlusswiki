@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"baseUrl": "src",
+		"outDir": "./dist",
+		"sourceMap": true,
+		"noImplicitAny": true,
+		"strict": true,
+		"alwaysStrict": true,
+		"allowUnreachableCode": false,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "**/*.spec.ts"]
+}
