@@ -1,7 +1,11 @@
 <template>
-    <div class="bg-white min-h-screen">
+    <div class="bg-white min-h-screen flex flex-col">
         <Header />
-        <slot />
+
+        <div class="flex-grow">
+            <slot />
+
+        </div>
 
         <Footer />
     </div>

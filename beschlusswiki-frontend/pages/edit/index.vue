@@ -1,5 +1,5 @@
 <template>
-    <div class="h-screen">
+    <div class="w-screen">
 
         <EditResolutionHead class="w-5/6 mx-auto" :resolution="state.resolution" />
         <span class="text-black">Error: {{ error.statusCode }}</span>
