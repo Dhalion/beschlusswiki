@@ -67,3 +67,29 @@ export async function postNew(resolution: Object) {
 		throw error;
 	}
 }
+
+export async function updateById(id: string, resolution: ResolutionDocument) {
+	try {
+		// Check if resolution with given id is found
+		const result = await ResolutionModel.findById(id);
+		if (!result) {
+			throw new Error("Resolution not found");
+		}
+		// Set old resolution's id to new resolution parent
+		// resolution.parent = result._id;
+		resolution.created = Date.now();
+
+		// Validate new Resolution
+		const newResolution = new ResolutionModel(resolution);
+		if (!validateResolution(newResolution.toObject())) {
+			throw new InvalidResolutionError("Resolution did not pass validation");
+		}
+
+		newResolution.parent = result._id;
+		await newResolution.save();
+
+		return result;
+	} catch (error) {
+		throw error;
+	}
+}

@@ -6,4 +6,6 @@ export default (router: express.Router) => {
 	router.get("/resolution", ResolutionController.getResolution);
 	//? POST /resolution
 	router.post("/resolution", ResolutionController.postResolution);
+	//? PUT /resolution
+	router.put("/resolution", ResolutionController.putResolution);
 };
