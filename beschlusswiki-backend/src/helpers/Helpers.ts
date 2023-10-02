@@ -13,3 +13,22 @@ export const authentication = (salt: string, password: string) => {
 		.update(env.SECRET)
 		.digest("hex");
 };
+
+type TimedFunctionResult<T> = {
+	result: T;
+	time: number;
+};
+
+export function measureExecutionTime<T>(
+	func: (...args: any[]) => T,
+	...args: any[]
+): TimedFunctionResult<T> {
+	const start = performance.now();
+	const result = func(...args);
+	const end = performance.now();
+	const time = end - start;
+	return {
+		result,
+		time,
+	};
+}

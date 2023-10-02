@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 import {ResolutionModel} from "../db/Schemas";
 
+//! #################################
+//! #    THIS FILE IS DEPRECATED    #
+//! #################################
+
 enum SearchEngine {
 	// Enum for the search engine to use
 	// Built in mongoDB or ElasticSearch

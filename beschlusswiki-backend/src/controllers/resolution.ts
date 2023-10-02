@@ -11,6 +11,10 @@ import {
 
 import * as ResolutionService from "../services/ResolutionService";
 
+//! #################################
+//! #    THIS FILE IS DEPRECATED    #
+//! #################################
+
 export const searchResolution = async (
 	req: express.Request,
 	res: express.Response

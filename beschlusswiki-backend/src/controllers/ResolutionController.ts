@@ -47,6 +47,8 @@ export const getResolution = async (
 	}
 };
 
+//? Handles POST /resolution
+//? Only acceps new resolutions. Duplicate resolutions will be rejected
 export const postResolution = async (
 	req: express.Request,
 	res: express.Response
@@ -56,9 +58,13 @@ export const postResolution = async (
 		if (!resolution) {
 			return res.status(400).json({message: "Bad request"}).end();
 		}
-		return res.status(501).json({message: "Not implemented"}).end();
-	} catch (error) {
+		await ResolutionService.postNew(resolution);
+		return res.status(201).end();
+	} catch (error: any) {
 		console.error(error);
+		if (error instanceof ResolutionService.InvalidResolutionError) {
+			return res.status(400).json({message: "Invalid resolution"}).end();
+		}
 		return res.status(500).json({message: "Internal server error"});
 	}
 };
