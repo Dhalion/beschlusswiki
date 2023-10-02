@@ -1,7 +1,7 @@
 import express from "express";
 
 import authentication from "./authentication";
-import resolution from "./resolution";
+import resolution from "./ResolutionRouter";
 
 const router = express.Router();
 

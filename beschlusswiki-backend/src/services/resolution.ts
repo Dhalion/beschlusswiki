@@ -111,6 +111,16 @@ export async function searchResolutionByQuery(qO: searchOptions) {
 	throw new Error("No valid search engine provided");
 }
 
+// Get all resolutions from DB
+export async function findAll() {
+	try {
+		const results = await ResolutionModel.find();
+		return results;
+	} catch (error) {
+		throw error;
+	}
+}
+
 export function parseQueryOptions(query: mongoose.QueryOptions): searchOptions {
 	// Parse query options from a given query
 	// Returns a searchOptions object

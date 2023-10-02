@@ -9,6 +9,8 @@ import {
 	InvalidResolutionError,
 } from "../services/resolution";
 
+import * as ResolutionService from "../services/ResolutionService";
+
 export const searchResolution = async (
 	req: express.Request,
 	res: express.Response
