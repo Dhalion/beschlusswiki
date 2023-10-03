@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
 import {ResolutionModel} from "../db/Schemas";
-import {ResolutionDocument, validateResolution} from "../helpers/Validators";
+import {validateResolution} from "../helpers/Validators";
+import {IResolutionDocument} from "../db/ResolutionSchema";
 
 export class InvalidResolutionError extends Error {
 	constructor(message: string) {
@@ -68,7 +69,7 @@ export async function postNew(resolution: Object) {
 	}
 }
 
-export async function updateById(id: string, resolution: ResolutionDocument) {
+export async function updateById(id: string, resolution: IResolutionDocument) {
 	try {
 		// Check if resolution with given id is found
 		const result = await ResolutionModel.findById(id);
@@ -77,7 +78,8 @@ export async function updateById(id: string, resolution: ResolutionDocument) {
 		}
 		// Set old resolution's id to new resolution parent
 		// resolution.parent = result._id;
-		resolution.created = Date.now();
+		resolution.created = new Date();
+		resolution.parent = result._id;
 
 		// Validate new Resolution
 		const newResolution = new ResolutionModel(resolution);
@@ -85,7 +87,6 @@ export async function updateById(id: string, resolution: ResolutionDocument) {
 			throw new InvalidResolutionError("Resolution did not pass validation");
 		}
 
-		newResolution.parent = result._id;
 		await newResolution.save();
 
 		return result;

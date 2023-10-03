@@ -1,26 +1,8 @@
 import mongoose from "mongoose";
 import {ResolutionModel} from "../db/Schemas";
+import {IResolutionDocument} from "../db/ResolutionSchema";
 
-export interface ResolutionDocument extends mongoose.Document {
-	rid: String;
-	rcode: String;
-	created: number;
-	user: String;
-	parent: mongoose.Schema.Types.ObjectId;
-	body: {
-		title: String;
-		tag: String;
-		applicants: Array<String>;
-		year: Number;
-		category: {
-			name: String;
-			id: String;
-		};
-		text: String;
-	};
-}
-
-export function validateResolution(resolution: ResolutionDocument): boolean {
+export function validateResolution(resolution: IResolutionDocument): boolean {
 	// Schema validation should have already been done by mongoose
 	// This function only pperforms logical validation
 
@@ -55,7 +37,7 @@ export function validateResolution(resolution: ResolutionDocument): boolean {
 	// Check if created is valid date and is not in future
 	// Created is unix timestamp
 	const created = resolution.created;
-	const now = Date.now();
+	const now: Date = new Date();
 	if (created > now) {
 		return false;
 	}

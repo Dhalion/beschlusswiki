@@ -1,5 +1,9 @@
 import mongoose, {mongo} from "mongoose";
 
+//! #################################
+//! #    THIS FILE IS DEPRECATED    #
+//! #################################
+
 //* USER Schema
 const userSchema = new mongoose.Schema({
 	uuid: {type: String, unique: true, required: true},
@@ -14,8 +18,27 @@ const userSchema = new mongoose.Schema({
 
 export const UserModel = mongoose.model("User", userSchema, "users");
 
+export interface IResolution {
+	rid: String;
+	rcode: String;
+	created: Date;
+	user: String;
+	parent: mongoose.Schema.Types.ObjectId;
+	body: {
+		title: String;
+		tag: String;
+		applicants: Array<String>;
+		year: Number;
+		category: {
+			name: String;
+			id: String;
+		};
+		text: String;
+	};
+}
+
 //* RESOLUTION Schema
-const resolutionSchema = new mongoose.Schema(
+const resolutionSchema = new mongoose.Schema<IResolution>(
 	{
 		rid: {type: String, unique: true},
 		rcode: {type: String},
