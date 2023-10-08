@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 import {validateResolution} from "../helpers/Validators";
-import ResolutionModel, {IResolutionDocument} from "../db/ResolutionSchema";
+import {IResolutionDocument, ResolutionModel} from "../db/ResolutionSchema";
 
 export class InvalidResolutionError extends Error {
 	constructor(message: string) {

@@ -1,14 +1,26 @@
 import {Schema, Types, Model, model, Document} from "mongoose";
 import crypto from "crypto";
 
+// A resolution can be in one of three states
+// Staged: The resolution has been created but not yet approved
+// Live: The resolution has been approved and is live
+// Archived: The resolution has been archived
+enum ResolutionState {
+	Staged = "staged",
+	Live = "live",
+	Archived = "archived",
+}
+
 //* RESOLUTION Schema
 const resolutionSchema = new Schema(
 	{
 		rid: {type: String, unique: true},
 		rcode: {type: String},
 		created: {type: Date},
-		user: {type: String},
-		parent: {type: Schema.Types.ObjectId},
+		createdBy: {type: Schema.Types.ObjectId}, // Refers to a user
+		approvedBy: {type: Schema.Types.ObjectId}, // Refers to a user
+		parent: {type: Schema.Types.ObjectId}, // Refers to a resolution
+		state: {type: String, enum: ResolutionState},
 		hash: {type: String},
 		body: {
 			title: {type: String},
@@ -60,8 +72,10 @@ export interface IResolutionDocument extends Document {
 	rid: String;
 	rcode: String;
 	created: Date;
-	user: String;
+	createdBy: Types.ObjectId;
 	parent: Types.ObjectId;
+	approvedBy: Types.ObjectId;
+	state: String;
 	hash: String;
 	body: {
 		title: String;
@@ -78,10 +92,5 @@ export interface IResolutionDocument extends Document {
 	stringify(): String;
 }
 
-const ResolutionModel: Model<IResolutionDocument> = model<IResolutionDocument>(
-	"Resolution",
-	resolutionSchema,
-	"resolutions"
-);
-
-export default ResolutionModel;
+export const ResolutionModel: Model<IResolutionDocument> =
+	model<IResolutionDocument>("Resolution", resolutionSchema, "resolutions");
