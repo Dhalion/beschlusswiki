@@ -1,6 +1,6 @@
 <template>
     <div class="bg-hellrosa text-beere flex justify-center 
-        justify-self-center place-items-center">
+        justify-self-center place-items-center w-full">
         <div class="flex flex-col items-center p-10">
             <span class="font-black text-8xl pb-4">{{ resolution.body.tag }}</span>
             <span class="font-black text-6xl">{{ resolution.body.year }}</span>

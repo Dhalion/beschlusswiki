@@ -1,11 +1,9 @@
 
 <template>
-    <div class="flex justify-center text-black">
-        <div v-if="resolution">
-            <div class="flex flex-col h-full w-7/12 ring-1 ring-gray-200 shadow">
-                <ResolutionViewResolutionHead :resolution="resolution" />
-                <ResolutionViewResolutionBody :resolution="resolution.body.text" :error="error" />
-            </div>
+    <div class="flex justify-center text-black w-full flex-grow">
+        <div class="flex flex-col w-7/12 mx-auto ring-1 ring-gray-200 shadow">
+            <ResolutionViewResolutionHead :resolution="resolution" />
+            <ResolutionViewResolutionBody :resolution="resolution.body.text" :error="error" />
         </div>
         <div v-if="!resolution && !error">
             Loading

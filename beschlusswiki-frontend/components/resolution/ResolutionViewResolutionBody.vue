@@ -7,9 +7,9 @@
         <!-- Navigate one back Button: -->
 
     </div>
-    <div class="pl-20 pr-20 pre text-base leading-6 antialiased whitespace-pre-line break-normal juso-highlight">
+    <div
+        class="pl-20 pr-20 pb-10 pre text-base leading-6 antialiased whitespace-pre-line break-normal juso-highlight flex justify-center">
         {{ resolution }}
-
     </div>
 </template>
 

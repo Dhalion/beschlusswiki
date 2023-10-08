@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white h-full">
+    <div class="bg-white h-full w-full">
         <ResolutionView />
     </div>
 </template>
