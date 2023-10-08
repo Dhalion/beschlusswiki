@@ -67,14 +67,6 @@ const isLoading = computed(() => {
 
 
 
-onMounted(async () => {
-    try {
-
-    } catch (error) {
-        console.log(error);
-    }
-});
-
 const parseMD = async () => {
     state.parsedMarkdown = md.render(state.plainMarkdown);
 }
