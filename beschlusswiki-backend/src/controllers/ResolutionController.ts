@@ -82,6 +82,7 @@ export const putResolution = async (
 			return res.status(400).json({message: "Bad request"}).end();
 		}
 		await ResolutionService.updateById(id, resolution);
+		console.log("Resolution " + id + " updated");
 		return res.status(200).end();
 	} catch (error: any) {
 		console.error(error);
@@ -91,3 +92,29 @@ export const putResolution = async (
 		return res.status(500).json({message: "Internal server error"});
 	}
 };
+
+export const getHash = async (req: express.Request, res: express.Response) => {
+	try {
+		const id = req.query?.id?.toString();
+		if (!id) {
+			return res.status(400).json({message: "Bad request"}).end();
+		}
+		// fetch resolution with id
+		const resolution = await ResolutionService.findById(id);
+		if (!resolution) {
+			return res.status(404).json({message: "Resolution not found"}).end();
+		}
+		const hash = resolution.createHash();
+		const str = resolution.stringify();
+		return res.json({hash, stringified: str}).status(200).end();
+	} catch (error: any) {
+		console.error(error);
+		if (error instanceof ResolutionService.InvalidResolutionError) {
+			return res.status(400).json({message: "Invalid resolution"}).end();
+		}
+		return res.status(500).json({message: "Internal server error"});
+	}
+};
+
+// 12ab2023-DEMO1aaaaDemo1DEMO1Admin2023Demo00ffDemotext Lorem ipsum dolor sit amet.
+// 12ab2023-DEMO1aaaaDemo1DEMO1Admin2023Demo00ffDemotext Lorem ipsum dolor sit amet.

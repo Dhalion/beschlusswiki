@@ -1,13 +1,12 @@
 import mongoose from "mongoose";
 
-import {ResolutionModel} from "../db/Schemas";
 import {validateResolution} from "../helpers/Validators";
-import {IResolutionDocument} from "../db/ResolutionSchema";
+import ResolutionModel, {IResolutionDocument} from "../db/ResolutionSchema";
 
 export class InvalidResolutionError extends Error {
 	constructor(message: string) {
 		super(message);
-		this.name = "DuplicateResolutionError";
+		this.name = "InvalidResolutionError";
 		Object.setPrototypeOf(this, InvalidResolutionError.prototype);
 	}
 }
@@ -74,15 +73,23 @@ export async function updateById(id: string, resolution: IResolutionDocument) {
 		// Check if resolution with given id is found
 		const result = await ResolutionModel.findById(id);
 		if (!result) {
-			throw new Error("Resolution not found");
+			throw new InvalidResolutionError("Resolution not found");
 		}
 		// Set old resolution's id to new resolution parent
 		// resolution.parent = result._id;
 		resolution.created = new Date();
 		resolution.parent = result._id;
 
-		// Validate new Resolution
+		// Create new resolution object
 		const newResolution = new ResolutionModel(resolution);
+		newResolution.hash = newResolution.createHash();
+		// Check if new resolution is a duplicate
+		const duplicates = await ResolutionModel.find({hash: newResolution.hash});
+		if (duplicates.length > 0) {
+			throw new InvalidResolutionError("Resolution is a duplicate");
+		}
+
+		// Validate new Resolution
 		if (!validateResolution(newResolution.toObject())) {
 			throw new InvalidResolutionError("Resolution did not pass validation");
 		}

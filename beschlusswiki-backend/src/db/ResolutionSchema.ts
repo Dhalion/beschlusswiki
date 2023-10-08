@@ -1,4 +1,5 @@
 import {Schema, Types, Model, model, Document} from "mongoose";
+import crypto from "crypto";
 
 //* RESOLUTION Schema
 const resolutionSchema = new Schema(
@@ -24,6 +25,37 @@ const resolutionSchema = new Schema(
 	{strict: "throw"} // Throw an error if invalid data is passed
 );
 
+// Create resolution hash method
+resolutionSchema.methods.createHash = function () {
+	// Stringify the object and take sha256 hash
+	// const str = this.stringify().encode("utf-8");
+	const str = this.stringify();
+	return crypto.createHash("sha256").update(str).digest("hex");
+};
+
+resolutionSchema.methods.stringify = function () {
+	// Stringifies the resolution object with all relevant keys for hashing
+	const res = this.toObject();
+	const body = res.body;
+	const applicants = body.applicants;
+	const category = body.category;
+
+	const stringified = (
+		res.rid +
+		res.rcode +
+		res.user +
+		body.title +
+		body.tag +
+		applicants.join("") +
+		body.year +
+		category.name +
+		category.id +
+		body.text
+	).toString();
+
+	return stringified;
+};
+
 export interface IResolutionDocument extends Document {
 	rid: String;
 	rcode: String;
@@ -42,10 +74,14 @@ export interface IResolutionDocument extends Document {
 		};
 		text: String;
 	};
+	createHash(): String;
+	stringify(): String;
 }
 
-export default model<IResolutionDocument>(
+const ResolutionModel: Model<IResolutionDocument> = model<IResolutionDocument>(
 	"Resolution",
 	resolutionSchema,
 	"resolutions"
 );
+
+export default ResolutionModel;
