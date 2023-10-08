@@ -3,7 +3,7 @@
     <div class="flex justify-center text-black w-full flex-grow">
         <div class="flex flex-col w-7/12 mx-auto ring-1 ring-gray-200 shadow">
             <ResolutionViewResolutionHead :resolution="resolution" />
-            <ResolutionViewResolutionBody :resolution="resolution.body.text" :error="error" />
+            <ResolutionViewResolutionBody :resolution-text="resolution.body.text" :resolution-id="resolutionId" />
         </div>
         <div v-if="!resolution && !error">
             Loading
