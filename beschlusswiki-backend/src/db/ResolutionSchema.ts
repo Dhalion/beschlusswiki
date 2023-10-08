@@ -1,5 +1,6 @@
 import {Schema, Types, Model, model, Document} from "mongoose";
 import crypto from "crypto";
+import {IUserDocument, UserModel} from "./UserSchema";
 
 // A resolution can be in one of three states
 // Staged: The resolution has been created but not yet approved
@@ -17,8 +18,8 @@ const resolutionSchema = new Schema(
 		rid: {type: String, unique: true},
 		rcode: {type: String},
 		created: {type: Date},
-		createdBy: {type: Schema.Types.ObjectId}, // Refers to a user
-		approvedBy: {type: Schema.Types.ObjectId}, // Refers to a user
+		createdBy: {type: Schema.Types.ObjectId, ref: "User"}, // Refers to a user
+		approvedBy: {type: Schema.Types.ObjectId, ref: "User"}, // Refers to a user
 		parent: {type: Schema.Types.ObjectId}, // Refers to a resolution
 		state: {type: String, enum: ResolutionState},
 		hash: {type: String},
@@ -40,13 +41,12 @@ const resolutionSchema = new Schema(
 // Create resolution hash method
 resolutionSchema.methods.createHash = function () {
 	// Stringify the object and take sha256 hash
-	// const str = this.stringify().encode("utf-8");
 	const str = this.stringify();
 	return crypto.createHash("sha256").update(str).digest("hex");
 };
 
+// Stringifies the resolution object with all relevant keys for hashing
 resolutionSchema.methods.stringify = function () {
-	// Stringifies the resolution object with all relevant keys for hashing
 	const res = this.toObject();
 	const body = res.body;
 	const applicants = body.applicants;

@@ -31,7 +31,9 @@ export async function findById(id: string) {
 
 export async function findByRID(rid: string) {
 	try {
-		const result = await ResolutionModel.findOne({rid: rid});
+		const result = await ResolutionModel.findOne({rid: rid}).populate(
+			"createdBy"
+		);
 		return result;
 	} catch (error) {
 		throw error;
@@ -62,6 +64,7 @@ export async function postNew(resolution: Object) {
 		if (resolutionExists) {
 			throw new InvalidResolutionError("Resolution already exists");
 		}
+		// Set created date
 		await newResolution.save();
 	} catch (error) {
 		throw error;
