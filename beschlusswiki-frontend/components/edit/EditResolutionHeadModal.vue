@@ -49,9 +49,9 @@ const loadedResolution = useLoadedResolution();
 
 const state = computed(() => {
     return {
-        title: loadedResolution.value.titel,
-        tag: loadedResolution.value.tag,
-        year: loadedResolution.value.jahr,
+        title: loadedResolution.value.body.title,
+        tag: loadedResolution.value.body.tag,
+        year: loadedResolution.value.body.year,
     }
 });
 
@@ -70,9 +70,9 @@ const validate = (state) => {
 }
 
 async function submit() {
-    loadedResolution.value.titel = state.value.title;
-    loadedResolution.value.tag = state.value.tag;
-    loadedResolution.value.jahr = state.value.year;
+    loadedResolution.value.body.title = state.value.title;
+    loadedResolution.value.body.tag = state.value.tag;
+    loadedResolution.value.body.year = state.value.year;
     isOpen.value = false;
 }
 

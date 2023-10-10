@@ -3,6 +3,7 @@
         <div class="w-5/6">
             <span class="text-5xl text-altrot font-extrabold">Beschluss bearbeiten</span>
             <div class="flex items-center">
+                {{ loadedResolution.value }}
                 <span class="text-beere text-2xl font-bold">{{ fullTitle }}</span>
                 <EditResolutionHeadModal class="p-2" />
 
@@ -17,19 +18,20 @@
 <script setup>
 const loadedResolution = useLoadedResolution();
 
+
 const resolution = computed(() => {
     return {
-        titel: loadedResolution.value.titel,
-        tag: loadedResolution.value.tag,
-        jahr: loadedResolution.value.jahr,
-        fließtext: loadedResolution.value.fließtext,
+        title: loadedResolution.value.body.title,
+        tag: loadedResolution.value.body.tag,
+        year: loadedResolution.value.body.year,
+        text: loadedResolution.value.body.text,
     }
 });
 
 
 
 const fullTitle = computed(() => {
-    return `${resolution.value.titel} (${resolution.value.jahr}) - ${resolution.value.tag}`;
+    return `${resolution.value.title} (${resolution.value.year}) - ${resolution.value.tag}`;
 });
 
 
