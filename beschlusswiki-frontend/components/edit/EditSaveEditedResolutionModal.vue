@@ -18,8 +18,8 @@
 
 
                 <div class="flex justify-end space-x-2">
-                    <UButton>Abbrechen</UButton>
-                    <UButton>Speichern</UButton>
+                    <UButton @click="isOpen = false">Abbrechen</UButton>
+                    <UButton @click="handleSave">Speichern</UButton>
                 </div>
             </UCard>
         </UModal>
@@ -27,6 +27,13 @@
 </template>
 
 <script setup>
-
+const { $bus } = useNuxtApp();
 const isOpen = ref(false);
+
+
+function handleSave() {
+    isOpen.value = false;
+    $bus.$emit('save');
+}
+
 </script>

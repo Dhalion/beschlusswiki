@@ -1,7 +1,7 @@
 <template>
     <div class="w-screen">
-        <EditResolutionHead class="w-5/6 mx-auto" v-if="!isLoading" />
 
+        <EditResolutionHead class="w-5/6 mx-auto" v-if="!isLoading" />
         <div v-if="plainMarkdown">
             <div class="w-5/6 mx-auto flex mt-2 justify-center">
                 <span class="text-gray-400 text-lg w-1/2 text-center">Beschluss bearbeiten </span>
@@ -20,8 +20,15 @@
         </div>
 
 
-        <div v-if="!plainMarkdown && !error" class="flex justify-center items-center h-screen">
-            <span class="text-gray-500">Lade Beschluss...</span>
+        <div v-if="!plainMarkdown && !error" class="flex justify-center items-center h-screen flex-col">
+            <!-- Loading spinner -->
+            <div class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-current
+                        border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite] text-jusorot-600"
+                role="status">
+            </div>
+            <span class="text-slate-500 pt-4">
+                Lade Beschluss...
+            </span>
         </div>
 
 
@@ -31,18 +38,29 @@
             <span class="text-white mt-5">Beschluss konnte nicht geladen werden! Fehlercode: {{ error }}</span>
         </div>
     </div>
+    <!-- Toasts are here. -->
+    <UNotifications>
+        <template #title="{ title }">
+            <span v-html="title" />
+        </template>
+        <template #description="{ description }">
+            <span v-html="description" />
+        </template>
+    </UNotifications>
 </template>
 
 <script setup>
 import MarkdownIt from 'markdown-it'
 
 const md = new MarkdownIt();
+const { $bus } = useNuxtApp();
 const config = useRuntimeConfig();
-const API_ENDPOINT = config.public.apiEndpoint;
 const router = useRouter();
-const resolutionId = router.currentRoute.value.query.id;
-
 const resolution = useLoadedResolution();
+const toast = useToast();
+
+const API_ENDPOINT = config.public.apiEndpoint;
+const resolutionId = router.currentRoute.value.query.id;
 
 
 const plainMarkdown = ref("");
@@ -54,6 +72,15 @@ const parsedMarkdown = computed(() => {
 });
 
 onMounted(async () => {
+    $bus.$on('save', () => {
+        resolution.value.body.text = plainMarkdown.value;
+        saveResolution(resolution.value).then(res => {
+            console.log(`Status code: ${res}`);
+            showToastSavedDone(res);
+        });
+    });
+
+
     try {
         const response = await fetch(`${API_ENDPOINT}/resolution?id=${resolutionId}`);
         if (!response.ok) {
@@ -68,5 +95,55 @@ onMounted(async () => {
         isLoading.value = false;
     }
 });
+
+async function saveResolution(resolution) {
+    // Remove "user" property from resolution object.
+    delete resolution.user;
+    // Remove "_id" property from resolution object. For reasons.
+    delete resolution._id;
+
+    const response = await fetch(`${API_ENDPOINT}/resolution?id=${resolutionId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ "resolution": resolution }),
+    });
+    return response.status;
+}
+
+function showToastSavedDone(statusCode) {
+    let title, description, icon, status;
+
+    if (statusCode == 200) {
+        title = 'Beschluss gespeichert!';
+        description = "Änderungen wurden zur Freigabe eingereicht.";
+        icon = "i-heroicons-check-circle";
+        status = 'success';
+    } else if (statusCode == 400) {
+        title = 'Fehler beim Speichern!';
+        description = `Keine Änderungen vorgenommen oder es existiert schon eine Version mit demselben Text. Statuscode: ${statusCode}`;
+        icon = "i-heroicons-x-circle";
+        status = 'error';
+    } else {
+        title = 'Fehler beim Speichern!';
+        description = `Statuscode: ${statusCode}`;
+        icon = "i-heroicons-x-circle";
+        status = 'error';
+    }
+
+    toast.add({
+        title: title,
+        description: description,
+        status: status,
+        duration: 5000,
+        isClosable: true,
+        icon: icon,
+        closeButton: {
+            color: 'white',
+            size: 'sm',
+        },
+    });
+}
 
 </script>
