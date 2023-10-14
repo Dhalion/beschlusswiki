@@ -10,11 +10,18 @@
             {{ resolution.body.title }}
         </div>
     </div>
+
     <!-- Category and Origin Bar -->
     <div class="bg-beere flex justify-between items-center p-1 px-3">
         <span class="text-xs font-sans text-white antialiased"> Kategorie / Unterkategorie </span>
         <span class="px-3 my-1 py-1 bg-hellrosa text-beere rounded-full text-sm tracking-wide"
             v-for="applicant in resolution.body.applicants">Bayern</span>
+    </div>
+
+    <!-- Resolution not live Warning -->
+    <div class="bg-red-600 flex p-3 my-5  border-slate-400  text-white font-semibold tracking-widest justify-center"
+        v-if="warningMessage">
+        {{ warningMessage }}
     </div>
 </template>
 
@@ -25,6 +32,19 @@ const { resolution } = defineProps({
 
 onMounted(() => {
     console.log(resolution);
+})
+
+const warningMessage = computed(() => {
+    switch (resolution.state) {
+        case "staged":
+            return "Dieser Beschluss wurde noch nicht freigegeben!";
+        case "archived":
+            return "Dieser Beschluss ist archiviert!";
+        case "live":
+            return "";
+        default:
+            return "";
+    }
 })
 
 const applicants = () => {
