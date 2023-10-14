@@ -80,7 +80,7 @@ export async function search(query: QueryString.ParsedQs) {
 	// parse additional query parameters
 	try {
 		const searchQuery = query.q ? query.q.toString() : "";
-		const limit = query.limit ? parseInt(query.limit.toString()) : -1;
+		const limit = query.limit ? parseInt(query.limit.toString()) : 0;
 		const offset = query.offset ? parseInt(query.offset.toString()) : 0;
 		const engine =
 			query.engine?.toString() === "elastic"
