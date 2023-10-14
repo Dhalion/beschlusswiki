@@ -75,7 +75,6 @@ onMounted(async () => {
     $bus.$on('save', () => {
         resolution.value.body.text = plainMarkdown.value;
         saveResolution(resolution.value).then(res => {
-            console.log(`Status code: ${res}`);
             showToastSavedDone(res);
         });
     });
