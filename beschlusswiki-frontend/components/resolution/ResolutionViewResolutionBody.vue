@@ -9,16 +9,23 @@
         <UButton icon="i-heroicons-pencil-square" size="xl" variant="link" :to="`/edit?id=${resolutionId}`" />
 
     </div>
-    <div
-        class="pl-20 pr-20 pb-10 pre text-base leading-6 antialiased whitespace-pre-line break-normal juso-highlight flex justify-center">
-        {{ resolutionText }}
+    <div class="text-base leading-6 antialiased w-3/4 mx-auto pb-10">
+        <span v-html="parsedResolution" class="prose" />
     </div>
 </template>
 
 <script setup>
+import MarkdownIt from 'markdown-it'
+
 // Receive Resolution from prop
 const { resolutionText, resolutionId } = defineProps({
     resolutionText: String,
     resolutionId: String,
 })
+const md = new MarkdownIt();
+
+const parsedResolution = computed(() => {
+    return md.render(resolutionText);
+})
+
 </script>
