@@ -13,6 +13,15 @@ export const getResolution = async (
 		const id = req.query.id?.toString();
 		const rId = req.query.rid?.toString();
 		const rCode = req.query.rcode?.toString();
+		const query = req.query.q?.toString();
+
+		if (query) {
+			const results = await ResolutionService.search(req.query);
+			if (!results) {
+				return res.status(404).json({message: "No Resolutions found"}).end();
+			}
+			return res.json(results).status(200).end();
+		}
 
 		if (id) {
 			const result = await ResolutionService.findById(id);
@@ -43,6 +52,10 @@ export const getResolution = async (
 		return res.json(results).status(200).end();
 	} catch (error) {
 		console.error(error);
+		if (error instanceof ResolutionService.InvalidSearchQueryError) {
+			return res.status(400).json({message: "Invalid Query"}).end();
+		}
+
 		return res.status(500).json({message: "Internal server error"});
 	}
 };

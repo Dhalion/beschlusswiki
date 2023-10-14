@@ -6,7 +6,7 @@ import {IUserDocument, UserModel} from "./UserSchema";
 // Staged: The resolution has been created but not yet approved
 // Live: The resolution has been approved and is live
 // Archived: The resolution has been archived
-enum ResolutionState {
+export enum ResolutionState {
 	Staged = "staged",
 	Live = "live",
 	Archived = "archived",
