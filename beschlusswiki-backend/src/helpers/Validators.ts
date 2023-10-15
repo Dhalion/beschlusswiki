@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import {ResolutionModel} from "../db/Schemas";
+import {ResolutionModel} from "../db/ResolutionSchema";
 import {IResolutionDocument} from "../db/ResolutionSchema";
 
 export function validateResolution(resolution: IResolutionDocument): boolean {
