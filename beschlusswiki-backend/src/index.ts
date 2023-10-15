@@ -7,10 +7,16 @@ import cors from "cors";
 import {load} from "ts-dotenv";
 import mongoose, {mongo} from "mongoose";
 import router from "./router";
+import * as fs from "fs";
+import * as https from "https";
+import requireHTTPS from "./middleware/requireHttps";
 
 const env = load({
 	PORT: Number,
 	MONGO_URI: String,
+	SSL_KEY: String,
+	SSL_CERT: String,
+	SSL_KEY_PASSWORD: String,
 });
 
 const port = env.PORT || 3000;
@@ -25,7 +31,18 @@ app.use(
 
 app.use(express.json());
 
-app.listen(port, () => {
+// Enforce HTTPS
+app.use(requireHTTPS);
+
+const options = {
+	key: fs.readFileSync(env.SSL_KEY),
+	cert: fs.readFileSync(env.SSL_CERT),
+	passphrase: env.SSL_KEY_PASSWORD,
+};
+
+const server = https.createServer(options, app);
+
+server.listen(port, () => {
 	console.log(`${Date()} [SERVER] is listening on port ${port}`);
 });
 

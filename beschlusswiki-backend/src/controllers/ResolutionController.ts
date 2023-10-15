@@ -143,6 +143,9 @@ export const patchResolution = async (
 		console.log("Resolution " + id + " updated");
 		return res.status(200).end();
 	} catch (error: any) {
+		if (error instanceof ResolutionService.InvalidResolutionError) {
+			return res.status(400).json({message: "Invalid request"}).end();
+		}
 		console.error(error);
 		return res.status(500).json({message: "Internal server error"});
 	}
