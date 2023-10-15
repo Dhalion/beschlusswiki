@@ -8,6 +8,10 @@ export default (router: express.Router) => {
 	router.post("/resolution", ResolutionController.postResolution);
 	//? PUT /resolution
 	router.put("/resolution", ResolutionController.putResolution);
+	//? PATCH /resolution
+	router.patch("/resolution", ResolutionController.patchResolution);
+	//? DELETE /resolution
+	router.delete("/resolution", ResolutionController.deleteResolution);
 	// Test hash function
 	router.get("/hash", ResolutionController.getHash);
 };

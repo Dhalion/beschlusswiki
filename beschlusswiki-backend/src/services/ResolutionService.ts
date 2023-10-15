@@ -161,3 +161,36 @@ export async function updateById(id: string, resolution: IResolutionDocument) {
 		throw error;
 	}
 }
+
+export async function deleteById(id: string) {
+	try {
+		const result = await ResolutionModel.findByIdAndDelete(id);
+		if (!result) {
+			throw new InvalidResolutionError("Resolution not found");
+		}
+		return result;
+	} catch (error) {
+		throw error;
+	}
+}
+
+export async function updateField(id: string, field: string, value: string) {
+	const editableFields = ["state"];
+	try {
+		const result = await ResolutionModel.findById(id);
+		if (!result) {
+			throw new InvalidResolutionError("Resolution not found");
+		}
+		// Check if field may be edited
+		if (!editableFields.includes(field)) {
+			throw new InvalidResolutionError("Field is not editable");
+		}
+		// Update field
+		// @ts-ignore
+		result[field] = value;
+		await result.save();
+		return result;
+	} catch (error) {
+		throw error;
+	}
+}

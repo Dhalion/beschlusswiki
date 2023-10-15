@@ -106,6 +106,48 @@ export const putResolution = async (
 	}
 };
 
+//? Handles DELETE /resolution
+//? Deletes a resolution by id
+export const deleteResolution = async (
+	req: express.Request,
+	res: express.Response
+) => {
+	try {
+		const id = req.query.id?.toString();
+		if (!id) {
+			return res.status(400).json({message: "Bad request"}).end();
+		}
+		await ResolutionService.deleteById(id);
+		console.log("Resolution " + id + " deleted");
+		return res.status(200).end();
+	} catch (error: any) {
+		console.error(error);
+		return res.status(500).json({message: "Internal server error"});
+	}
+};
+
+//? Handles PATCH /resolution
+//? Updates a single field in a resolution
+export const patchResolution = async (
+	req: express.Request,
+	res: express.Response
+) => {
+	try {
+		const id = req.query.id?.toString();
+		const field = req.body?.field?.toString();
+		const value = req.body?.value?.toString();
+		if (!id || !field || !value) {
+			return res.status(400).json({message: "Bad request"}).end();
+		}
+		await ResolutionService.updateField(id, field, value);
+		console.log("Resolution " + id + " updated");
+		return res.status(200).end();
+	} catch (error: any) {
+		console.error(error);
+		return res.status(500).json({message: "Internal server error"});
+	}
+};
+
 export const getHash = async (req: express.Request, res: express.Response) => {
 	try {
 		const id = req.query?.id?.toString();
