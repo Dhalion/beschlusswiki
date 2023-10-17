@@ -1,10 +1,12 @@
 import express from "express";
 
-import resolution from "./ResolutionRouter";
+import ResolutionRouter from "./ResolutionRouter";
+import AuthenticationRouter from "./AuthenticationRouter";
 
 const router = express.Router();
 
 export default (): express.Router => {
-	resolution(router);
+	ResolutionRouter(router);
+	AuthenticationRouter(router);
 	return router;
 };
