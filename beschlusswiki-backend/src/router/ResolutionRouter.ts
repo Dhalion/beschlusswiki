@@ -1,5 +1,7 @@
-import * as ResolutionController from "../controllers/ResolutionController";
 import express from "express";
+import * as ResolutionController from "../controllers/ResolutionController";
+import authenticate, {requireRole} from "../middleware/authenticate";
+import {UserRoles} from "../db/UserSchema";
 
 export default (router: express.Router) => {
 	//? GET /resolution
@@ -8,10 +10,22 @@ export default (router: express.Router) => {
 	router.post("/resolution", ResolutionController.postResolution);
 	//? PUT /resolution
 	router.put("/resolution", ResolutionController.putResolution);
+
 	//? PATCH /resolution
-	router.patch("/resolution", ResolutionController.patchResolution);
+	router.patch(
+		"/resolution",
+		authenticate,
+		requireRole([UserRoles.Editor]),
+		ResolutionController.patchResolution
+	);
+
 	//? DELETE /resolution
-	router.delete("/resolution", ResolutionController.deleteResolution);
+	router.delete(
+		"/resolution",
+		authenticate,
+		requireRole([UserRoles.Admin]),
+		ResolutionController.deleteResolution
+	);
 	// Test hash function
 	router.get("/hash", ResolutionController.getHash);
 };

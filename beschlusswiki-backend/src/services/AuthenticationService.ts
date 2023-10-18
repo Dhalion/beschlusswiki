@@ -1,6 +1,8 @@
 import {UserRoles, UserModel} from "../db/UserSchema";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import {env} from "../index";
 
 const MAGIC_TOKEN = "ABABABABABAB";
 
@@ -17,6 +19,14 @@ export class UsernameAlreadyTakenError extends Error {
 		super(message);
 		this.name = "UsernameAlreadyTakenError";
 		Object.setPrototypeOf(this, UsernameAlreadyTakenError.prototype);
+	}
+}
+
+export class InvalidCredentialsError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "InvalidCredentialsError";
+		Object.setPrototypeOf(this, InvalidCredentialsError.prototype);
 	}
 }
 
@@ -58,4 +68,33 @@ export async function registerUser(
 		console.log(err);
 		throw err;
 	}
+}
+
+export async function loginUser(username: string, password: string) {
+	const user = await UserModel.findOne({username}).select(
+		"+authentication.passwordHash"
+	);
+	if (!user) {
+		throw new InvalidCredentialsError("User not found");
+	}
+	const passwordMatch = await bcrypt.compare(
+		password,
+		user.authentication.passwordHash
+	);
+	if (!passwordMatch) {
+		throw new InvalidCredentialsError("Password does not match");
+	}
+
+	// Generate JWT token
+	const jwtToken = jwt.sign(
+		{
+			username: user.username,
+			roles: user.roles,
+		},
+		env.SERVER_SECRET || "secret",
+		{
+			expiresIn: "1h",
+		}
+	);
+	return jwtToken;
 }

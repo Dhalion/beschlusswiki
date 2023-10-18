@@ -11,12 +11,13 @@ import * as fs from "fs";
 import * as https from "https";
 import requireHTTPS from "./middleware/requireHttps";
 
-const env = load({
+export const env = load({
 	PORT: Number,
 	MONGO_URI: String,
 	SSL_KEY: String,
 	SSL_CERT: String,
 	SSL_KEY_PASSWORD: String,
+	SERVER_SECRET: String,
 });
 
 const port = env.PORT || 3000;

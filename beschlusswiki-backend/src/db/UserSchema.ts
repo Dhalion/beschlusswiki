@@ -20,14 +20,14 @@ const userSchema = new Schema({
 });
 
 export interface IUserDocument extends Document {
-	id: String;
-	username: String;
+	id: string;
+	username: string;
 	email: String;
-	roles: Array<String>;
+	roles: Array<string>;
 	status: boolean;
 	authentication: {
-		passwordHash: String;
-		sessionToken: String;
+		passwordHash: string;
+		sessionToken: string;
 	};
 }
 
