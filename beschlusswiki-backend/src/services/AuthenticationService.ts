@@ -2,7 +2,7 @@ import {UserRoles, UserModel} from "../db/UserSchema";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import {env} from "../index";
+import {env} from "../app";
 
 const MAGIC_TOKEN = "ABABABABABAB";
 

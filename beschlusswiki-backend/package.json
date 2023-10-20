@@ -2,10 +2,10 @@
   "name": "beschlusswiki-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "nodemon --inspect",
-    "debug": "nodemon --inspect src/index.ts",
+    "debug": "nodemon --inspect src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

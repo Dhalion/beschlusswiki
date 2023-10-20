@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import {env} from "../index";
+import {env} from "../app";
 import {Request, Response, NextFunction} from "express";
 
 //? Middleware to check if a user is authenticated
