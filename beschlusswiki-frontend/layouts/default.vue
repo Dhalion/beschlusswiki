@@ -2,21 +2,42 @@
     <div class="bg-white min-h-screen flex flex-col ">
         <Header />
 
-        <div class="flex-grow">
+        <div class="flex-grow snap-y">
             <slot />
 
+            <div v-if="showScrollToTop" @click="scrollToTop" class="rounded-full bg-jusorot-700 w-12 h-12 flex justify-center items-center 
+                hover:cursor-pointer fixed bottom-20 right-20 border-white border-2">
+                <UIcon name="i-heroicons-arrow-up" class="text-xl font-extrabold text-white" />
+            </div>
         </div>
 
-
-        <Footer />
+        <Footer ref="footerRef" />
     </div>
 </template>
 
-<script>
-import Header from '~/components/Header.vue'
-export default {
-    components: {
-        Header
-    }
-}
+<script setup>
+const showScrollToTop = ref(false);
+const reachedFooter = ref(false);
+
+const scrollToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+    });
+};
+
+
+const onScroll = () => {
+    showScrollToTop.value = window.scrollY > 100;
+};
+
+onMounted(() => {
+    window.addEventListener('scroll', onScroll);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', onScroll);
+});
+
 </script>
+
