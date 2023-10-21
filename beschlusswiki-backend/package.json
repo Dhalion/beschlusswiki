@@ -6,7 +6,9 @@
   "scripts": {
     "start": "nodemon --inspect",
     "debug": "nodemon --inspect src/app.ts",
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
+    "ts.check": "tsc --project tsconfig.json",
+    "add-build": "git add dist",
     "test": "jest --runInBand"
   },
   "keywords": [],
@@ -41,5 +43,10 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.2.2"
-  }
+  },
+  "pre-commit": [
+    "ts.check",
+    "build",
+    "add-build"
+  ]
 }
