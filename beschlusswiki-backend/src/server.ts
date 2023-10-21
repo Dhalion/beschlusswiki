@@ -20,6 +20,11 @@ export function createServer(): https.Server {
 	// Enforce HTTPS
 	app.use("/", router);
 
+	// Heartbeat endpoint
+	app.get("/", (req, res) => {
+		res.send("Hello World!");
+	});
+
 	const options = {
 		key: fs.readFileSync(env.SSL_KEY),
 		cert: fs.readFileSync(env.SSL_CERT),
