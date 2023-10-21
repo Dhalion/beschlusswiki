@@ -50,6 +50,6 @@ export function startServer(
 	});
 }
 
-export function stopServer(server: https.Server): void {
+export function stopServer(server: https.Server | http.Server): void {
 	server.close();
 }

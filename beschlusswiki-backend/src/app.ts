@@ -1,6 +1,6 @@
 import {load} from "ts-dotenv";
 import mongoose from "mongoose";
-import {createServer, startServer} from "./server";
+import {createServer, startServer, stopServer} from "./server";
 
 export const env = load({
 	PORT: Number,
@@ -20,10 +20,10 @@ startServer(app, port);
 
 const MONGO_URI = env.MONGO_URI;
 
-mongoose.Promise = Promise;
 mongoose.connect(MONGO_URI, {dbName: "beschlusswiki"});
 mongoose.connection.on("error", (err: Error) => {
 	console.error(`MongoDB connection error: ${err}`);
+	stopServer(app);
 	process.exit(1);
 });
 
