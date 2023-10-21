@@ -13,6 +13,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: beschlusswiki-backend
 
     steps:
       - name: Checkout code
