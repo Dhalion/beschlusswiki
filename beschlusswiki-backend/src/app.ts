@@ -1,6 +1,11 @@
 import {load} from "ts-dotenv";
 import mongoose from "mongoose";
-import {createServer, startServer, stopServer} from "./server";
+import express from "express";
+import cors from "cors";
+import router from "./router";
+import * as fs from "fs";
+import http from "http";
+import * as https from "https";
 
 export const env = load({
 	PORT: Number,
@@ -14,17 +19,41 @@ export const env = load({
 
 export const port = env.PORT || 3000;
 
-const app = createServer();
+const app = express();
 
-startServer(app, port);
+app.use(
+	cors({
+		credentials: true,
+	})
+);
 
-const MONGO_URI = env.MONGO_URI;
+app.use(express.json());
 
-mongoose.connect(MONGO_URI, {dbName: "beschlusswiki"});
+// Enforce HTTPS
+app.use("/", router);
+
+// Heartbeat endpoint
+app.get("/", (req, res) => {
+	res.send("Hello World!");
+});
+
+const server: http.Server | https.Server = (() => {
+	if (env.ENVIRONMENT != "production") {
+		const options = {
+			key: fs.readFileSync(env.SSL_KEY),
+			cert: fs.readFileSync(env.SSL_CERT),
+			passphrase: env.SSL_KEY_PASSWORD,
+		};
+		return https.createServer(options, app);
+	} else {
+		return http.createServer(app);
+	}
+})();
+
+mongoose.connect(env.MONGO_URI, {dbName: "beschlusswiki"});
 mongoose.connection.on("error", (err: Error) => {
 	console.error(`MongoDB connection error: ${err}`);
-	stopServer(app);
 	process.exit(1);
 });
 
-export default app;
+export default server;
