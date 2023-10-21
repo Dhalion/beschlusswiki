@@ -1,15 +1,8 @@
 {
-    "devCommand": "npm run dev",
-    "builds": [
+    "rewrites": [
         {
-            "src": "src/app.ts",
-            "use": "@vercel/node"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "/src/app.ts"
+            "source": "/(.*)",
+            "destination": "/api"
         }
     ]
 }
