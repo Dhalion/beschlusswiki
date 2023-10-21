@@ -5,8 +5,9 @@ import * as fs from "fs";
 import * as https from "https";
 import {load} from "ts-dotenv";
 import {env} from "./app";
+import http from "http";
 
-export function createServer(): https.Server {
+export function createServer(): https.Server | http.Server {
 	const app: Express = express();
 
 	app.use(
@@ -25,18 +26,25 @@ export function createServer(): https.Server {
 		res.send("Hello World!");
 	});
 
-	const options = {
-		key: fs.readFileSync(env.SSL_KEY),
-		cert: fs.readFileSync(env.SSL_CERT),
-		passphrase: env.SSL_KEY_PASSWORD,
-	};
-
-	const server = https.createServer(options, app);
-
-	return server;
+	const options = {};
+	if (env.ENVIRONMENT != "production") {
+		const options = {
+			key: fs.readFileSync(env.SSL_KEY),
+			cert: fs.readFileSync(env.SSL_CERT),
+			passphrase: env.SSL_KEY_PASSWORD,
+		};
+		const server = https.createServer(options, app);
+		return server;
+	} else {
+		const server = http.createServer(app);
+		return server;
+	}
 }
 
-export function startServer(server: https.Server, port: number): void {
+export function startServer(
+	server: https.Server | http.Server,
+	port: number
+): void {
 	server.listen(port, () => {
 		console.log(`${Date()} [SERVER] is listening on port ${port}`);
 	});
