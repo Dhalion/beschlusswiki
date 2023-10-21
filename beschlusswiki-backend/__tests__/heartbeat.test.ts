@@ -6,6 +6,7 @@ describe("GET /", () => {
 		const res = await request(app).get("/");
 		expect(res.status).toBe(200);
 	});
+
 	test("should return Hello World!", async () => {
 		const res = await request(app).get("/");
 		expect(res.text).toBe("Hello World!");
