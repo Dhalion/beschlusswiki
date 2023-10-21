@@ -31,6 +31,22 @@ export class InvalidSearchQueryError extends Error {
 	}
 }
 
+export class InvalidIdError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "InvalidIdError";
+		Object.setPrototypeOf(this, InvalidIdError.prototype);
+	}
+}
+
+export class ResolutionNotFoundError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "ResolutionNotFoundError";
+		Object.setPrototypeOf(this, ResolutionNotFoundError.prototype);
+	}
+}
+
 export interface searchOptions {
 	// Search options for the searchResolutionByQuery function
 	searchQuery: string;
@@ -53,7 +69,11 @@ export async function findById(id: string) {
 		const result = await ResolutionModel.findById(id);
 		return result;
 	} catch (error) {
-		throw error;
+		if (error instanceof mongoose.Error.CastError) {
+			throw new InvalidIdError("Invalid id");
+		} else {
+			throw error;
+		}
 	}
 }
 
@@ -96,7 +116,7 @@ export async function search(query: QueryString.ParsedQs) {
 	}
 }
 
-export async function postNew(resolution: Object) {
+export async function postNew(resolution: Object): Promise<Types.ObjectId> {
 	try {
 		const newResolution = new ResolutionModel(resolution);
 		// Validate Resolution
@@ -118,8 +138,12 @@ export async function postNew(resolution: Object) {
 		newResolution.state = ResolutionState.Staged;
 		// Create hash
 		newResolution.hash = newResolution.createHash();
-		await newResolution.save();
+		const r = await newResolution.save();
+		return r._id;
 	} catch (error) {
+		if (error instanceof mongoose.Error) {
+			throw new InvalidResolutionError("Resolution did not pass validation");
+		}
 		throw error;
 	}
 }
@@ -129,7 +153,7 @@ export async function updateById(id: string, resolution: IResolutionDocument) {
 		// Check if resolution with given id is found
 		const result = await ResolutionModel.findById(id);
 		if (!result) {
-			throw new InvalidResolutionError("Resolution not found");
+			throw new ResolutionNotFoundError("Resolution not found");
 		}
 		// Set old resolution's id to new resolution parent
 		resolution.parent = result._id;

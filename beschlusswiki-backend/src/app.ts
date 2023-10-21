@@ -13,9 +13,9 @@ export const env = load({
 
 export const port = env.PORT || 3000;
 
-const server = createServer();
+const app = createServer();
 
-startServer(server, port);
+startServer(app, port);
 
 const MONGO_URI = env.MONGO_URI;
 
@@ -25,3 +25,5 @@ mongoose.connection.on("error", (err: Error) => {
 	console.error(`MongoDB connection error: ${err}`);
 	process.exit(1);
 });
+
+export default app;

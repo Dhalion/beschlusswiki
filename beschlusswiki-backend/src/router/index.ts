@@ -5,8 +5,13 @@ import AuthenticationRouter from "./AuthenticationRouter";
 
 const router = express.Router();
 
-export default (): express.Router => {
-	ResolutionRouter(router);
-	AuthenticationRouter(router);
-	return router;
-};
+router.use("/auth", AuthenticationRouter);
+router.use("/resolution", ResolutionRouter);
+
+export default router;
+
+// export default (): express.Router => {
+// 	ResolutionRouter(router);
+// 	AuthenticationRouter(router);
+// 	return router;
+// };

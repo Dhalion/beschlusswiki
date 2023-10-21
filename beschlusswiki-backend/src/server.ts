@@ -18,7 +18,7 @@ export function createServer(): https.Server {
 	app.use(express.json());
 
 	// Enforce HTTPS
-	app.use("/", router());
+	app.use("/", router);
 
 	const options = {
 		key: fs.readFileSync(env.SSL_KEY),
@@ -35,4 +35,8 @@ export function startServer(server: https.Server, port: number): void {
 	server.listen(port, () => {
 		console.log(`${Date()} [SERVER] is listening on port ${port}`);
 	});
+}
+
+export function stopServer(server: https.Server): void {
+	server.close();
 }

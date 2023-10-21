@@ -10,7 +10,8 @@
 		"alwaysStrict": true,
 		"allowUnreachableCode": false,
 		"noFallthroughCasesInSwitch": true,
-		"noImplicitReturns": true
+		"noImplicitReturns": true,
+		"esModuleInterop": true
 	},
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "**/*.spec.ts"]

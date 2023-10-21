@@ -41,7 +41,7 @@ export const getResolution = async (
 
 		if (rCode) {
 			const result = await ResolutionService.findByRCode(rCode);
-			if (!result) {
+			if (!result.length || !result) {
 				return res.status(404).json({message: "Resolution not found"}).end();
 			}
 			return res.json(result).status(200).end();
@@ -51,9 +51,12 @@ export const getResolution = async (
 		const results = await ResolutionService.findAll();
 		return res.json(results).status(200).end();
 	} catch (error) {
-		console.error(error);
+		// console.error(error);
 		if (error instanceof ResolutionService.InvalidSearchQueryError) {
 			return res.status(400).json({message: "Invalid Query"}).end();
+		}
+		if (error instanceof ResolutionService.InvalidIdError) {
+			return res.status(400).json({message: "Invalid id"}).end();
 		}
 
 		return res.status(500).json({message: "Internal server error"});
@@ -71,8 +74,8 @@ export const postResolution = async (
 		if (!resolution) {
 			return res.status(400).json({message: "Bad request"}).end();
 		}
-		await ResolutionService.postNew(resolution);
-		return res.status(201).end();
+		const id = await ResolutionService.postNew(resolution);
+		return res.status(201).json({id}).end();
 	} catch (error: any) {
 		console.error(error);
 		if (error instanceof ResolutionService.InvalidResolutionError) {
@@ -101,6 +104,9 @@ export const putResolution = async (
 		console.error(error);
 		if (error instanceof ResolutionService.InvalidResolutionError) {
 			return res.status(400).json({message: "Invalid resolution"}).end();
+		}
+		if (error instanceof ResolutionService.ResolutionNotFoundError) {
+			return res.status(404).json({message: "Resolution not found"}).end();
 		}
 		return res.status(500).json({message: "Internal server error"});
 	}

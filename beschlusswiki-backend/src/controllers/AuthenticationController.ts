@@ -29,7 +29,7 @@ export const registerUser = async (req: Request, res: Response) => {
 		return res.status(400).json({message: "Bad request"}).end();
 	}
 	console.log(`[AUTH] User ${username} created successfully`);
-	return res.status(200).json({username, password}).end();
+	return res.status(201).json({username, password}).end();
 };
 
 export const loginUser = async (req: Request, res: Response) => {
@@ -44,7 +44,7 @@ export const loginUser = async (req: Request, res: Response) => {
 	try {
 		const jwtToken = await AuthenticationService.loginUser(username, password);
 		console.log(`[AUTH] User ${username} logged in successfully`);
-		return res.status(200).json(jwtToken).end();
+		return res.status(200).json({token: jwtToken}).end();
 	} catch (err) {
 		if (err instanceof AuthenticationService.InvalidCredentialsError) {
 			return res.status(401).json({message: "Invalid credentials"}).end();
