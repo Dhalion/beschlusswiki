@@ -18,8 +18,6 @@
 </template>
 
 <script setup>
-
-
 const selectedTab = ref(0);
 
 function onSelectedTabChange(index) {
