@@ -1,12 +1,12 @@
 <template>
     <div class="bg-hellrosa text-beere flex justify-center 
         justify-self-center place-items-center w-full">
-        <div class="flex flex-col items-center p-10">
-            <span class="font-black text-8xl pb-4">{{ resolution.body.tag }}</span>
-            <span class="font-black text-6xl">{{ resolution.body.year }}</span>
+        <div class="flex flex-col items-center xl:p-10 p-5">
+            <span class="font-black xl:text-8xl text-4xl xl:pb-4">{{ resolution.body.tag }}</span>
+            <span class="font-black xl:text-6xl text-2xl">{{ resolution.body.year }}</span>
         </div>
-        <div class="w-3/4 p-1 font-bold text-4xl 
-        line-clamp-3 text-clip pr-4">
+        <div class="w-3/4 xl:p-1 font-bold xl:text-4xl text-lg
+        xl:line-clamp-3 xl:text-clip xl:pr-4">
             {{ resolution.body.title }}
         </div>
     </div>
@@ -30,9 +30,6 @@ const { resolution } = defineProps({
     resolution: Object,
 })
 
-onMounted(() => {
-    console.log(resolution);
-})
 
 const warningMessage = computed(() => {
     switch (resolution.state) {
