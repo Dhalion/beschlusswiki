@@ -4,14 +4,31 @@ import pkg from "./package.json";
 export default defineNuxtConfig({
 	devtools: {enabled: true},
 	components: true,
-	modules: ["@nuxt/ui", "@nuxt/content"],
+	modules: ["@nuxt/ui", "@nuxt/content", "@sidebase/nuxt-auth"],
 
 	runtimeConfig: {
 		public: {
+			// omit PUBLIC due to NUXT .env syntax
 			apiEndpoint: process.env.API_ENDPOINT,
 			version: process.env.VERSION,
 		},
 	},
+
+	// Auth configuration
+	auth: {
+		globalAppMiddleware: false,
+		baseURL: process.env.NUXT_PUBLIC_API_ENDPOINT + "/auth",
+		provider: {
+			type: "local",
+			endpoints: {
+				signIn: {path: "/signIn", method: "post"},
+				signOut: {path: "/signout", method: "post"},
+				signUp: {path: "/signup", method: "post"},
+				getSession: {path: "/user", method: "get"},
+			},
+		},
+	},
+
 
 	// Tailwind and CD Theming stuff
 	tailwindcss: {

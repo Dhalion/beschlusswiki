@@ -3,6 +3,7 @@ export const useSearch = () =>
 	useState("searchQuery", () => {
 		return {
 			searchQuery: "",
+			error: "",
 		};
 	});
 
