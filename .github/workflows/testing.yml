@@ -5,7 +5,7 @@ env:
   MONGO_URI: ${{ secrets.MONGO_URI }}
   SSL_KEY: ${{ secrets.SSL_KEY }}
   SSL_CERT: ${{ secrets.SSL_CERT }}
-  SSL_KEY_PASSWORD: ${{ secrets.SSL_CA }}
+  SSL_KEY_PASSWORD: ${{ secrets.SSL_KEY_PASSWORD }}
   SERVER_SECRET: ${{ secrets.SERVER_SECRET }}
   ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
 
