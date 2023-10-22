@@ -21,7 +21,7 @@ export const env = load({
 export const port = env.PORT || 3000;
 
 const corsOptions = {
-	origin: allowedOrigins,
+	origin: true,
 	credentials: true,
 };
 
