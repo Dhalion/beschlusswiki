@@ -14,6 +14,10 @@ export default defineNuxtConfig({
 		},
 	},
 
+	routeRules: {
+		"/**": {cors: true},
+	},
+
 	// Auth configuration
 	auth: {
 		globalAppMiddleware: false,
@@ -28,7 +32,6 @@ export default defineNuxtConfig({
 			},
 		},
 	},
-
 
 	// Tailwind and CD Theming stuff
 	tailwindcss: {

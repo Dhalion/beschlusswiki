@@ -10,8 +10,9 @@
         </div>
 
         <!--* SEARCH RESULTS -->
-        <div v-if="searchResults && !search.error" class="flex flex-col justify-center w-3/4 mx-auto">
-            <span class="text-slate-500 ml-4 mt-3">
+        <div v-if="searchResults && !search.error"
+            class="flex flex-col justify-center xl:w-3/4  xl:mx-auto w-10/12 mx-auto">
+            <span class="text-slate-500 xl:ml-4 mt-3 text-xs xl:text-lg">
                 {{ searchResults.length }}
                 {{ searchResults.length === 1 ? 'Beschluss' : 'Beschlüsse' }} gefunden
             </span>
@@ -24,7 +25,7 @@
         <!--* ERROR BANNER  -->
         <div class="flex justify-center p-20 mx-auto text-slate-600" v-if="search.error">
             <span>
-                Fehler bei der Suche. Bitte versuche es später erneut.
+                Fehler bei der Suche. Bitte versuche es später erneut. {{ search.error }}
             </span>
         </div>
     </div>
@@ -52,6 +53,7 @@ const performSearch = async (query) => {
         const response = await fetch(`${API_ENDPOINT}/resolution?q=${query}`);
         const data = await response.json();
         const status = await response.status;
+        console.log(response);
 
         if (status && status !== 200) {
             search.value.error = status;
@@ -66,7 +68,6 @@ const performSearch = async (query) => {
 
 // Initialisiere die Suche, wenn die Komponente montiert wird
 onMounted(() => {
-    console.log(`[MOUNTED] Search obj: ${search.value.searchQuery}`);
     performSearch(search.value.searchQuery);
 });
 

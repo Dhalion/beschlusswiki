@@ -6,7 +6,8 @@ import router from "./router";
 import * as fs from "fs";
 import http from "http";
 import * as https from "https";
-import {allowedOrigins} from "helpers/allowedOrigins";
+import {allowedOrigins} from "./helpers/allowedOrigins";
+import corsDebug from "./middleware/corsDebug";
 
 export const env = load({
 	PORT: Number,
@@ -21,13 +22,15 @@ export const env = load({
 export const port = env.PORT || 3000;
 
 const corsOptions = {
-	origin: allowedOrigins,
-	credentials: true,
+	origin: "*",
+	// credentials: true,
 };
 
 const app = express();
 
 app.use(cors(corsOptions));
+
+app.use(corsDebug);
 
 app.use(express.json());
 
