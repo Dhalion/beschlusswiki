@@ -5,7 +5,7 @@ export default function corsDebug(
 	res: Response,
 	next: NextFunction
 ) {
-	res.on("finish", () => {
+	res.on("error", () => {
 		console.log("Request headers:");
 		console.log(req.headers);
 		console.log("Response headers:");

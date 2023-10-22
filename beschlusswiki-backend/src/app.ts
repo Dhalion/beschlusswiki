@@ -23,7 +23,7 @@ export const port = env.PORT || 3000;
 
 const corsOptions = {
 	origin: "*",
-	credentials: true,
+	// credentials: true,
 };
 
 const app = express();
