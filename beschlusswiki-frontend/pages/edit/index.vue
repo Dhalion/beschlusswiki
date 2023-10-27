@@ -51,6 +51,7 @@
 
 <script setup>
 import MarkdownIt from 'markdown-it'
+import { navigateTo } from 'nuxt/app';
 
 const md = new MarkdownIt();
 const { $bus } = useNuxtApp();
@@ -58,6 +59,8 @@ const config = useRuntimeConfig();
 const router = useRouter();
 const resolution = useLoadedResolution();
 const toast = useToast();
+
+const { status, data } = useAuth();
 
 const API_ENDPOINT = config.public.apiEndpoint;
 const resolutionId = router.currentRoute.value.query.id;
@@ -70,6 +73,8 @@ const isLoading = ref(true);
 const parsedMarkdown = computed(() => {
     return md.render(plainMarkdown.value);
 });
+// Requires login
+definePageMeta({ middleware: ["authentication"] })
 
 onMounted(async () => {
     $bus.$on('save', () => {
@@ -144,5 +149,13 @@ function showToastSavedDone(statusCode) {
         },
     });
 }
+
+
+watch(status, (newStatus) => {
+    if (newStatus !== "authenticated") {
+        // Throw user out of here.
+        navigateTo("/");
+    }
+});
 
 </script>

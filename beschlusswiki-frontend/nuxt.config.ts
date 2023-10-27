@@ -1,10 +1,8 @@
-import pkg from "./package.json";
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	devtools: {enabled: true},
 	components: true,
-	modules: ["@nuxt/ui", "@nuxt/content", "@sidebase/nuxt-auth"],
+	modules: ["@nuxt/ui", "@sidebase/nuxt-auth"],
 
 	runtimeConfig: {
 		public: {
@@ -22,17 +20,20 @@ export default defineNuxtConfig({
 	auth: {
 		globalAppMiddleware: false,
 		baseURL: process.env.NUXT_PUBLIC_API_ENDPOINT + "/auth",
+
 		provider: {
 			type: "local",
+			pages: {
+				login: "/admin/login",
+			},
 			endpoints: {
-				signIn: {path: "/signIn", method: "post"},
+				signIn: {path: "/login", method: "post"},
 				signOut: {path: "/signout", method: "post"},
-				signUp: {path: "/signup", method: "post"},
-				getSession: {path: "/user", method: "get"},
+				signUp: {path: "/register", method: "post"},
+				getSession: {path: "/session", method: "get"},
 			},
 		},
 	},
-
 	// Tailwind and CD Theming stuff
 	tailwindcss: {
 		config: {

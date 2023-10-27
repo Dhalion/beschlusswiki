@@ -1,6 +1,6 @@
 <template>
     <div class="bg-slate-800 w-1/3 mx-auto mt-16 p-8 rounded-3xl">
-        <UForm :state="state" class="text-slate-800 gap-y-3 flex flex-col" @submit="submit" :validate="validate">
+        <UForm :state="state" class="text-slate-800 gap-y-3 flex flex-col" @submit.prevent="submit" :validate="validate">
             <span class="text-gray-300 font-bold text-2xl">Anmelden</span>
 
             <span class="text-red-500 text-sm" v-if="state.error">
@@ -19,18 +19,36 @@
                 Anmelden
             </UButton>
         </UForm>
+        Status: {{ status }}
+        <br>
+        data: {{ data }}
     </div>
 </template>
 
 <script setup>
+import { useRoute } from 'nuxt/app';
 
-const { signIn, signOut } = useAuth();
+
+definePageMeta({
+    auth:
+    {
+        unauthenticatedOnly: true,
+        navigateAuthenticatedTo: '/',
+    }
+})
+
+const { status, data, signIn, signOut } = useAuth();
+
+const config = useRuntimeConfig();
+const route = useRoute();
 
 const state = ref({
-    email: "abc@example.com",
-    password: "undefined",
+    email: "user",
+    password: "password",
     error: undefined,
 });
+
+const redirect = route.query.redirect;
 
 const validate = (state) => {
     const errors = [];
@@ -44,14 +62,25 @@ const validate = (state) => {
 }
 
 async function submit(event) {
-    console.log("submit");
     try {
-        const res = await signIn(state.email, state.password);
-        console.log(res);
+        event.preventDefault();
+        await signIn(
+            {
+                username: state.value.email,
+                password: state.value.password,
+            }
+        );
     } catch (error) {
+        console.error(error);
         state.value.error = error;
     }
-
+    console.log("Auth Status: " + status.value);
+    if (status.value === "authenticated") {
+        // Leite den Benutzer zur gespeicherten URL zurück
+        navigateTo(redirect || '/admin/dashboard');
+    }
 }
+
+
 
 </script>

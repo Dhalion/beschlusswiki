@@ -1,1 +1,5 @@
 __pycache__
+beschlusswiki-frontend/package-lock.json
+beschlusswiki-frontend/yarn.lock
+beschlusswiki-frontend/.vscode/settings.json
+beschlusswiki-backend/package.json
