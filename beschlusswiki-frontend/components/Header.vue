@@ -12,6 +12,10 @@
             <NuxtLink href="#" class="xl:text-2xl text-xl font-extrabold flex-nowrap text-white">
                 Jusos Beschlusswiki
             </NuxtLink>
+            <UButton class="ml-5" variant="primary" @click="signOut" v-if="status == 'authenticated'">
+                Abmelden
+            </UButton>
+            {{ status }}
         </div>
     </nav>
 </template>
@@ -19,6 +23,7 @@
 <script setup>
 const search = useSearch();
 
+const { status, signOut } = useAuth();
 
 function handleLogoClick() {
     search.value.searchQuery = "";

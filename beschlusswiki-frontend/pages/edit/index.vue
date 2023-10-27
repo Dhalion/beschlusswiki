@@ -1,19 +1,19 @@
 <template>
     <div class="w-screen">
 
-        <EditResolutionHead class="w-5/6 mx-auto" v-if="!isLoading" />
+        <EditResolutionHead class="md:w-5/6 mx-auto" v-if="!isLoading" />
         <div v-if="plainMarkdown">
-            <div class="w-5/6 mx-auto flex mt-2 justify-center">
-                <span class="text-gray-400 text-lg w-1/2 text-center">Beschluss bearbeiten </span>
-                <span class="text-gray-400 text-lg w-1/2 text-center">Vorschau</span>
+            <div class="md:w-5/6 mx-auto flex mt-2 justify-center">
+                <span class="text-gray-400 md:text-lg text-sm w-1/2 text-center">Beschluss bearbeiten </span>
+                <span class="text-gray-400 md:text-lg text-sm w-1/2 text-center">Vorschau</span>
             </div>
-            <div class="text-black markdown mx-auto w-5/6 flex justify-center divide-x pt-3">
+            <div class="text-black markdown mx-auto md:w-5/6 flex justify-center divide-x pt-3">
                 <div class="w-1/2 h-screen p-3">
-                    <UTextarea v-model="plainMarkdown" variant="none" autoresize
-                        class="font-mono text-base outline outline-1 outline-gray-300 outline-offset-1 bg-white" />
+                    <UTextarea v-model="plainMarkdown" variant="none" autoresize size="xs"
+                        class="font-mono md:text-base text-xs outline outline-1 outline-gray-300 outline-offset-1 bg-white" />
                 </div>
-                <div class="w-1/2 p-3">
-                    <div v-html="parsedMarkdown" class="prose w-full"></div>
+                <div class="w-1/2 md:p-3 p-1">
+                    <div v-html="parsedMarkdown" class="prose w-full text-sm pr-3"></div>
                     <!-- {{ plainMarkdown }} -->
                 </div>
             </div>
@@ -51,6 +51,7 @@
 
 <script setup>
 import MarkdownIt from 'markdown-it'
+import { navigateTo } from 'nuxt/app';
 
 const md = new MarkdownIt();
 const { $bus } = useNuxtApp();
@@ -58,6 +59,8 @@ const config = useRuntimeConfig();
 const router = useRouter();
 const resolution = useLoadedResolution();
 const toast = useToast();
+
+const { status, data } = useAuth();
 
 const API_ENDPOINT = config.public.apiEndpoint;
 const resolutionId = router.currentRoute.value.query.id;
@@ -70,6 +73,8 @@ const isLoading = ref(true);
 const parsedMarkdown = computed(() => {
     return md.render(plainMarkdown.value);
 });
+// Requires login
+definePageMeta({ middleware: ["authentication"] })
 
 onMounted(async () => {
     $bus.$on('save', () => {
@@ -144,5 +149,13 @@ function showToastSavedDone(statusCode) {
         },
     });
 }
+
+
+watch(status, (newStatus) => {
+    if (newStatus !== "authenticated") {
+        // Throw user out of here.
+        navigateTo("/");
+    }
+});
 
 </script>

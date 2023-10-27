@@ -1,4 +1,4 @@
-import server, {port} from "app";
+import server, {port} from "./app";
 
 // Start server
 server.listen(port, () => {

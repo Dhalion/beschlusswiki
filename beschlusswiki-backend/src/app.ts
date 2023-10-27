@@ -30,11 +30,8 @@ const app = express();
 
 app.use(cors(corsOptions));
 
-app.use(corsDebug);
-
 app.use(express.json());
 
-// Enforce HTTPS
 app.use("/", router);
 
 // Heartbeat endpoint

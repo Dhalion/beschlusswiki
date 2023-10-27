@@ -1,7 +1,7 @@
 <template>
     <div>
         <UTooltip text="Beschlusskopf bearbeiten">
-            <UIcon name="i-heroicons-pencil-square-solid" class="text-gray-600 text-2xl m-3 cursor-pointer"
+            <UIcon name="i-heroicons-pencil-square-solid" class="text-gray-600 md:text-2xl text-lg m-3 cursor-pointer"
                 @click="isOpen = true" />
         </UTooltip>
 

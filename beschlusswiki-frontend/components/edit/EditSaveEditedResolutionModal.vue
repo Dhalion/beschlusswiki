@@ -1,7 +1,7 @@
 <template>
     <div>
         <UTooltip text="Beschluss speichern">
-            <UIcon name="i-heroicons-arrow-down-tray" class="text-beere text-5xl m-3 cursor-pointer"
+            <UIcon name="i-heroicons-arrow-down-tray" class="text-beere md:text-5xl text-3xl m-3 cursor-pointer"
                 @click="isOpen = true" />
         </UTooltip>
 
