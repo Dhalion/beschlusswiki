@@ -36,7 +36,12 @@
         </UTable>
 
 
-        <div class="flex flex-col pt-5">
+        <div class="flex flex-row justify-between pt-5 items-center ">
+            <div class="flex gap-3">
+                <AdminCreateUserModal @user-created="refresh()" />
+                <UButton label="Aktualisieren" variant="solid" color="primary" icon="i-heroicons-arrow-path"
+                    @click="refresh()" />
+            </div>
             <div class="flex justify-center">
                 <UPagination v-model="tablePage" :page-count="tablePageCount" :total="data?.length" />
             </div>
@@ -116,8 +121,34 @@ const statusOptions = (row) => [[
     { label: "Inaktiv", onClick: () => handleUserStatusChange(row, false) }
 ]];
 
-function handleUserStatusChange(row, newStatus) {
-    console.log(`Setting userr ${row.username} to ${newStatus ? "active" : "inactive"}`);
+async function handleUserStatusChange(row, newStatus) {
+    newStatus ? newStatus = "active" : newStatus = "inactive";
+    console.log(`Setting user ${row.username} to ${newStatus}`);
+
+    const { data, error } = await useFetch("/auth/user/", {
+        method: "PATCH",
+        baseURL: API_ENDPOINT,
+        query: { id: row._id, field: "status", value: newStatus },
+    });
+
+    if (error.value) {
+        toast.add({
+            title: `Fehler beim Ändern des Benutzerstatus von  ${row.username}`,
+            description: error.message,
+            icon: "i-heroicons-exclamation-triangle",
+            type: "error",
+        });
+    } else {
+
+        toast.add({
+            title: "Benutzerstatus geändert",
+            description: `Der Benutzer ${row.username} wurde erfolgreich auf ${newStatus} gesetzt.`,
+            icon: "i-heroicons-check-circle",
+            type: "success",
+        });
+        refresh();
+    }
+
 }
 
 async function handleUserDelete(row) {

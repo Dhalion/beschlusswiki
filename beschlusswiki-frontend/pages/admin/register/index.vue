@@ -1,38 +1,18 @@
 <template>
   <div class="bg-slate-800 w-1/3 mx-auto mt-16 p-8 rounded-3xl">
-    <UForm
-      :state="state"
-      class="text-slate-800 gap-y-5 flex flex-col"
-      :validate="validate"
-      @submit="submit"
-    >
+    <UForm :state="state" class="text-slate-800 gap-y-5 flex flex-col" :validate="validate" @submit="submit">
       <span class="text-gray-300 font-bold text-2xl">Registrieren</span>
 
       <UFormGroup name="key" label="* Registrierungsschlüssel" help="">
-        <UInput
-          v-model="state.key"
-          type="text"
-          placeholder="Registrierungsschlüssel"
-          icon="i-heroicons-key"
-        />
+        <UInput v-model="state.key" type="text" placeholder="Registrierungsschlüssel" icon="i-heroicons-key" />
       </UFormGroup>
 
       <UFormGroup name="email" label="Email oder Nutzername" required>
-        <UInput
-          v-model="state.email"
-          type="text"
-          placeholder="E-Mail"
-          icon="i-heroicons-envelope"
-        />
+        <UInput v-model="state.email" type="text" placeholder="E-Mail" icon="i-heroicons-envelope" />
       </UFormGroup>
 
       <UFormGroup label="Passwort" name="password" required>
-        <UInput
-          v-model="state.password"
-          type="password"
-          placeholder="Passwort"
-          icon="i-heroicons-lock-closed"
-        />
+        <UInput v-model="state.password" type="password" placeholder="Passwort" icon="i-heroicons-lock-closed" />
       </UFormGroup>
 
       <UButton type="submit" class="mt-2" block> Anmelden </UButton>
