@@ -1,7 +1,7 @@
 <template>
     <div class="bg-slate-800 px-5 mx-10 text-black">
         <UTable :rows="tableRows" :columns="tableColumns" :loading="pending"
-            :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }">
+            :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :empty-state="emptyState">
 
             <!--* Rollen Spalte *-->
             <template #roles-data="{ row }">
@@ -25,14 +25,20 @@
 
             <!--* Aktionen Spalte *-->
             <template #actions-data="{ row }">
-                <UButton icon="i-heroicons-trash" variant="link" color="grey" />
+                <UPopover v-model="confirmationPopup">
+                    <UButton icon="i-heroicons-trash" variant="link" color="grey" />
+                    <template #panel="{ close }">
+                        <AdminConfirmationPopup @confirm="handleUserDelete(row); close();" @cancel="close();"
+                            title="Nutzer löschen?" />
+                    </template>
+                </UPopover>
             </template>
         </UTable>
 
 
         <div class="flex flex-col pt-5">
             <div class="flex justify-center">
-                <UPagination v-model="tablePage" :page-count="tablePageCount" :total="data.users.length" />
+                <UPagination v-model="tablePage" :page-count="tablePageCount" :total="data?.length" />
             </div>
             <div class="flex justify-end p-3">
                 <span class="text-gray-400 pr-3 text-sm pt-1">Einträge pro Seite:</span>
@@ -40,25 +46,61 @@
             </div>
         </div>
     </div>
+    <UNotifications />
 </template>
 
 <script setup>
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
+const toast = useToast();
 
 const tablePage = ref(1);
 const tablePageCount = ref(10);
 
-const { data, error, pending } = await useLazyFetch(API_ENDPOINT + "/auth/users", {
+const confirmationPopup = ref(null);
+
+const { data, error, pending, refresh } = await useLazyFetch(API_ENDPOINT + "/auth/user", {
+    transform: (data) => {
+        return data.users;
+    },
+    onRequestError: (error) => {
+        toast.add({
+            title: "Fehler beim Laden der Benutzer",
+            message: error.message,
+            type: "error",
+        });
+    },
+    onResponseError: (error) => {
+        toast.add({
+            title: "Fehler beim Laden der Benutzer",
+            message: error.message,
+            type: "error",
+        });
+    },
 })
 
+const emptyState = computed(() => {
+    if (error.value) return { icon: 'i-heroicons-exclamation-triangle', label: 'Fehler beim Laden.' };
+    else return { icon: 'i-heroicons-circle-stack-20-solid', label: 'No items.' };
+});
 
 const tableRows = computed(() => {
-    return pending.value ? [] : data.value.users.slice(
+    if (!data.value) return [];
+    if (data.value.length === 0) return [];
+    if (error.value) {
+        toast.add({
+            title: "Fehler beim Laden der Benutzer",
+            message: error.value.message,
+            type: "error",
+        });
+    }
+
+    return data.value.slice(
         (tablePage.value - 1) * tablePageCount.value,
         tablePage.value * tablePageCount.value,
     );
 });
+
 
 
 const tableColumns = [
@@ -78,5 +120,37 @@ function handleUserStatusChange(row, newStatus) {
     console.log(`Setting userr ${row.username} to ${newStatus ? "active" : "inactive"}`);
 }
 
+async function handleUserDelete(row) {
+    console.log(`Deleting user ${row.username}`);
+
+    const { data, error } = await useFetch("/auth/user/", {
+        method: "DELETE",
+        baseURL: API_ENDPOINT,
+        query: { id: row._id },
+    });
+    if (error.value) {
+        toast.add({
+            title: "Fehler beim Löschen des Benutzers",
+            description: error.message,
+            icon: "i-heroicons-exclamation-triangle",
+            type: "error",
+        });
+    } else {
+        removeUserFromTable(row._id);
+        toast.add({
+            title: "Benutzer gelöscht",
+            description: `Der Benutzer ${row.username} wurde erfolgreich gelöscht.`,
+            icon: "i-heroicons-check-circle",
+            type: "success",
+        });
+    }
+}
+
+function removeUserFromTable(id) {
+    const index = data.value.findIndex((user) => user._id === id);
+    if (index !== -1) {
+        data.value.splice(index, 1);
+    }
+}
 
 </script>
