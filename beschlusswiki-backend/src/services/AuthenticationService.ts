@@ -98,3 +98,7 @@ export async function loginUser(username: string, password: string) {
 	);
 	return jwtToken;
 }
+
+export async function getUsers() {
+	return await UserModel.find();
+}

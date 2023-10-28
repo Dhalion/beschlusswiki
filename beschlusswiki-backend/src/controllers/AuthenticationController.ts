@@ -58,3 +58,15 @@ export const getSession = async (req: Request, res: Response) => {
 
 	return res.status(200).json({success: true, session: "hello world"}).end();
 };
+
+export const getUsers = async (req: Request, res: Response) => {
+	console.log(`[AUTH] User requested users`);
+
+	try {
+		const users = await AuthenticationService.getUsers();
+		console.log(`[AUTH] Users fetched successfully`);
+		return res.status(200).json({users}).end();
+	} catch (err) {
+		return res.status(500).json({message: "Error"}).end();
+	}
+};

@@ -1,6 +1,6 @@
 <template>
-    <MainSearchHero />
-    <MainSearchView />
+  <MainSearchHero />
+  <MainSearchView />
 </template>
 
 <script setup>
@@ -9,7 +9,6 @@ const search = useSearch();
 const searchQuery = computed(() => route.query.query);
 
 if (searchQuery.value) {
-    search.value.searchQuery = searchQuery.value;
+  search.value.searchQuery = searchQuery.value;
 }
-
 </script>

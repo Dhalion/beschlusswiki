@@ -1,10 +1,7 @@
 <template>
-    <div class="bg-white h-full w-full">
-        <ResolutionView />
-    </div>
+  <div class="bg-white h-full w-full">
+    <ResolutionView />
+  </div>
 </template>
 
-<script setup>
-
-
-</script>
+<script setup></script>
