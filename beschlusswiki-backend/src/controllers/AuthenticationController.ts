@@ -105,12 +105,41 @@ export const deleteUser = async (req: Request, res: Response) => {
 
 	try {
 		const users = await AuthenticationService.deleteUser(userId);
-		console.log(`[AUTH] Users deleted successfully`);
+		console.log(`[AUTH] User ${userId} deleted successfully`);
 		return res.status(200).end();
 	} catch (err) {
 		console.log(err);
 		if (err instanceof AuthenticationService.UserNotFoundError) {
 			return res.status(404).json({message: "User not found"}).end();
+		}
+		return res.status(500).json({message: "Error"}).end();
+	}
+};
+
+export const createUser = async (req: Request, res: Response) => {
+	console.log(`[AUTH] User requested to create user`);
+	const username = req.body?.username?.toString();
+	const password = req.body?.password?.toString();
+	const roles = req.body?.roles;
+	const status = req.body?.enabled;
+
+	if (!username || !password || !roles || !status) {
+		return res.status(400).json({message: "Bad request"}).end();
+	}
+
+	try {
+		const user = await AuthenticationService.createUser(
+			username,
+			password,
+			roles,
+			status
+		);
+		console.log(`[AUTH] User ${username} created successfully`);
+		return res.status(200).end();
+	} catch (err) {
+		console.log(err);
+		if (err instanceof AuthenticationService.UsernameAlreadyTakenError) {
+			return res.status(400).json({message: "Username already taken"}).end();
 		}
 		return res.status(500).json({message: "Error"}).end();
 	}
