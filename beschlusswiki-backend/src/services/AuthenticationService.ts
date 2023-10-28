@@ -1,4 +1,4 @@
-import {UserRoles, UserModel} from "../db/UserSchema";
+import {UserRoles, UserModel, IUserDocument} from "../db/UserSchema";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -27,6 +27,22 @@ export class InvalidCredentialsError extends Error {
 		super(message);
 		this.name = "InvalidCredentialsError";
 		Object.setPrototypeOf(this, InvalidCredentialsError.prototype);
+	}
+}
+
+export class InvalidFieldError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "InvalidFieldError";
+		Object.setPrototypeOf(this, InvalidFieldError.prototype);
+	}
+}
+
+export class UserNotFoundError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "UserNotFoundError";
+		Object.setPrototypeOf(this, UserNotFoundError.prototype);
 	}
 }
 
@@ -101,4 +117,29 @@ export async function loginUser(username: string, password: string) {
 
 export async function getUsers() {
 	return await UserModel.find();
+}
+
+export async function patchUser(userId: string, field: string, value: string) {
+	// Validate field with IUserDcoument
+	if (!Object.keys(UserModel.schema.paths).includes(field)) {
+		throw new InvalidFieldError("Invalid field");
+	}
+	if (field === "id") {
+		throw new InvalidFieldError("Cannot patch id");
+	}
+	if (field === "status") {
+		if (value !== "active" && value !== "inactive") {
+			throw new InvalidFieldError("Invalid value");
+		}
+		const newState = value === "active" ? true : false;
+		const res = await UserModel.updateOne({_id: userId}, {status: newState});
+		console.log(res);
+	}
+}
+
+export async function deleteUser(userId: string) {
+	const res = await UserModel.deleteOne({_id: userId});
+	if (res.deletedCount === 0) {
+		throw new UserNotFoundError("User not found");
+	}
 }

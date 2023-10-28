@@ -1,5 +1,6 @@
 import {Request, Response} from "express";
 import * as AuthenticationService from "../services/AuthenticationService";
+import {UserModel} from "db/UserSchema";
 
 export const registerUser = async (req: Request, res: Response) => {
 	const username = req.body?.username?.toString();
@@ -67,6 +68,50 @@ export const getUsers = async (req: Request, res: Response) => {
 		console.log(`[AUTH] Users fetched successfully`);
 		return res.status(200).json({users}).end();
 	} catch (err) {
+		return res.status(500).json({message: "Error"}).end();
+	}
+};
+
+export const patchUser = async (req: Request, res: Response) => {
+	console.log(`[AUTH] User requested to patch user`);
+	const userId = req.query?.id?.toString();
+	const field = req.query?.field?.toString();
+	const value = req.query?.value?.toString();
+
+	if (!userId || !field || !value) {
+		return res.status(400).json({message: "Bad request"}).end();
+	}
+
+	try {
+		const users = await AuthenticationService.patchUser(userId, field, value);
+		console.log(`[AUTH] Users patched successfully`);
+		return res.status(200).json({users}).end();
+	} catch (err) {
+		console.log(err);
+		if (err instanceof AuthenticationService.InvalidFieldError) {
+			return res.status(400).json({message: "Invalid field"}).end();
+		}
+		return res.status(500).json({message: "Error"}).end();
+	}
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+	console.log(`[AUTH] User requested to delete user`);
+	const userId = req.query?.id?.toString();
+
+	if (!userId) {
+		return res.status(400).json({message: "Missing User ID"}).end();
+	}
+
+	try {
+		const users = await AuthenticationService.deleteUser(userId);
+		console.log(`[AUTH] Users deleted successfully`);
+		return res.status(200).end();
+	} catch (err) {
+		console.log(err);
+		if (err instanceof AuthenticationService.UserNotFoundError) {
+			return res.status(404).json({message: "User not found"}).end();
+		}
 		return res.status(500).json({message: "Error"}).end();
 	}
 };
