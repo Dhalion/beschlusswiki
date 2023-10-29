@@ -1,7 +1,7 @@
 <template>
   <div class="text-black">
     <div class="bg-slate-800 px-5 mx-10">
-      <UTable :rows="rows" :columns="columns" :empty-state="emptyState"
+      <UTable :rows="rows" :columns="columns" :empty-state="emptyState" :loading="pending"
         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }">
         <!--* Resolution State Column  -->
         <template #state-data="{ row }">
@@ -31,13 +31,17 @@
         </template>
       </UTable>
 
-      <div class="flex flex-col pt-5">
+      <div class="flex flex-row justify-between pt-5 items-center ">
+        <div class="flex gap-3">
+          <UButton label="Aktualisieren" variant="solid" color="primary" icon="i-heroicons-arrow-path"
+            @click="refresh()" />
+        </div>
         <div class="flex justify-center">
-          <UPagination v-model="page" :page-count="pageCount" :total="resolutions.length" />
+          <UPagination v-model="tablePage" :page-count="tablePageCount" :total="data?.length" />
         </div>
         <div class="flex justify-end p-3">
           <span class="text-gray-400 pr-3 text-sm pt-1">Einträge pro Seite:</span>
-          <USelect v-model="pageCount" :options="[10, 20, 50, 100]" />
+          <USelect v-model="tablePageCount" :options="[10, 20, 50, 100]" />
         </div>
       </div>
     </div>
@@ -90,7 +94,7 @@ const columns = [
 
 const stateOptions = (row) => [[{ label: "Staged" }, { label: "Live" }]];
 
-const { data, error, pending } = useLazyFetch("/resolution", {
+const { data, error, pending, refresh } = useLazyFetch("/resolution", {
   baseURL: API_ENDPOINT,
   onRequestError: (err) => {
     taost.add({
