@@ -35,6 +35,8 @@
         <div class="flex gap-3">
           <UButton label="Aktualisieren" variant="solid" color="primary" icon="i-heroicons-arrow-path"
             @click="refresh()" />
+          <UButton label="Neuer Beschluss" variant="solid" color="primary" icon="i-heroicons-plus"
+            to="/resolution/create" />
         </div>
         <div class="flex justify-center">
           <UPagination v-model="tablePage" :page-count="tablePageCount" :total="data?.length" />

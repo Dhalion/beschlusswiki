@@ -16,6 +16,10 @@ export default defineNuxtConfig({
 		"/**": {cors: true},
 	},
 
+	typescript: {
+		typeCheck: true,
+	},
+
 	// Auth configuration
 	auth: {
 		globalAppMiddleware: false,

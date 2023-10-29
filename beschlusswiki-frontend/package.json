@@ -15,7 +15,8 @@
     "@nuxtjs/eslint-module": "^4.1.0",
     "@sidebase/nuxt-auth": "^0.6.0-rc.1",
     "nuxt": "^3.8.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vue-tsc": "^1.8.22"
   },
   "dependencies": {
     "@auth/core": "^0.17.0",
