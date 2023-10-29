@@ -1,7 +1,7 @@
 <template>
   <div class="text-black">
     <div class="bg-slate-800 px-5 mx-10">
-      <UTable :rows="rows" :columns="columns"
+      <UTable :rows="rows" :columns="columns" :empty-state="emptyState"
         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }">
         <!--* Resolution State Column  -->
         <template #state-data="{ row }">
@@ -42,15 +42,18 @@
       </div>
     </div>
   </div>
+  <UNotifications />
 </template>
 
 <script setup>
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
+const taost = useToast();
 
 const resolutions = computed(() => {
   // Transform the date to a readable format
-  return pending.value ? [] : data.value.map((resolution) => {
+  if (pending.value || error.value) return [];
+  return data.value.map((resolution) => {
     const transformedResolution = { ...resolution };
     transformedResolution.created = new Date(resolution.created).toLocaleString(
       "de-DE",
@@ -87,5 +90,21 @@ const columns = [
 
 const stateOptions = (row) => [[{ label: "Staged" }, { label: "Live" }]];
 
-const { data, error, pending } = useFetch(API_ENDPOINT + "/resolution", {});
+const { data, error, pending } = useLazyFetch("/resolution", {
+  baseURL: API_ENDPOINT,
+  onRequestError: (err) => {
+    taost.add({
+      timeout: 8000,
+      title: "Fehler beim Laden der Resolutionen",
+      description: `Fehler: ${err.error.name} - ${err.error.message}`,
+      variant: "danger",
+    });
+  },
+});
+
+const emptyState = computed(() => {
+  if (error.value) return { icon: 'i-heroicons-exclamation-triangle', label: 'Fehler beim Laden.' };
+  else return { icon: 'i-heroicons-circle-stack-20-solid', label: 'No items.' };
+});
+
 </script>

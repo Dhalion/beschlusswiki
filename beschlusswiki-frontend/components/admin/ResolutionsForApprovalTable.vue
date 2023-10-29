@@ -54,12 +54,11 @@ const page = ref(1);
 const pageCount = ref(10);
 
 const rows = computed(() => {
-  return pending.value
-    ? []
-    : data.value.slice(
-      (page.value - 1) * pageCount.value,
-      page.value * pageCount.value,
-    );
+  if (pending.value || error.value) return [];
+  return data.value.slice(
+    (page.value - 1) * pageCount.value,
+    page.value * pageCount.value,
+  );
 });
 
 const columns = [
