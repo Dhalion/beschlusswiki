@@ -1,7 +1,7 @@
 <template>
   <div class="text-black">
     <div class="bg-slate-800 px-5 mx-10">
-      <UTable :rows="rows" :columns="columns"
+      <UTable :rows="rows" :columns="columns" :empty-state="emptyState"
         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }">
         <!--* Resolution State Column  -->
         <template #state-data="{ row }">
@@ -105,5 +105,30 @@ const { data, error, pending } = useFetch(API_ENDPOINT + "/resolution", {
         return transformedResolution;
       });
   },
+  onRequestError: (err) => {
+    toast.add({
+      timeout: 8000,
+      title: "Fehler beim Laden der Beschlüsse zum Freigeben",
+      description: `${err.error.message}`,
+      variant: "danger",
+    });
+  },
+  onResponseError: (err) => {
+    toast.add({
+      timeout: 8000,
+      title: "Fehler beim Laden der Beschlüsse zum Freigeben",
+      description: `${err.error.message}`,
+      variant: "danger",
+    });
+  },
 });
+
+const emptyState = computed(() => {
+  if (error.value) return {
+    icon: 'i-heroicons-exclamation-triangle',
+    label: 'Fehler beim Laden.'
+  };
+  else return { icon: 'i-heroicons-circle-stack-20-solid', label: 'No items.' };
+});
+
 </script>

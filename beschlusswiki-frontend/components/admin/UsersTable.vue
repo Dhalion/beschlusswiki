@@ -71,14 +71,14 @@ const { data, error, pending, refresh } = await useLazyFetch(API_ENDPOINT + "/au
     onRequestError: (error) => {
         toast.add({
             title: "Fehler beim Laden der Benutzer",
-            message: error.message,
+            description: error.error.message,
             type: "error",
         });
     },
     onResponseError: (error) => {
         toast.add({
             title: "Fehler beim Laden der Benutzer",
-            message: error.message,
+            description: error.error.message,
             type: "error",
         });
     },

@@ -95,7 +95,7 @@ const { data, error, pending } = useLazyFetch("/resolution", {
   onRequestError: (err) => {
     taost.add({
       timeout: 8000,
-      title: "Fehler beim Laden der Resolutionen",
+      title: "Fehler beim Laden der Beschlüsse",
       description: `Fehler: ${err.error.name} - ${err.error.message}`,
       variant: "danger",
     });
