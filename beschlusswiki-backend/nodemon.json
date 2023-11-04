@@ -2,7 +2,7 @@
     "watch": [
         "src"
     ],
-    "ext": ".ts,.js",
+    "ext": ".ts,.js,.env",
     "execMap": {
         "ts": "node --require ts-node/register"
     }

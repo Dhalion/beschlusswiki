@@ -7,6 +7,7 @@ import {
 	ResolutionState,
 } from "../db/ResolutionSchema";
 import QueryString from "qs";
+import {env} from "../app";
 
 enum SearchEngine {
 	// Enum for the search engine to use
@@ -218,3 +219,137 @@ export async function updateField(id: string, field: string, value: string) {
 		throw error;
 	}
 }
+
+async function searchWithElastic(query: string) {
+	try {
+		const tokens = tokenizeQuery(query);
+		const elasticQuery = buildElasticQuery(
+			query,
+			tokens.tokens,
+			tokens.literalTokens,
+			tokens.excludeTokens
+		);
+		const URI = env.ELASTIC_URI + "/resolutions" + "/_search";
+		const res = await fetch(URI, {
+			method: "POST",
+			headers: {"Content-Type": "application/json"},
+			body: JSON.stringify(elasticQuery),
+		})
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error(response.statusText);
+				}
+				return response.json();
+			})
+			.then((data) => {
+				console.log(data.hits);
+				return data.hits.hits;
+			})
+			.catch((error) => {
+				console.error(error);
+				throw error;
+			});
+		return res;
+	} catch (error) {
+		throw error;
+	}
+}
+
+const tokenizeQuery = (query: string) => {
+	query = query.trim();
+	// Split query into tokens
+	const tokens = query.split(" ");
+	// Split tokens into literal tokens and non-literal tokens. Literal tokens are surrounded by quotes
+	const literalTokens: string[] = [];
+	const excludeTokens: string[] = [];
+	tokens.forEach((token) => {
+		if (token.startsWith('"') && token.endsWith('"')) {
+			literalTokens.push(token);
+		} else if (token.startsWith("-")) {
+			excludeTokens.push(token);
+		}
+	});
+	// Remove quotes from literal tokens
+	literalTokens.forEach((token, index) => {
+		literalTokens[index] = token.replace(/"/g, "");
+	});
+	// Remove minus from exclude tokens
+	excludeTokens.forEach((token, index) => {
+		excludeTokens[index] = token.replace(/-/g, "");
+	});
+	return {
+		tokens: tokens,
+		literalTokens: literalTokens,
+		excludeTokens: excludeTokens,
+	};
+};
+
+const buildElasticQuery = (
+	query: string,
+	tokens: string[],
+	literalTokens: string[],
+	excludeTokens: string[]
+) => {
+	let elasticQuery: any = {
+		_source: {
+			excludes: ["text"],
+		},
+		query: {
+			bool: {
+				must: [],
+				should: [],
+				must_not: [],
+			},
+		},
+	};
+	// Add literal tokens to must
+	literalTokens.forEach((token) => {
+		elasticQuery.query.bool.must.push({
+			match: {
+				content: token,
+			},
+		});
+	});
+	// Add exclude tokens to must_not
+	excludeTokens.forEach((token) => {
+		elasticQuery.query.bool.must_not.push({
+			match: {
+				content: token,
+			},
+		});
+	});
+	// Add tokens to should multi_match
+	elasticQuery.query.bool.should.push({
+		multi_match: {
+			query: query,
+			fields: ["title^2", "text"],
+			fuzziness: "AUTO",
+			boost: 1.5,
+		},
+	});
+	// Add tokens to should match_phrase
+	elasticQuery.query.bool.should.push({
+		match_phrase: {
+			text: {
+				query: query,
+				slop: 1,
+			},
+		},
+	});
+	// Add tokens to should span_near
+	elasticQuery.query.bool.should.push({
+		span_near: {
+			clauses: tokens.map((token) => {
+				return {
+					span_term: {
+						text: token,
+					},
+				};
+			}),
+			slop: 1,
+			in_order: true,
+		},
+	});
+
+	return elasticQuery;
+};

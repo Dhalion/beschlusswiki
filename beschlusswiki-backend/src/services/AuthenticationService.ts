@@ -143,3 +143,30 @@ export async function deleteUser(userId: string) {
 		throw new UserNotFoundError("User not found");
 	}
 }
+
+export async function createUser(
+	username: string,
+	password: string,
+	roles: Array<UserRoles>,
+	status: boolean
+) {
+	const hashedPassword = await bcrypt.hash(password, 10);
+
+	// Check if username is already taken
+	if (await UserModel.exists({username})) {
+		throw new UsernameAlreadyTakenError("Username already taken");
+	}
+
+	// Create new User
+	const newUser = new UserModel({
+		// generate random 6 digit hex id
+		id: crypto.randomBytes(3).toString("hex"),
+		username: username,
+		roles: roles,
+		status: status,
+		authentication: {
+			passwordHash: hashedPassword,
+		},
+	});
+	await newUser.save();
+}

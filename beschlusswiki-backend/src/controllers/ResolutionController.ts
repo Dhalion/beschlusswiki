@@ -179,6 +179,3 @@ export const getHash = async (req: express.Request, res: express.Response) => {
 		return res.status(500).json({message: "Internal server error"});
 	}
 };
-
-// 12ab2023-DEMO1aaaaDemo1DEMO1Admin2023Demo00ffDemotext Lorem ipsum dolor sit amet.
-// 12ab2023-DEMO1aaaaDemo1DEMO1Admin2023Demo00ffDemotext Lorem ipsum dolor sit amet.

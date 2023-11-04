@@ -17,6 +17,7 @@ export const env = load({
 	SSL_KEY_PASSWORD: String,
 	SERVER_SECRET: String,
 	ENVIRONMENT: String,
+	ELASTIC_URI: String,
 });
 
 export const port = env.PORT || 3000;
