@@ -56,10 +56,15 @@ export interface searchOptions {
 	engine: SearchEngine;
 }
 
-export async function findAll() {
+export async function findAll(returnText: boolean = false) {
+	// Doesn't return the text of the resolution by default.
+	// This is to improve performance
 	try {
-		const results = await ResolutionModel.find();
-		return results;
+		if (returnText) {
+			return await ResolutionModel.find();
+		} else {
+			return await ResolutionModel.find().select("-text -body.text");
+		}
 	} catch (error) {
 		throw error;
 	}
@@ -108,10 +113,15 @@ export async function search(query: QueryString.ParsedQs) {
 				? SearchEngine.ELASTICSEARCH
 				: SearchEngine.MONGO;
 
-		return await ResolutionModel.find({$text: {$search: searchQuery}})
-			.limit(limit)
-			.skip(offset)
-			.exec();
+		if (engine === SearchEngine.ELASTICSEARCH) {
+			return await searchWithElastic(searchQuery);
+		} else {
+			return await ResolutionModel.find({$text: {$search: searchQuery}})
+				.select("-text -body.text") // Exclude the body text from the response. Improves performance by
+				.limit(limit)
+				.skip(offset)
+				.exec();
+		}
 	} catch (error) {
 		throw error;
 	}

@@ -14,6 +14,7 @@ export const getResolution = async (
 		const rId = req.query.rid?.toString();
 		const rCode = req.query.rcode?.toString();
 		const query = req.query.q?.toString();
+		const selectText = req.query.selectText?.toString();
 
 		if (query) {
 			const results = await ResolutionService.search(req.query);
@@ -48,7 +49,10 @@ export const getResolution = async (
 		}
 
 		// If no query parameters are given, return all resolutions
-		const results = await ResolutionService.findAll();
+		// Return Resolution text only if selectText is true
+		const results = await ResolutionService.findAll(
+			selectText == "true" ? true : false
+		);
 		return res.json(results).status(200).end();
 	} catch (error) {
 		// console.error(error);
