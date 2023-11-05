@@ -5,5 +5,6 @@ const router = Router();
 
 //? GET /category
 router.get("/", CategoryController.getCategory);
+router.patch("/", CategoryController.patchCategory);
 
 export default router;
