@@ -108,10 +108,11 @@ export async function search(query: QueryString.ParsedQs) {
 		const searchQuery = query.q ? query.q.toString() : "";
 		const limit = query.limit ? parseInt(query.limit.toString()) : 0;
 		const offset = query.offset ? parseInt(query.offset.toString()) : 0;
+		// Default search is elastic
 		const engine =
-			query.engine?.toString() === "elastic"
-				? SearchEngine.ELASTICSEARCH
-				: SearchEngine.MONGO;
+			query.engine?.toString() === "mongo"
+				? SearchEngine.MONGO
+				: SearchEngine.ELASTICSEARCH;
 
 		if (engine === SearchEngine.ELASTICSEARCH) {
 			return await searchWithElastic(searchQuery);
