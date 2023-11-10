@@ -1,5 +1,6 @@
 <template>
-  <div class="bg-creme rounded-3xl shadow-lg p-4 flex flex-col text-center h-full">
+  <NuxtLink :href="`/category?id=${props.id}`"
+    class="bg-creme rounded-3xl shadow-lg p-4 flex flex-col text-center h-full">
 
     <div class="h-3/4 flex justify-center align-top p-2">
       <img src="../../assets/work-in-progress.png" class="w-1/2" :alt="props.title" />
@@ -12,7 +13,7 @@
     <span class="text-gray-500 text-sm font-light h-full flex justify-center items-end">
       {{ props.resolutions.length }} Beschlüsse
     </span>
-  </div>
+  </NuxtLink>
 </template>
 
 <script setup>
