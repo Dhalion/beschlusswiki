@@ -90,19 +90,28 @@ export const postResolution = async (
 };
 
 //? Handles PUT /resolution
-//? Updates an existing resolution, creates a copy with reference to parent
+//? Updates an existing resolution, creates a copy with reference to parent if override is false
 export const putResolution = async (
 	req: express.Request,
 	res: express.Response
 ) => {
 	try {
 		const id = req.query.id?.toString();
+		const override = req.query?.override
+			? req.query.override.toString() == "true"
+			: false;
 		const resolution = req.body?.resolution;
 		if (!id || !resolution) {
 			return res.status(400).json({message: "Bad request"}).end();
 		}
-		await ResolutionService.updateById(id, resolution);
-		console.log("Resolution " + id + " updated");
+		if (override) {
+			await ResolutionService.overrideById(id, resolution);
+			console.log("Resolution " + id + " overriden");
+		} else {
+			await ResolutionService.updateById(id, resolution);
+			console.log("Resolution " + id + " updated");
+		}
+
 		return res.status(200).end();
 	} catch (error: any) {
 		console.error(error);

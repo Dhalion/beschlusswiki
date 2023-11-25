@@ -1,6 +1,6 @@
 <template>
     <UDropdown :items="items" :popper="{ placement: 'bottom-end' }" class="pl-4">
-        <UAvatar alt="Demo User" size="sm" />
+
     </UDropdown>
     <UNotifications />
 </template>

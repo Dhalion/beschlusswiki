@@ -11,7 +11,6 @@
         Jusos Beschlusswiki
       </NuxtLink>
 
-      <HeaderUserSection />
     </div>
   </nav>
 </template>

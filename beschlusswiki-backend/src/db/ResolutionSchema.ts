@@ -56,8 +56,7 @@ resolutionSchema.methods.stringify = function () {
 		body.tag +
 		applicants.join("") +
 		body.year +
-		category.name +
-		category.id +
+		category +
 		body.text
 	).toString();
 

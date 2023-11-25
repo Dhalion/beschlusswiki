@@ -1,11 +1,6 @@
 <template>
   <div class="bg-slate-800 w-1/3 mx-auto mt-16 p-8 rounded-3xl">
-    <UForm
-      :state="state"
-      class="text-slate-800 gap-y-3 flex flex-col"
-      :validate="validate"
-      @submit.prevent="submit"
-    >
+    <UForm :state="state" class="text-slate-800 gap-y-3 flex flex-col" :validate="validate" @submit="submit">
       <span class="text-gray-300 font-bold text-2xl">Anmelden</span>
 
       <span v-if="state.error" class="text-red-500 text-sm">
@@ -13,21 +8,11 @@
       </span>
 
       <UFormGroup name="email" label="Email oder Nutzername" required>
-        <UInput
-          v-model="state.email"
-          type="text"
-          placeholder="E-Mail"
-          icon="i-heroicons-envelope"
-        />
+        <UInput v-model="state.email" type="text" placeholder="E-Mail" icon="i-heroicons-envelope" />
       </UFormGroup>
 
       <UFormGroup label="Passwort" name="password" required>
-        <UInput
-          v-model="state.password"
-          type="password"
-          placeholder="Passwort"
-          icon="i-heroicons-lock-closed"
-        />
+        <UInput v-model="state.password" type="password" placeholder="Passwort" icon="i-heroicons-lock-closed" />
       </UFormGroup>
 
       <UButton type="submit" class="mt-2" block> Anmelden </UButton>
@@ -44,7 +29,7 @@ import { useRoute } from "nuxt/app";
 definePageMeta({
   auth: {
     unauthenticatedOnly: true,
-    navigateAuthenticatedTo: "/",
+    navigateAuthenticatedTo: "/admin",
   },
 });
 
@@ -55,11 +40,16 @@ const route = useRoute();
 
 const state = ref({
   email: "user",
-  password: "password",
+  password: "user",
   error: undefined,
 });
 
 const redirect = route.query.redirect;
+
+if (status.value === "authenticated") {
+  navigateTo(redirect || "/admin");
+}
+
 
 const validate = (state) => {
   const errors = [];
@@ -79,10 +69,11 @@ const validate = (state) => {
 
 async function submit(event) {
   try {
-    event.preventDefault();
     await signIn({
       username: state.value.email,
       password: state.value.password,
+    }, {
+      callbackUrl: redirect || "/admin/dashboard",
     });
   } catch (error) {
     console.error(error);
@@ -91,7 +82,8 @@ async function submit(event) {
   console.log("Auth Status: " + status.value);
   if (status.value === "authenticated") {
     // Leite den Benutzer zur gespeicherten URL zurück
-    navigateTo(redirect || "/admin/dashboard");
+    console.log("Redirecting to: " + redirect);
+    navigateTo(redirect || "/admin/dashboard", { external: true });
   }
 }
 </script>

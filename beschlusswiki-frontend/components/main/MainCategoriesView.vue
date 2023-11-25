@@ -1,7 +1,11 @@
 <template>
   <div class="flex flex-col items-center mt-10">
     <SharedLoadingSpinner v-if="pending" text="Loading Categories" />
+    <UAlert icon="i-heroicons-information-circle" title="Fehler beim Laden der Kategorien" :description="error"
+      variant="solid" color="primary" v-if="error" class="w-2/3" />
 
+    <UAlert icon="i-heroicons-information-circle" title="Keine Kategorien gefunden" :description="error" variant="solid"
+      color="primary" v-if="!pending && !categories" class="w-2/3" />
     <!-- Category Cards Container -->
     <div class="bg-white h-full text-black mx-5 sm:w-3/4 items-center grid gap-6 grid-cols-2
                   md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
@@ -15,7 +19,6 @@
 </template>
 
 <script setup>
-const search = useSearch();
 const config = useRuntimeConfig();
 
 // const cardsContainerWidth = ref(window.innerWidth * .75);
@@ -23,6 +26,6 @@ const config = useRuntimeConfig();
 
 const { data: categories, error, pending, refresh } = useLazyFetch("/category", {
   baseURL: config.public.apiEndpoint,
-  transform: (data) => data.categories,
+
 });
 </script>

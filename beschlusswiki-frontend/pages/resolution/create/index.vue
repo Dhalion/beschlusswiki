@@ -17,8 +17,8 @@
                 </div>
 
                 <UFormGroup label="Kategorien" name="categories">
-                    <ResolutionCreateBadgeSelector v-model:selected="formState.body.categories"
-                        :options="FETCHED_CATEGORIES" class="mt-2" />
+                    <!-- <ResolutionCreateBadgeSelector v-model:selected="formState.body.category"
+                        :options="FETCHED_CATEGORIES" class="mt-2" /> -->
                 </UFormGroup>
 
                 <UFormGroup label="Antragsteller*innen" name="applicants">
@@ -79,23 +79,7 @@
 
 <script setup lang="ts">
 import type { FormError } from '@nuxt/ui/dist/runtime/types';
-
-
-interface IResolution {
-    rid: String;
-    rcode: String;
-    created: Date;
-    state: String;
-    body: {
-        title: String;
-        tag: String;
-        applicants: Array<String>;
-        year: Number;
-        categories: Array<String>;
-        text: String;
-    };
-    applicantsInput: String;
-}
+import { type INewResolution } from '~/types/Interfaces';
 
 const config = useRuntimeConfig();
 const toast = useToast();
@@ -139,7 +123,7 @@ function stopCountdown() {
     confirmButtonText.value = CONFIRM_BUTTON_TEXT;
 }
 
-const formState: Ref<IResolution> = ref({
+const formState: Ref<INewResolution> = ref({
     rid: "",
     rcode: "",
     created: new Date(),
@@ -149,26 +133,11 @@ const formState: Ref<IResolution> = ref({
         tag: "tag1",
         applicants: ["Admin"],
         year: 2023,
-        categories: ["Testbeschlüsse"],
+        category: null,
         text: "Testtext",
     },
     applicantsInput: "",
 });
-// const formState: Ref<IResolution> = ref({
-//     rid: "",
-//     rcode: "",
-//     created: new Date(),
-//     state: "",
-//     body: {
-//         title: "",
-//         tag: "",
-//         applicants: [],
-//         year: 0,
-//         categories: [],
-//         text: "",
-//     },
-//     applicantsInput: "",
-// });
 
 const addApplicant = () => {
     if (formState.value.body.applicants.includes(formState.value.applicantsInput.trim()) || formState.value.applicantsInput.trim() == "") {
@@ -182,7 +151,7 @@ const removeApplicant = (applicant: String) => {
     formState.value.body.applicants = formState.value.body.applicants.filter((a) => a !== applicant);
 };
 
-const validateForm = (formState: IResolution): FormError[] => {
+const validateForm = (formState: INewResolution): FormError[] => {
     const errors = [];
 
     if (!formState.body?.title) {
@@ -203,7 +172,7 @@ const validateForm = (formState: IResolution): FormError[] => {
             message: "Jahr darf nicht leer sein",
         });
     }
-    if (!formState.body?.categories) {
+    if (!formState.body?.category) {
         errors.push({
             path: "categories",
             message: "Kategorien dürfen nicht leer sein",
@@ -240,7 +209,7 @@ async function submitForm() {
                     tag: formState.value.body.tag,
                     applicants: formState.value.body.applicants,
                     year: formState.value.body.year,
-                    categories: formState.value.body.categories,
+                    category: formState.value.body.category,
                     text: formState.value.body.text,
                 }
             }
