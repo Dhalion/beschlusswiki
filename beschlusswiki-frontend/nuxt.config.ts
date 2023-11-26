@@ -4,7 +4,7 @@ const version = require("./package.json").version;
 export default defineNuxtConfig({
 	devtools: {enabled: false},
 	components: true,
-	modules: ["@nuxt/ui", "@sidebase/nuxt-auth", "nuxt-mongoose", "nuxt-lodash"],
+	modules: ["@nuxt/ui", "@sidebase/nuxt-auth", "nuxt-mongoose"],
 
 	runtimeConfig: {
 		serverSecret: process.env.SERVER_SECRET,

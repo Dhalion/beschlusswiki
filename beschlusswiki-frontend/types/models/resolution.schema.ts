@@ -19,6 +19,25 @@ export enum SearchEngine {
 	ELASTICSEARCH = "elastic",
 }
 
+export interface IResolution {
+	rid: string;
+	rcode: string;
+	created: Date;
+	createdBy: Types.ObjectId;
+	approvedBy: Types.ObjectId;
+	parent: Types.ObjectId;
+	state: ResolutionState;
+	hash: string;
+	body: {
+		title: string;
+		tag: string;
+		applicants: string[];
+		year: number;
+		category: Types.ObjectId;
+		text: string | null;
+	};
+}
+
 export const ResolutionSchema = defineMongooseModel({
 	name: "Resolution",
 	schema: {

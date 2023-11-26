@@ -14,6 +14,7 @@
 </template>
 
 <script setup lang="ts">
+import type { IResolution } from '~/types/models/resolution.schema';
 
 const config = useRuntimeConfig();
 const toast = useToast();
@@ -25,22 +26,13 @@ const props = defineProps({
   },
 });
 
-interface IReducedResolution {
-  _id: string;
-  body: {
-    title: string;
-    tag: string;
-    year: number;
-  };
-}
 
 
-const { data: resolution, pending, error, refresh } = useLazyFetch("/resolution", {
+const { data: resolution, pending, error, refresh } = useLazyFetch<IResolution>("/resolution", {
   baseURL: config.public.apiEndpoint,
   params: {
     id: props.id,
   },
-  transform: (data) => data as IReducedResolution,
   onRequestError: (err) => {
     toast.add({
       title: "Fehler",

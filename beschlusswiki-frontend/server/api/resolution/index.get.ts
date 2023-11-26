@@ -24,7 +24,9 @@ export default defineEventHandler(async (event) => {
 
 		if (searchQuery) {
 			// Search Resolution
-			console.log(`Searching for resolution using ${searchEngine}`);
+			console.log(
+				`Searching for resolution using ${searchEngine}. Query: ${searchQuery}`
+			);
 			if (searchEngine == SearchEngine.MONGO) {
 				//******* SEARCH USING MONGODB ********
 				const results = await ResolutionSchema.find({

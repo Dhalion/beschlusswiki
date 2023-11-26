@@ -20,7 +20,6 @@
 const runtimeConfig = useRuntimeConfig();
 
 const { status, signOut } = useAuth();
-console.log(status.value);
 
 const version = ref("version");
 
