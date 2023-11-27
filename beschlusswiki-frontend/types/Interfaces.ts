@@ -1,4 +1,5 @@
 import {omit} from "@nuxt/ui/dist/runtime/utils";
+import type {IUser} from "./models/user.schema";
 
 //* Full Resolution Interface
 export interface INewResolution {
@@ -47,4 +48,11 @@ export interface ICategory {
 
 export interface ICategoriesResponse {
 	categories: Array<ICategory>;
+}
+
+export interface SessionData {
+	accessToken: string;
+	refreshToken: string;
+	user: IUser;
+	expires: Date;
 }

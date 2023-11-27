@@ -97,10 +97,16 @@
 
 import type { FormError } from '@nuxt/ui/dist/runtime/types';
 import { type IResolution, type ICategory, type IResolutionToSend } from '~/types/Interfaces';
-
+const { status: authStatus,
+  data: authData,
+  lastRefreshedAt,
+  getSession,
+  signIn,
+} = useAuth();
 
 const config = useRuntimeConfig();
 const route = useRoute();
+const router = useRouter();
 const overrideCheck = ref(true);
 const toast = useToast();
 
@@ -137,14 +143,31 @@ async function submit() {
     });
     return;
   }
-  // Remove hash, user and date from resolution
 
-
+  // Ensure JWT is valid
+  const session = await getSession({ required: true });
+  if (!session) {
+    toast.add({
+      title: "Fehler beim Speichern",
+      description: "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.",
+      icon: "i-heroicons-exclamation-triangle",
+      actions: [
+        {
+          label: "Anmelden",
+          click: () => router.push(`/admin/login?redirect=${route.fullPath}`),
+        }],
+    });
+    return;
+  }
+  const headers = useRequestHeaders(['cookie']) as HeadersInit
 
   const { data, error } = await useLazyFetch("/resolution", {
     query: {
       id: route.query.id,
       override: overrideCheck.value,
+    },
+    headers: {
+      "Authorization": `Bearer ${session}`,
     },
     baseURL: config.public.apiEndpoint,
     method: "PUT",

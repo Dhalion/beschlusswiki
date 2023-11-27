@@ -6,6 +6,17 @@ export enum UserRoles {
 	Contributor = "contributor",
 }
 
+export interface IUser {
+	id: String;
+	username: String;
+	email: string;
+	roles: UserRoles[];
+	status: boolean;
+	authentication: {
+		passwordHash: string;
+	};
+}
+
 export const UserSchema = defineMongooseModel({
 	name: "User",
 	schema: {
@@ -16,7 +27,6 @@ export const UserSchema = defineMongooseModel({
 		status: {type: Boolean, required: true},
 		authentication: {
 			passwordHash: {type: String, select: false, required: true},
-			sessionToken: {type: String, select: false},
 		},
 	},
 });

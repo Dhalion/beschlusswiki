@@ -34,12 +34,11 @@ export default defineEventHandler(async (event) => {
 	// Generate JWT token
 	const token = jwt.sign(
 		{
-			username: user.username,
-			roles: user.roles,
+			user: user,
 		},
 		config.serverSecret,
 		{
-			expiresIn: "1min",
+			expiresIn: "10min",
 		}
 	);
 	console.log(`User ${user.username} has logged in`);
