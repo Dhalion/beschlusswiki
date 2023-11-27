@@ -11,13 +11,12 @@
 </template>
 
 <script setup lang="ts">
-const search = useSearch();
-const isSearching = useSearchState();
 
-const searchInput = ref("");
 
 const props = defineProps(["modelValue"]);
-const emit = defineEmits(["update:modelValue"])
+const emit = defineEmits(["update:modelValue"]);
+
+const searchInput = props.modelValue || "";
 
 const handleSearchInput = (event: Event) => {
   emit("update:modelValue", (event.target as HTMLInputElement).value);
