@@ -1,7 +1,7 @@
 <template>
-  <div class="flex w-screen">
+  <div class="flex w-full mt-2 px-5">
 
-    <!--* LAODING BANNER  -->
+    <!--* LODING BANNER  -->
     <div v-if="!searchResults && error" class="flex flex-grow py-40 justify-center items-center">
       <div
         class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite] text-jusorot-600">
@@ -9,8 +9,8 @@
     </div>
 
     <!--* SEARCH RESULTS -->
-    <div v-if="searchResults && !error" class="flex flex-col justify-center xl:w-3/4 xl:mx-auto w-10/12 mx-auto">
-      <span class="text-slate-500 xl:ml-4 mt-3 text-xs xl:text-lg">
+    <div v-if="searchResults && !error" class="flex flex-col justify-center w-full">
+      <span class="text-slate-500 mt-3 text-xs xl:text-lg">
         {{ searchResults.length }}
         {{ searchResults.length === 1 ? "Beschluss" : "Beschlüsse" }} gefunden
       </span>
