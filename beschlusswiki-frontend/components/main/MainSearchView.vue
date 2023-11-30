@@ -63,6 +63,7 @@ watch(
   () => props.modelValue,
   debounce((value) => {
     query.query = value;
+    console.log("debounced", value);
     refresh();
   }, 250)
 );
