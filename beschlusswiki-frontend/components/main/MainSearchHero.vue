@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center flex-col">
+  <div class="flex justify-center flex-col mt-5">
     <div class="shadow-lg xl:h-60 h-48 bg-rosa flex justify-center items-center flex-col mt-3 rounded-3xl mx-5">
       <h1 class="text-beere xl:text-5xl text-3xl font-bold">Anträge suchen</h1>
       <!-- Searchbar -->

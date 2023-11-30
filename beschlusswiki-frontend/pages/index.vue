@@ -1,8 +1,10 @@
 <template>
-    <MainSearchHero v-model="searchQuery" />
-    <!-- Show Categories only if user didnt input any search query -->
-    <MainCategoriesView v-if="searchQuery.length == 0" />
-    <MainSearchView v-if="searchQuery.length > 0" v-model="searchQuery" />
+    <div class="sm:w-full lg:w-3/4 mx-auto">
+        <MainSearchHero v-model="searchQuery" />
+        <!-- Show Categories only if user didnt input any search query -->
+        <MainCategoriesView v-if="searchQuery.length == 0" />
+        <MainSearchView v-if="searchQuery.length > 0" v-model="searchQuery" />
+    </div>
 </template>
 
 <script setup lang="ts">
