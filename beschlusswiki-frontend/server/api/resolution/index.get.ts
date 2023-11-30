@@ -27,10 +27,12 @@ export default defineEventHandler(async (event) => {
 			console.log(
 				`Searching for resolution using ${searchEngine}. Query: ${searchQuery}`
 			);
+
 			if (searchEngine == SearchEngine.MONGO) {
 				//******* SEARCH USING MONGODB ********
 				const results = await ResolutionSchema.find({
 					$text: {$search: searchQuery.toString()},
+					state: "live",
 				});
 				return results;
 			} else {
