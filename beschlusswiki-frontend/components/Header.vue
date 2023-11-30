@@ -11,17 +11,15 @@
         Jusos Beschlusswiki
       </NuxtLink>
 
-      <HeaderUserSection />
     </div>
   </nav>
 </template>
 
-<script setup>
-const search = useSearch();
+<script setup lang="ts">
 
-
-
-function handleLogoClick() {
-  search.value.searchQuery = "";
+const handleLogoClick = () => {
+  // Fire Logo Clicked Event
+  useEvent("logoClicked");
 }
+
 </script>

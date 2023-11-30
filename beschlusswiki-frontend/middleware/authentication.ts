@@ -6,9 +6,6 @@ export default defineNuxtRouteMiddleware((to, from) => {
 		return;
 	}
 
-	// Save redirect path
-	const redirectPath = to.fullPath;
-
 	// Redirect to login page if user is not authenticated
-	return navigateTo("/admin/login?redirect=" + redirectPath);
+	return navigateTo("/admin/login?redirect=" + to.fullPath);
 });

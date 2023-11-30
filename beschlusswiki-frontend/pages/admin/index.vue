@@ -21,6 +21,9 @@
 const route = useRoute();
 const router = useRouter();
 
+definePageMeta({
+  middleware: "authentication"
+});
 
 
 const selectedTab = computed(() => {

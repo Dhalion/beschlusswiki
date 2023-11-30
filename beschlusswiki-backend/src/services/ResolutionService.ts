@@ -72,7 +72,9 @@ export async function findAll(returnText: boolean = false) {
 
 export async function findById(id: string) {
 	try {
-		const result = await ResolutionModel.findById(id);
+		const result = await ResolutionModel.findById(id)
+			.populate("body.category")
+			.exec();
 		return result;
 	} catch (error) {
 		if (error instanceof mongoose.Error.CastError) {
@@ -115,8 +117,10 @@ export async function search(query: QueryString.ParsedQs) {
 				: SearchEngine.ELASTICSEARCH;
 
 		if (engine === SearchEngine.ELASTICSEARCH) {
+			console.log("Using elastic");
 			return await searchWithElastic(searchQuery);
 		} else {
+			console.log("Using mongo");
 			return await ResolutionModel.find({$text: {$search: searchQuery}})
 				.select("-text -body.text") // Exclude the body text from the response. Improves performance by
 				.limit(limit)
@@ -171,6 +175,7 @@ export async function updateById(id: string, resolution: IResolutionDocument) {
 		resolution.parent = result._id;
 		// Set created date
 		resolution.created = new Date();
+		delete resolution._id;
 
 		// Create new resolution object
 		const newResolution = new ResolutionModel(resolution);
@@ -191,6 +196,29 @@ export async function updateById(id: string, resolution: IResolutionDocument) {
 		newResolution.hash = newResolution.createHash();
 
 		await newResolution.save();
+
+		return result;
+	} catch (error) {
+		throw error;
+	}
+}
+
+export async function overrideById(
+	id: string,
+	resolution: IResolutionDocument
+) {
+	try {
+		// Check if resolution with given id is found
+		const result = await ResolutionModel.findOneAndUpdate(
+			{_id: id},
+			resolution,
+			{
+				upsert: false,
+			}
+		);
+		if (!result) {
+			throw new ResolutionNotFoundError("Resolution not found");
+		}
 
 		return result;
 	} catch (error) {
@@ -233,14 +261,21 @@ export async function updateField(id: string, field: string, value: string) {
 
 async function searchWithElastic(query: string) {
 	try {
-		const tokens = tokenizeQuery(query);
-		const elasticQuery = buildElasticQuery(
-			query,
-			tokens.tokens,
-			tokens.literalTokens,
-			tokens.excludeTokens
-		);
 		const URI = env.ELASTIC_URI + "/resolutions" + "/_search";
+
+		const elasticQuery = {
+			_source: {
+				excludes: ["text"],
+			},
+			query: {
+				simple_query_string: {
+					query: query,
+					fields: ["title^3", "tag", "text", "category^2"],
+				},
+			},
+			size: 100,
+		};
+
 		const res = await fetch(URI, {
 			method: "POST",
 			headers: {"Content-Type": "application/json"},
@@ -248,13 +283,20 @@ async function searchWithElastic(query: string) {
 		})
 			.then((response) => {
 				if (!response.ok) {
+					console.error(response);
 					throw new Error(response.statusText);
 				}
 				return response.json();
 			})
 			.then((data) => {
-				console.log(data.hits);
-				return data.hits.hits;
+				// Transform data to match mongoDB response
+				const transformedHits = data.hits.hits.map((hit: any) => {
+					return {
+						_id: hit._id,
+						body: hit._source,
+					};
+				});
+				return transformedHits;
 			})
 			.catch((error) => {
 				console.error(error);
@@ -265,102 +307,3 @@ async function searchWithElastic(query: string) {
 		throw error;
 	}
 }
-
-const tokenizeQuery = (query: string) => {
-	query = query.trim();
-	// Split query into tokens
-	const tokens = query.split(" ");
-	// Split tokens into literal tokens and non-literal tokens. Literal tokens are surrounded by quotes
-	const literalTokens: string[] = [];
-	const excludeTokens: string[] = [];
-	tokens.forEach((token) => {
-		if (token.startsWith('"') && token.endsWith('"')) {
-			literalTokens.push(token);
-		} else if (token.startsWith("-")) {
-			excludeTokens.push(token);
-		}
-	});
-	// Remove quotes from literal tokens
-	literalTokens.forEach((token, index) => {
-		literalTokens[index] = token.replace(/"/g, "");
-	});
-	// Remove minus from exclude tokens
-	excludeTokens.forEach((token, index) => {
-		excludeTokens[index] = token.replace(/-/g, "");
-	});
-	return {
-		tokens: tokens,
-		literalTokens: literalTokens,
-		excludeTokens: excludeTokens,
-	};
-};
-
-const buildElasticQuery = (
-	query: string,
-	tokens: string[],
-	literalTokens: string[],
-	excludeTokens: string[]
-) => {
-	let elasticQuery: any = {
-		_source: {
-			excludes: ["text"],
-		},
-		query: {
-			bool: {
-				must: [],
-				should: [],
-				must_not: [],
-			},
-		},
-	};
-	// Add literal tokens to must
-	literalTokens.forEach((token) => {
-		elasticQuery.query.bool.must.push({
-			match: {
-				content: token,
-			},
-		});
-	});
-	// Add exclude tokens to must_not
-	excludeTokens.forEach((token) => {
-		elasticQuery.query.bool.must_not.push({
-			match: {
-				content: token,
-			},
-		});
-	});
-	// Add tokens to should multi_match
-	elasticQuery.query.bool.should.push({
-		multi_match: {
-			query: query,
-			fields: ["title^2", "text"],
-			fuzziness: "AUTO",
-			boost: 1.5,
-		},
-	});
-	// Add tokens to should match_phrase
-	elasticQuery.query.bool.should.push({
-		match_phrase: {
-			text: {
-				query: query,
-				slop: 1,
-			},
-		},
-	});
-	// Add tokens to should span_near
-	elasticQuery.query.bool.should.push({
-		span_near: {
-			clauses: tokens.map((token) => {
-				return {
-					span_term: {
-						text: token,
-					},
-				};
-			}),
-			slop: 1,
-			in_order: true,
-		},
-	});
-
-	return elasticQuery;
-};
