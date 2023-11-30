@@ -81,6 +81,10 @@
 import type { FormError } from '@nuxt/ui/dist/runtime/types';
 import { type INewResolution } from '~/types/Interfaces';
 
+definePageMeta({
+    middleware: "authentication"
+});
+
 const config = useRuntimeConfig();
 const toast = useToast();
 
