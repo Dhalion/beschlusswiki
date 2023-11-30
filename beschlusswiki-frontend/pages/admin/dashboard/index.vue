@@ -3,13 +3,11 @@
     <h1>Dashboard</h1>
     Hallo "{{ user?.email }}"
     <br />
-    <span class="text-black"
-      >Status:
+    <span class="text-black">Status:
       {{ status }}
     </span>
     <br />
-    <span class="text-black"
-      >Data:
+    <span class="text-black">Data:
       {{ data }}
     </span>
     <br />
@@ -17,7 +15,12 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+
+definePageMeta({
+  middleware: "authentication"
+})
+
 const { status, data, signOut } = useAuth();
 
 function logout() {

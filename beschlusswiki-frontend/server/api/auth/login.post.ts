@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
 		},
 		config.serverSecret,
 		{
-			expiresIn: "10min",
+			expiresIn: "120min",
 		}
 	);
 	console.log(`User ${user.username} has logged in`);

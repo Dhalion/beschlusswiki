@@ -97,6 +97,11 @@
 
 import type { FormError } from '@nuxt/ui/dist/runtime/types';
 import { type IResolution, type ICategory, type IResolutionToSend } from '~/types/Interfaces';
+
+definePageMeta({
+  middleware: ['authentication'],
+})
+
 const { status: authStatus,
   data: authData,
   lastRefreshedAt,
