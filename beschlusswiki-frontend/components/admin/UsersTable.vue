@@ -69,15 +69,16 @@ const { data, error, pending, refresh } = await useLazyFetch(API_ENDPOINT + "/au
   onRequestError: (error) => {
     toast.add({
       title: "Fehler beim Laden der Benutzer",
-      description: error.error.message,
-      type: "error",
+      description: error?.error?.message,
+      icon: "i-heroicons-exclamation-triangle",
     });
   },
   onResponseError: (error) => {
+    console.error(error);
     toast.add({
       title: "Fehler beim Laden der Benutzer",
-      description: error.error.message,
-      type: "error",
+      description: error?.response?.status + ": " + error?.response.statusText,
+      icon: "i-heroicons-exclamation-triangle",
     });
   },
 })
@@ -88,13 +89,12 @@ const emptyState = computed(() => {
 });
 
 const tableRows = computed(() => {
-  if (!data.value) return [];
-  if (data.value.length === 0) return [];
+  if (!data.value || data.value.length === 0) return [];
+
   if (error.value) {
     toast.add({
       title: "Fehler beim Laden der Benutzer",
-      message: error.value.message,
-      type: "error",
+      description: error.value.message,
     });
   }
 
@@ -134,7 +134,6 @@ async function handleUserStatusChange(row, newStatus) {
       title: `Fehler beim Ändern des Benutzerstatus von  ${row.username}`,
       description: error.message,
       icon: "i-heroicons-exclamation-triangle",
-      type: "error",
     });
   } else {
 
@@ -142,7 +141,6 @@ async function handleUserStatusChange(row, newStatus) {
       title: "Benutzerstatus geändert",
       description: `Der Benutzer ${row.username} wurde erfolgreich auf ${newStatus} gesetzt.`,
       icon: "i-heroicons-check-circle",
-      type: "success",
     });
     refresh();
   }
@@ -170,7 +168,6 @@ async function handleUserDelete(row) {
       title: "Benutzer gelöscht",
       description: `Der Benutzer ${row.username} wurde erfolgreich gelöscht.`,
       icon: "i-heroicons-check-circle",
-      type: "success",
     });
   }
 }
@@ -181,5 +178,7 @@ function removeUserFromTable(id) {
     data.value.splice(index, 1);
   }
 }
+
+
 
 </script>

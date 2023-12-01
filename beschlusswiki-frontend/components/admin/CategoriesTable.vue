@@ -11,7 +11,7 @@
                     @click="refresh()" />
             </div>
             <div class="flex justify-center">
-                <UPagination v-model="tablePage" :page-count="tablePageCount" :total="data?.categories.length" />
+                <UPagination v-model="tablePage" :page-count="tablePageCount" :total="data?.categories?.length || 0" />
             </div>
             <div class="flex justify-end p-3">
                 <span class="text-gray-400 pr-3 text-sm pt-1">Einträge pro Seite:</span>
@@ -46,15 +46,16 @@ const { data, error, pending, refresh } = useLazyFetch<ICategoriesData>("/catego
     baseURL: API_ENDPOINT,
     onRequestError: (error) => {
         toast.add({
-            title: "Fehler beim Laden der Benutzer",
+            title: "Fehler beim Laden der Kategorien",
             description: error.error.message,
             icon: "i-heroicons-exclamation-triangle",
         });
     },
     onResponseError: (error) => {
+        console.error(error);
         toast.add({
-            title: "Fehler beim Laden der Benutzer",
-            description: error.error?.message,
+            title: "Fehler beim Laden der Kategorien",
+            description: error?.response?.status + ": " + error?.response.statusText,
             icon: "i-heroicons-exclamation-triangle",
         });
     },
@@ -74,7 +75,7 @@ const emptyState = computed(() => {
 const tableRows = computed(() => {
     if (!data.value?.categories) return [];
     if (data.value?.categories.length === 0) return [];
-    if (error.value) {
+if (error.value) {
         toast.add({
             title: "Fehler beim Laden der Kategorien",
             description: error.value.message,
