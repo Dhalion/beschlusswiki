@@ -41,15 +41,9 @@ const { data: resolution, pending, error, refresh } = useLazyFetch("/resolution"
     id: props.resolution._id,
   },
   transform: (data) => data as IReducedResolution,
-  onRequestError: (err) => {
-    toast.add({
-      title: "Fehler",
-      description: err.error.message,
-      icon: "i-heroicons-x-circle",
-      timeout: 5000,
-    });
-  },
+
   onResponseError: (err) => {
+    if (err.response?.status == 503) return;
     toast.add({
       title: "Fehler",
       description: err.error?.message || "Unknown",
