@@ -1,6 +1,6 @@
 <template>
   <div class="text-black px-2 mx-2">
-    <UTabs :items="tabItems" class="w-1/2 pt-5 mx-auto" @change="onSelectedTabChange" v-model="selectedTab">
+    <UTabs :items="tabItems" class=" pt-5 px-5 w-5/6 mx-auto" @change="onSelectedTabChange" v-model="selectedTab">
       <template #default="{ item, index, selected }">
         <div class="flex min-w-min gap-3 relative truncate text-base mx-3">
           <UIcon :name="item.icon" class="flex-shrink-0 text-xl self-center" />
