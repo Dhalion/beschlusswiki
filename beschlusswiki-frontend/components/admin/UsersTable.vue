@@ -41,11 +41,11 @@
         <AdminCreateUserModal @user-created="refresh()" />
       </div>
       <div class="flex justify-center">
-        <UPagination v-model="tablePage" :page-count="tablePageCount" :total="data?.length" />
+        <UPagination v-model="page" :page-count="pageCount" :total="data?.length || 0" />
       </div>
       <div class="flex justify-end p-3">
         <span class="text-gray-400 pr-3 text-sm pt-1">Einträge pro Seite:</span>
-        <USelect v-model="tablePageCount" :options="[10, 20, 50, 100]" />
+        <USelect v-model="pageCount" :options="[10, 20, 50, 100]" />
       </div>
     </div>
   </div>
@@ -57,8 +57,8 @@ const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
 const toast = useToast();
 
-const tablePage = ref(1);
-const tablePageCount = ref(10);
+const page = ref(1);
+const pageCount = ref(10);
 
 const confirmationPopup = ref(null);
 
@@ -99,8 +99,8 @@ const tableRows = computed(() => {
   }
 
   return data.value.slice(
-    (tablePage.value - 1) * tablePageCount.value,
-    tablePage.value * tablePageCount.value,
+    (page.value - 1) * pageCount.value,
+    page.value * pageCount.value,
   );
 });
 

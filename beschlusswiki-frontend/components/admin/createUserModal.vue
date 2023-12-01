@@ -3,7 +3,7 @@
         <UButton label="Neuen Benutzer erstellen" variant="solid" color="primary" @click="isOpen = true"
             icon="i-heroicons-user-plus" />
 
-        <UModal v-model="isOpen" prevent-close="true">
+        <UModal v-model="isOpen" :prevent-close="true">
             <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
 
                 <!--* Header -->
@@ -63,7 +63,7 @@
         </UModal>
 
 
-        <UModal prevent-close="true" v-model="showLoadingModal">
+        <UModal :prevent-close="true" v-model="showLoadingModal">
             <UCard>
                 <template #header>
                     <div class="flex items-end">

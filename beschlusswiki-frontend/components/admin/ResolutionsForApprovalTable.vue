@@ -39,11 +39,11 @@
             to="/resolution/create" />
         </div>
         <div class="flex justify-center">
-          <UPagination v-model="tablePage" :page-count="tablePageCount" :total="data?.length" />
+          <UPagination v-model="page" :page-count="pageCount" :total="data?.length" />
         </div>
         <div class="flex justify-end p-3">
           <span class="text-gray-400 pr-3 text-sm pt-1">Einträge pro Seite:</span>
-          <USelect v-model="tablePageCount" :options="[10, 20, 50, 100]" />
+          <USelect v-model="pageCount" :options="[10, 20, 50, 100]" />
         </div>
       </div>
     </div>
