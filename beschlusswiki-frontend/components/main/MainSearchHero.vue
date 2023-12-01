@@ -16,10 +16,11 @@
 const props = defineProps(["modelValue"]);
 const emit = defineEmits(["update:modelValue"]);
 
-const searchInput = props.modelValue || "";
+const searchInput = ref(props.modelValue || "");
+
 
 const handleSearchInput = (event: Event) => {
-  emit("update:modelValue", (event.target as HTMLInputElement).value);
+  emit("update:modelValue", searchInput.value);
 };
 
 </script>
