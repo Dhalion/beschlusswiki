@@ -3,6 +3,18 @@
         <UTable :rows="tableRows" :columns="tableColumns" :loading="pending"
             :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :empty-state="emptyState">
 
+            <template #length-data="{ row }">
+                {{ row.resolutions.length || 0 }}
+            </template>
+
+            <template #actions-data="{ row }">
+                <div class="flex justify-start text-lg">
+                    <NuxtLink :to="`/category?id=${row._id}`">
+                        <UIcon name="i-heroicons-eye" />
+                    </NuxtLink>
+                </div>
+            </template>
+
         </UTable>
 
         <div class="flex flex-row justify-between pt-5 items-center ">
@@ -85,6 +97,7 @@ const tableColumns = [
     { key: "_id", label: "ID", sortable: true },
     { key: "name", label: "Name", sortable: true },
     { key: "tag", label: "Tag", sortable: true },
+    { key: "length", label: "Beschlüsse", sortable: true },
     { key: "actions", label: "Aktionen", sortable: false },
 ]
 

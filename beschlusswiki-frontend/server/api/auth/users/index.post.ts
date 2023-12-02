@@ -50,6 +50,7 @@ export default defineEventHandler(async (event) => {
 		const success = await user.save();
 
 		if (success) {
+			console.log(`User ${username} created`);
 			return {success: true};
 		} else {
 			return createError({statusCode: 500, message: "Internal Server Error"});
