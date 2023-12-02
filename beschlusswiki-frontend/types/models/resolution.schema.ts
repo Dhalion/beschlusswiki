@@ -1,6 +1,6 @@
 import {defineMongooseModel} from "#nuxt/mongoose";
 import {Types} from "mongoose";
-import {CategorySchema} from "./category.schema";
+import {CategorySchema, type ICategory} from "./category.schema";
 
 // A resolution can be in one of three states
 // Staged: The resolution has been created but not yet approved
@@ -33,7 +33,7 @@ export interface IResolution {
 		tag: string;
 		applicants: string[];
 		year: number;
-		category: Types.ObjectId;
+		category: Types.ObjectId | ICategory;
 		text: string | null;
 	};
 }

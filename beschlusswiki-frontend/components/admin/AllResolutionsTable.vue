@@ -13,6 +13,14 @@
           </UDropdown>
         </template>
 
+        <!--* Resolution Category Column  -->
+        <template #category-data="{ row }">
+          <UBadge color="orange" v-if="row.body.category?.tag">
+            {{ row.body.category.tag }} - {{ row.body.category.name }}
+          </UBadge>
+          <span v-else>null</span>
+        </template>
+
         <!--* ACTIONS COLUMN  -->
         <template #actions-data="{ row }">
           <div class="flex justify-start gap-x-5 text-lg">
@@ -52,6 +60,9 @@
 </template>
 
 <script setup>
+
+
+
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
 const taost = useToast();
@@ -89,6 +100,7 @@ const columns = [
   { key: "body.year", label: "Jahr", sortable: true },
   { key: "body.tag", label: "Tag", sortable: true },
   { key: "createdBy", label: "Autor", sortable: true },
+  { key: "category", label: "Kategorie", sortable: true },
   { key: "created", label: "Erstellt", sortable: true },
   { key: "body.title", label: "Titel", sortable: true },
   { key: "actions", label: "Aktionen", sortable: false },
@@ -97,6 +109,9 @@ const columns = [
 const stateOptions = (row) => [[{ label: "Staged" }, { label: "Live" }]];
 
 const { data, error, pending, refresh } = useLazyFetch("/resolution", {
+  query: {
+    category: true,
+  },
   baseURL: API_ENDPOINT,
   onRequestError: (err) => {
     taost.add({
@@ -108,9 +123,31 @@ const { data, error, pending, refresh } = useLazyFetch("/resolution", {
   },
 });
 
+const { data: categories } = useLazyFetch("/category", {
+  baseURL: API_ENDPOINT,
+  onResponseError: (err) => {
+    taost.add({
+      timeout: 8000,
+      title: "Fehler beim Laden der Kategorien",
+      description: `Fehler: ${err?.error?.name} - ${err?.error?.message}`,
+      variant: "danger",
+    });
+  },
+});
+
 const emptyState = computed(() => {
   if (error.value) return { icon: 'i-heroicons-exclamation-triangle', label: 'Fehler beim Laden.' };
   else return { icon: 'i-heroicons-circle-stack-20-solid', label: 'No items.' };
 });
+
+const categoriesItems = computed(() => {
+  if (categories.value) {
+    return categories.value.map((category) => {
+      return { label: `${category.tag} - ${category.name}` };
+    });
+  }
+});
+
+
 
 </script>

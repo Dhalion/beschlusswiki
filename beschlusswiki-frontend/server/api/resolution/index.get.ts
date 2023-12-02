@@ -112,7 +112,17 @@ export default defineEventHandler(async (event) => {
 		}
 
 		// Else return all resolutions
-		return await ResolutionSchema.find({});
+		const query = ResolutionSchema.find({});
+		if (selectText) {
+			query.select("+body.text");
+		}
+		if (populateCategory) {
+			query.populate("body.category");
+		}
+		const result = query.exec();
+		if (result) {
+			return result;
+		}
 	} catch (error) {
 		console.error(error);
 		return error;
