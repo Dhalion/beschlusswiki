@@ -1,4 +1,6 @@
 import {defineMongooseModel} from "#nuxt/mongoose";
+import {type ObjectId} from "mongoose";
+import type {Type} from "typescript";
 
 export enum UserRoles {
 	Admin = "admin",
@@ -7,8 +9,7 @@ export enum UserRoles {
 }
 
 export interface IUser {
-	_id: string;
-	id: String;
+	_id: ObjectId;
 	username: String;
 	email: string;
 	roles: UserRoles[];
@@ -21,7 +22,6 @@ export interface IUser {
 export const UserSchema = defineMongooseModel({
 	name: "User",
 	schema: {
-		id: {type: String, unique: true, required: true},
 		username: {type: String, unique: true, required: true},
 		email: {type: String, unique: true, required: false},
 		roles: {type: [String], enum: Object.values(UserRoles), required: true},

@@ -54,6 +54,8 @@
 
 <script setup lang="ts">
 import type { IUser } from '~/types/models/user.schema';
+import { type ObjectId } from "mongoose";
+
 
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
@@ -200,7 +202,7 @@ async function handleUserDelete(row: IUser) {
   }
 }
 
-function removeUserFromTable(id: string) {
+function removeUserFromTable(id: ObjectId) {
   if (!data.value) return;
   const index = data.value.findIndex((user) => user._id === id);
   if (index !== -1) {
