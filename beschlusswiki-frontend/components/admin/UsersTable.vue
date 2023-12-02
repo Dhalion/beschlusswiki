@@ -25,7 +25,7 @@
       <!--* Aktionen Spalte *-->
       <template #actions-data="{ row }">
         <UPopover v-model="confirmationPopup">
-          <UButton icon="i-heroicons-trash" variant="link" color="grey" />
+          <UButton icon="i-heroicons-trash" variant="link" color="gray" />
           <template #panel="{ close }">
             <AdminConfirmationPopup @confirm="handleUserDelete(row); close();" @cancel="close();"
               title="Nutzer löschen?" />
@@ -52,19 +52,45 @@
   <UNotifications />
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { IUser } from '~/types/models/user.schema';
+
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
 const toast = useToast();
+const router = useRouter();
+const route = useRoute();
 
 const page = ref(1);
 const pageCount = ref(10);
 
 const confirmationPopup = ref(null);
 
-const { data, error, pending, refresh } = await useLazyFetch(API_ENDPOINT + "/auth/user", {
-  transform: (data) => {
-    return data.users;
+const { getSession, token } = useAuth();
+
+// Ensure JWT is valid
+const session = await getSession({ required: true });
+if (!session) {
+  toast.add({
+    title: "Fehler beim Speichern",
+    description: "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.",
+    icon: "i-heroicons-exclamation-triangle",
+    actions: [
+      {
+        label: "Anmelden",
+        click: () => router.push(`/admin/login?redirect=${route.fullPath}`),
+      }],
+  });
+}
+const headers = useRequestHeaders(['cookie']);
+
+
+
+
+const { data, error, pending, refresh } = await useLazyFetch<IUser[]>("auth/users", {
+  baseURL: API_ENDPOINT,
+  headers: {
+    "Authorization": `${token.value}`,
   },
   onRequestError: (error) => {
     toast.add({
@@ -77,7 +103,7 @@ const { data, error, pending, refresh } = await useLazyFetch(API_ENDPOINT + "/au
     console.error(error);
     toast.add({
       title: "Fehler beim Laden der Benutzer",
-      description: error?.response?.status + ": " + error?.response.statusText,
+      description: error?.response?.status + ": " + error?.response?.statusText,
       icon: "i-heroicons-exclamation-triangle",
     });
   },
@@ -114,16 +140,16 @@ const tableColumns = [
   { key: "actions", label: "Aktionen", sortable: false }
 ]
 
-const statusOptions = (row) => [[
+const statusOptions = (row: IUser) => [[
   { label: "Aktiv", onClick: () => handleUserStatusChange(row, true) },
   { label: "Inaktiv", onClick: () => handleUserStatusChange(row, false) }
 ]];
 
-async function handleUserStatusChange(row, newStatus) {
-  newStatus ? newStatus = "active" : newStatus = "inactive";
+async function handleUserStatusChange(row: IUser, status: boolean) {
+  const newStatus = status ? "active" : "inactive";
   console.log(`Setting user ${row.username} to ${newStatus}`);
 
-  const { data, error } = await useFetch("/auth/user/", {
+  const { data, error } = await useFetch("/auth/users/", {
     method: "PATCH",
     baseURL: API_ENDPOINT,
     query: { id: row._id, field: "status", value: newStatus },
@@ -132,7 +158,7 @@ async function handleUserStatusChange(row, newStatus) {
   if (error.value) {
     toast.add({
       title: `Fehler beim Ändern des Benutzerstatus von  ${row.username}`,
-      description: error.message,
+      description: error.value.message,
       icon: "i-heroicons-exclamation-triangle",
     });
   } else {
@@ -147,20 +173,22 @@ async function handleUserStatusChange(row, newStatus) {
 
 }
 
-async function handleUserDelete(row) {
+async function handleUserDelete(row: IUser) {
   console.log(`Deleting user ${row.username}`);
 
-  const { data, error } = await useFetch("/auth/user/", {
+  const { data, error } = await useFetch("/auth/users", {
     method: "DELETE",
     baseURL: API_ENDPOINT,
     query: { id: row._id },
+    headers: {
+      "Authorization": `${token.value}`,
+    },
   });
   if (error.value) {
     toast.add({
       title: "Fehler beim Löschen des Benutzers",
-      description: error.message,
+      description: error.value.message,
       icon: "i-heroicons-exclamation-triangle",
-      type: "error",
     });
   } else {
     removeUserFromTable(row._id);
@@ -172,7 +200,8 @@ async function handleUserDelete(row) {
   }
 }
 
-function removeUserFromTable(id) {
+function removeUserFromTable(id: string) {
+  if (!data.value) return;
   const index = data.value.findIndex((user) => user._id === id);
   if (index !== -1) {
     data.value.splice(index, 1);

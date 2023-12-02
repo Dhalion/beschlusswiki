@@ -1,5 +1,4 @@
-import {UserSchema} from "~/types/models/user.schema";
-import {type IUser, UserRoles} from "~/types/models/user.schema";
+import {type IUser, UserRoles, UserSchema} from "~/types/models/user.schema";
 
 const ALLOWED_ROLES = [UserRoles.Admin];
 
@@ -23,9 +22,23 @@ export default defineEventHandler(async (event) => {
 				ALLOWED_ROLES.join(" or "),
 		});
 	}
+
 	try {
-		return await UserSchema.find({});
+		const id = getQuery(event)?.id;
+
+		if (!id) throw createError({statusCode: 400, message: "No id provided"});
+
+		const success = await UserSchema.deleteOne({_id: id});
+
+		if (!success)
+			throw createError({
+				statusCode: 500,
+				message: "Error while deleting user",
+			});
+		console.log(`User ${id} deleted`);
+		return {success: true};
 	} catch (error) {
-		return error;
+		console.error(error);
+		return createError({statusCode: 500, message: "Internal Server Error"});
 	}
 });
