@@ -11,7 +11,7 @@
                     @click="refresh()" />
             </div>
             <div class="flex justify-center">
-                <UPagination v-model="tablePage" :page-count="tablePageCount" :total="data?.categories?.length || 0" />
+                <UPagination v-model="tablePage" :page-count="tablePageCount" :total="data?.length || 0" />
             </div>
             <div class="flex justify-end p-3">
                 <span class="text-gray-400 pr-3 text-sm pt-1">Einträge pro Seite:</span>
@@ -23,6 +23,8 @@
 </template>
 
 <script setup lang="ts">
+import type { ICategory } from '~/types/models/category.schema';
+
 
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
@@ -31,18 +33,8 @@ const toast = useToast();
 const tablePage = ref(1);
 const tablePageCount = ref(10);
 
-interface Category {
-    _id: string;
-    name: string;
-    tag: string;
-    resolutions: string[];
-}
 
-interface ICategoriesData {
-    categories: Category[];
-}
-
-const { data, error, pending, refresh } = useLazyFetch<ICategoriesData>("/category", {
+const { data, error, pending, refresh } = useLazyFetch<ICategory[]>("/api/category", {
     baseURL: API_ENDPOINT,
     onRequestError: (error) => {
         toast.add({
@@ -73,9 +65,9 @@ const emptyState = computed(() => {
 });
 
 const tableRows = computed(() => {
-    if (!data.value?.categories) return [];
-    if (data.value?.categories.length === 0) return [];
-if (error.value) {
+    if (!data.value) return [];
+    if (data.value?.length === 0) return [];
+    if (error.value) {
         toast.add({
             title: "Fehler beim Laden der Kategorien",
             description: error.value.message,
@@ -83,7 +75,7 @@ if (error.value) {
         });
     }
 
-    return data.value.categories.slice(
+    return data.value.slice(
         (tablePage.value - 1) * tablePageCount.value,
         tablePage.value * tablePageCount.value,
     );
