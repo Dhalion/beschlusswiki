@@ -80,4 +80,16 @@ export enum PatchActions {
 	ACCEPT = "accept",
 	REJECT = "reject",
 	ARCHIVE = "archive",
+	SET_STATE_LIVE = "state_live",
+	SET_STATE_STAGED = "state_staged",
 }
+
+export const resolutionStateToPatchAction: Record<
+	ResolutionState,
+	PatchActions
+> = {
+	[ResolutionState.Staged]: PatchActions.SET_STATE_STAGED,
+	[ResolutionState.Live]: PatchActions.SET_STATE_LIVE,
+	[ResolutionState.Archived]: PatchActions.ARCHIVE,
+	[ResolutionState.Rejected]: PatchActions.REJECT,
+};

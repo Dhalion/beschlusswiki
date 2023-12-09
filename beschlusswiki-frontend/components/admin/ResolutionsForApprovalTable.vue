@@ -3,29 +3,20 @@
     <div class="bg-slate-800 px-5 mx-10">
       <UTable :rows="rows" :columns="columns" :empty-state="emptyState" :loading="pending"
         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }">
-        <!--* Resolution State Column  -->
-        <template #state-data="{ row }">
-          <!-- Dropdown to select staged/live -->
-          <UDropdown :items="stateOptions(row)" :popper="{ placement: 'bottom-start' }">
-            <UButton color="white" variant="solid" :label="row.state" trailing-icon="i-heroicons-chevron-down-20-solid"
-              size="xs">
-            </UButton>
-          </UDropdown>
-        </template>
 
         <!--* ACTIONS COLUMN  -->
-        <template #actions-data="{ row }">
+        <template #actions-data="{ row }: { row: IResolution }">
           <div class="flex justify-start gap-x-5 text-lg">
             <NuxtLink :to="`/resolution/${row._id}`">
               <UIcon name="i-heroicons-eye" />
             </NuxtLink>
 
             <NuxtLink class="hover:cursor-pointer">
-              <UIcon name=" i-heroicons-check" />
+              <UIcon name=" i-heroicons-check" @click="handleAcceptResolution(row._id.toString())" />
             </NuxtLink>
 
             <NuxtLink class="hover:cursor-pointer">
-              <UIcon name=" i-heroicons-no-symbol" />
+              <UIcon name=" i-heroicons-no-symbol" @click="handleRejectResolution(row._id.toString())" />
             </NuxtLink>
           </div>
         </template>
@@ -51,17 +42,21 @@
   <UNotifications />
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { PatchActions } from '~/types/Interfaces';
+import type { IResolution } from '~/types/models/resolution.schema';
+import { ResolutionState } from '~/types/Interfaces';
+
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
 const toast = useToast();
-
+const resolutionHandler = useResolutionHandler();
 
 const page = ref(1);
 const pageCount = ref(10);
 
 const rows = computed(() => {
-  if (pending.value || error.value) return [];
+  if (pending.value || error.value || !data.value) return [];
   return data.value.slice(
     (page.value - 1) * pageCount.value,
     page.value * pageCount.value,
@@ -70,7 +65,6 @@ const rows = computed(() => {
 
 const columns = [
   { key: "rid", label: "rid", sortable: true },
-  { key: "state", label: "state", sortable: true },
   { key: "rcode", label: "rcode", sortable: true },
   { key: "body.year", label: "Jahr", sortable: true },
   { key: "body.tag", label: "Tag", sortable: true },
@@ -80,37 +74,24 @@ const columns = [
   { key: "actions", label: "Aktionen", sortable: false },
 ];
 
-const stateOptions = (row) => [[{ label: "Staged" }, { label: "Live" }]];
 
-const { data, error, pending, refresh } = useLazyFetch("/resolution", {
+const { data, error, pending, refresh } = useLazyFetch<IResolution[]>("/resolution", {
   baseURL: API_ENDPOINT,
-  transform: (data) => {
-    return data.filter((resolution) => resolution.state == "staged")
-      .map((resolution) => {
-        const transformedResolution = { ...resolution };
-        transformedResolution.created = new Date(
-          resolution.created,
-        ).toLocaleString("de-DE", {
-          dateStyle: "short",
-          timeStyle: "short",
-        });
-        return transformedResolution;
-      });
+  query: {
+    filter: ResolutionState.Staged
   },
   onRequestError: (err) => {
     toast.add({
       timeout: 8000,
       title: "Fehler beim Laden der Beschlüsse zum Freigeben",
       description: `${err.error.message}`,
-      variant: "danger",
     });
   },
   onResponseError: (err) => {
     toast.add({
       timeout: 8000,
       title: "Fehler beim Laden der Beschlüsse zum Freigeben",
-      description: `${err.error.message}`,
-      variant: "danger",
+      description: `${err?.error?.message}`,
     });
   },
 });
@@ -123,4 +104,15 @@ const emptyState = computed(() => {
   else return { icon: 'i-heroicons-circle-stack-20-solid', label: 'No items.' };
 });
 
+const handleAcceptResolution = async (id: string) => {
+  if (! await resolutionHandler.ensureSession()) return;
+  resolutionHandler.handleResolutionState(id, PatchActions.ACCEPT);
+  refresh();
+};
+
+const handleRejectResolution = async (id: string) => {
+  if (! await resolutionHandler.ensureSession()) return;
+  resolutionHandler.handleResolutionState(id, PatchActions.REJECT);
+  refresh();
+};
 </script>

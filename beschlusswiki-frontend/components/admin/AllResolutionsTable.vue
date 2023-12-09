@@ -4,20 +4,6 @@
       <UTable :rows="rows" :columns="columns" :empty-state="emptyState" :loading="pending"
         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }">
 
-        <!--* Resolution State Column  -->
-        <template #state-data="{ row }">
-          <!-- Dropdown to select staged/live -->
-          <UDropdown :items="stateOptions" :popper="{ placement: 'bottom-start' }">
-            <UButton color="white" variant="solid" :label="capitalize(row.state)"
-              trailing-icon="i-heroicons-chevron-down-20-solid" size="xs">
-            </UButton>
-            <template #actions-item="{ item }">
-              <UButton color="white" variant="solid" :label="capitalize(item.label)" :icon="item.icon" size="xs"
-                @click="handleResolutionStateChange(row, item.label)" />
-            </template>
-          </UDropdown>
-        </template>
-
         <!--* Resolution Category Column  -->
         <template #category-data="{ row }">
           <UBadge color="amber" v-if="row.body.category?.tag">
@@ -29,6 +15,20 @@
         <!--* Resolution Date Column  -->
         <template #created-data="{ row }">
           <span>{{ new Date(row.created).toLocaleDateString() }}</span>
+        </template>
+
+        <!--* Resolution State Column  -->
+        <template #state-data="{ row }: { row: IResolution }">
+          <!-- Dropdown to select staged/live -->
+          <UDropdown :items="stateOptions(row._id.toString(), row.state)" :popper="{ placement: 'bottom-start' }">
+            <UButton color="white" variant="solid" :label="capitalize(row.state)"
+              trailing-icon="i-heroicons-chevron-down-20-solid" size="xs">
+            </UButton>
+            <template #actions-item="{ item }">
+              <UButton color="white" variant="solid" :label="capitalize(item.label)" :icon="item.icon" size="xs"
+                @click="console.log('foo')" />
+            </template>
+          </UDropdown>
         </template>
 
         <!--* ACTIONS COLUMN  -->
@@ -77,9 +77,10 @@
 
 <script setup lang="ts">
 
-import { ResolutionState } from '~/types/Interfaces';
+import { ResolutionState, resolutionStateToPatchAction } from '~/types/Interfaces';
 import type { ICategory } from '~/types/models/category.schema';
 import type { IResolution } from '~/types/models/resolution.schema';
+
 
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
@@ -90,6 +91,7 @@ const route = useRoute();
 const page = ref(1);
 const pageCount = ref(10);
 const confirmationPopup = ref(false);
+const resolutionHandler = useResolutionHandler();
 
 const { getSession, token } = useAuth();
 
@@ -118,8 +120,6 @@ const rows = computed(() => {
 });
 
 const columns = [
-  { key: "rid", label: "rid", sortable: true },
-  { key: "state", label: "state", sortable: true },
   { key: "rcode", label: "rcode", sortable: true },
   { key: "body.year", label: "Jahr", sortable: true },
   { key: "body.tag", label: "Tag", sortable: true },
@@ -127,15 +127,35 @@ const columns = [
   { key: "category", label: "Kategorie", sortable: true },
   { key: "created", label: "Erstellt", sortable: true },
   { key: "body.title", label: "Titel", sortable: true },
+  { key: "state", label: "state", sortable: true },
   { key: "actions", label: "Aktionen", sortable: false },
 ];
 
 
-const stateOptions = [[
-  { label: "Staged", icon: "i-heroicons-document-arrow-up" },
-  { label: "Live", icon: "i-heroicons-clipboard-document-check" },
-  { label: "Archived", icon: "i-heroicons-document-minus" },
-]];
+const stateOptions = (id: string, state: ResolutionState) => {
+  return [[
+    {
+      label: "Staged", icon: "i-heroicons-document-arrow-up",
+      click: () => { handleChangeResolutionState(id, ResolutionState.Staged) },
+      disabled: ResolutionState.Staged === state
+    },
+    {
+      label: "Live", icon: "i-heroicons-clipboard-document-check",
+      click: () => { handleChangeResolutionState(id, ResolutionState.Live) },
+      disabled: ResolutionState.Live === state
+    },
+    {
+      label: "Archived", icon: "i-heroicons-archive-box",
+      click: () => { handleChangeResolutionState(id, ResolutionState.Archived) },
+      disabled: ResolutionState.Archived === state
+    },
+    {
+      label: "Rejected", icon: "i-heroicons-x-circle",
+      click: () => { handleChangeResolutionState(id, ResolutionState.Rejected) },
+      disabled: ResolutionState.Rejected === state
+    },
+  ]]
+};
 
 const pagePaginationOptions = [10, 20, 50, 100];
 
@@ -169,13 +189,7 @@ const emptyState = computed(() => {
   else return { icon: 'i-heroicons-circle-stack-20-solid', label: 'No items.' };
 });
 
-const categoriesItems = computed(() => {
-  if (categories.value) {
-    return categories.value.map((category: ICategory) => {
-      return { label: `${category.tag} - ${category.name}` };
-    });
-  }
-});
+
 
 const capitalize = (str: string) => {
   if (typeof str !== "string") return "";
@@ -183,12 +197,9 @@ const capitalize = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-const handleResolutionStateChange = ((resolution: IResolution, newState: ResolutionState) => {
-  console.log(resolution._id, newState);
-});
+
 
 const handleDeleteResolution = (async (resolution: IResolution) => {
-  console.log(resolution._id);
 
   const { data: deleteData, error: deleteError } = await useLazyFetch("/resolution", {
     method: "DELETE",
@@ -217,5 +228,12 @@ const handleDeleteResolution = (async (resolution: IResolution) => {
   refresh();
 
 });
+
+const handleChangeResolutionState = async (id: string, state: ResolutionState) => {
+  console.log(`Changing state of ${id} to ${state}`);
+  if (! await resolutionHandler.ensureSession()) return;
+  resolutionHandler.handleResolutionState(id, resolutionStateToPatchAction[state]);
+  refresh();
+}
 
 </script>
