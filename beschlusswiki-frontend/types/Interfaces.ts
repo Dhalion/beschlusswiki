@@ -61,10 +61,12 @@ export interface SessionData {
 // Staged: The resolution has been created but not yet approved
 // Live: The resolution has been approved and is live
 // Archived: The resolution has been archived
+// Rejected: The proposed resolution has been rejected
 export enum ResolutionState {
 	Staged = "staged",
 	Live = "live",
 	Archived = "archived",
+	Rejected = "rejected",
 }
 
 export enum SearchEngine {
@@ -72,4 +74,10 @@ export enum SearchEngine {
 	// Built in mongoDB or ElasticSearch
 	MONGO = "mongo",
 	ELASTICSEARCH = "elastic",
+}
+
+export enum PatchActions {
+	ACCEPT = "accept",
+	REJECT = "reject",
+	ARCHIVE = "archive",
 }

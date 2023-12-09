@@ -1,6 +1,6 @@
 import {CategorySchema} from "~/types/models/category.schema";
 import {ResolutionSchema} from "~/types/models/resolution.schema";
-import {SearchEngine} from "~/types/Interfaces";
+import {ResolutionState, SearchEngine} from "~/types/Interfaces";
 import mongoose from "mongoose";
 
 export default defineEventHandler(async (event) => {
@@ -11,6 +11,7 @@ export default defineEventHandler(async (event) => {
 		const selectText = getQuery(event)?.text == ("true" || 1) ? true : false;
 		const populateCategory =
 			getQuery(event)?.category == ("true" || 1) ? true : false;
+		const filter = getQuery(event)?.filter as ResolutionState;
 
 		const searchEngine =
 			getQuery(event)?.engine == "elastic"
@@ -119,6 +120,9 @@ export default defineEventHandler(async (event) => {
 		}
 		if (populateCategory) {
 			query.populate("body.category");
+		}
+		if (filter === ResolutionState.Staged) {
+			query.where("state").equals(ResolutionState.Staged);
 		}
 		const result = query.exec();
 		if (result) {
