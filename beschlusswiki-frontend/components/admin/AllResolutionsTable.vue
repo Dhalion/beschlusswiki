@@ -3,6 +3,7 @@
     <div class="bg-slate-800 px-5 mx-10">
       <UTable :rows="rows" :columns="columns" :empty-state="emptyState" :loading="pending"
         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }">
+
         <!--* Resolution State Column  -->
         <template #state-data="{ row }">
           <!-- Dropdown to select staged/live -->
@@ -37,7 +38,13 @@
             </NuxtLink>
 
             <NuxtLink class="hover:cursor-pointer">
-              <UIcon name="i-heroicons-trash" />
+              <UPopover v-model="confirmationPopup">
+                <UIcon name="i-heroicons-trash" />
+                <template #panel="{ close }">
+                  <AdminConfirmationPopup @confirm="handleDeleteResolution(row); close();" @cancel="close();"
+                    title="Beschluss löschen?" />
+                </template>
+              </UPopover>
             </NuxtLink>
           </div>
         </template>
@@ -72,10 +79,30 @@ import type { IResolution } from '~/types/models/resolution.schema';
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
 const toast = useToast();
-
+const router = useRouter();
+const route = useRoute();
 
 const page = ref(1);
 const pageCount = ref(10);
+const confirmationPopup = ref(false);
+
+const { getSession, token } = useAuth();
+
+// Ensure JWT is valid
+const session = await getSession({ required: true });
+if (!session) {
+  toast.add({
+    title: "Fehler beim Speichern",
+    description: "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.",
+    icon: "i-heroicons-exclamation-triangle",
+    actions: [
+      {
+        label: "Anmelden",
+        click: () => router.push(`/admin/login?redirect=${route.fullPath}`),
+      }],
+  });
+}
+
 
 const rows = computed(() => {
   if (!data.value) return [];
@@ -146,11 +173,44 @@ const categoriesItems = computed(() => {
 });
 
 const capitalize = (str: string) => {
+  if (typeof str !== "string") return "";
+  if (str.length < 1) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
 const handleResolutionStateChange = ((resolution: IResolution, newState: ResolutionState) => {
   console.log(resolution._id, newState);
+});
+
+const handleDeleteResolution = (async (resolution: IResolution) => {
+  console.log(resolution._id);
+
+  const { data: deleteData, error: deleteError } = await useLazyFetch("/resolution", {
+    method: "DELETE",
+    baseURL: API_ENDPOINT,
+    headers: {
+      "Authorization": `${token.value}`,
+    },
+    query: {
+      id: resolution._id,
+    },
+  });
+
+  if (deleteError.value) {
+    toast.add({
+      title: "Fehler beim Löschen des Beschlusses",
+      description: `Fehler: ${deleteError.value?.statusCode} - ${deleteError.value?.statusMessage}`,
+      timeout: 8000,
+    });
+  } else {
+    toast.add({
+      title: "Beschluss gelöscht",
+      description: `Beschluss ${resolution._id} wurde erfolgreich gelöscht.`,
+      timeout: 8000,
+    });
+  }
+  refresh();
+
 });
 
 </script>

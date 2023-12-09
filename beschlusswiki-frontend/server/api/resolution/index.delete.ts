@@ -1,5 +1,5 @@
-import {ResolutionSchema} from "~/types/models/resolution.schema";
 import {type IUser, UserRoles} from "~/types/models/user.schema";
+import {ResolutionSchema} from "~/types/models/resolution.schema";
 
 const ALLOWED_ROLES = [UserRoles.Admin];
 
@@ -26,26 +26,18 @@ export default defineEventHandler(async (event) => {
 
 	try {
 		const id = getQuery(event)?.id;
-		const body = await readBody(event);
-
-		if (!body?.resolution) {
-			return createError({statusCode: 400, message: "No resolution provided"});
-		}
 
 		if (!id) throw createError({statusCode: 400, message: "No id provided"});
-		const success = await ResolutionSchema.updateOne(
-			{_id: id},
-			body.resolution,
-			{new: false}
-		);
+
+		const success = await ResolutionSchema.deleteOne({_id: id});
 
 		if (!success)
 			throw createError({
 				statusCode: 500,
-				message: "Error while updating resolution",
+				message: "Error while deleting resolution",
 			});
 
-		console.log(`Resolution ${id} updated`);
+		console.log(`Resolution ${id} deleted`);
 
 		return {success: true};
 	} catch (e) {
