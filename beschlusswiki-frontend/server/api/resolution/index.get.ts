@@ -1,5 +1,6 @@
 import {CategorySchema} from "~/types/models/category.schema";
-import {ResolutionSchema, SearchEngine} from "~/types/models/resolution.schema";
+import {ResolutionSchema} from "~/types/models/resolution.schema";
+import {SearchEngine} from "~/types/Interfaces";
 import mongoose from "mongoose";
 
 export default defineEventHandler(async (event) => {

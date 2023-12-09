@@ -1,25 +1,10 @@
 import {defineMongooseModel} from "#nuxt/mongoose";
 import {Types} from "mongoose";
 import {CategorySchema, type ICategory} from "./category.schema";
-
-// A resolution can be in one of three states
-// Staged: The resolution has been created but not yet approved
-// Live: The resolution has been approved and is live
-// Archived: The resolution has been archived
-export enum ResolutionState {
-	Staged = "staged",
-	Live = "live",
-	Archived = "archived",
-}
-
-export enum SearchEngine {
-	// Enum for the search engine to use
-	// Built in mongoDB or ElasticSearch
-	MONGO = "mongo",
-	ELASTICSEARCH = "elastic",
-}
+import {ResolutionState} from "../Interfaces";
 
 export interface IResolution {
+	_id: Types.ObjectId;
 	rid: string;
 	rcode: string;
 	created: Date;
