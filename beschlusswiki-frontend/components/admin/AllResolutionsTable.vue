@@ -26,6 +26,11 @@
           <span v-else>null</span>
         </template>
 
+        <!--* Resolution Date Column  -->
+        <template #created-data="{ row }">
+          <span>{{ new Date(row.created).toLocaleDateString() }}</span>
+        </template>
+
         <!--* ACTIONS COLUMN  -->
         <template #actions-data="{ row }">
           <div class="flex justify-start gap-x-5 text-lg">
