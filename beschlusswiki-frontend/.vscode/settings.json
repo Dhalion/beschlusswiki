@@ -5,7 +5,8 @@
 	"editor.quickSuggestions": {
 		"strings": true
 	},
-	"tailwindCSS.experimental.configFile": "tailwind.config.ts",
+	"tailwindCSS.experimental.configFile": "tailwind.config.js",
+	"tailwindCSS.includeLanguages": {},
 	"workbench.colorCustomizations": {
 		// "editor.background": "#ffffff"
 	},
