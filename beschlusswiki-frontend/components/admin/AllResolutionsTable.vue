@@ -6,16 +6,20 @@
         <!--* Resolution State Column  -->
         <template #state-data="{ row }">
           <!-- Dropdown to select staged/live -->
-          <UDropdown :items="stateOptions(row)" :popper="{ placement: 'bottom-start' }">
-            <UButton color="white" variant="solid" :label="row.state" trailing-icon="i-heroicons-chevron-down-20-solid"
-              size="xs">
+          <UDropdown :items="stateOptions" :popper="{ placement: 'bottom-start' }">
+            <UButton color="white" variant="solid" :label="capitalize(row.state)"
+              trailing-icon="i-heroicons-chevron-down-20-solid" size="xs">
             </UButton>
+            <template #actions-item="{ item }">
+              <UButton color="white" variant="solid" :label="capitalize(item.label)" :icon="item.icon" size="xs"
+                @click="handleResolutionStateChange(row, item.label)" />
+            </template>
           </UDropdown>
         </template>
 
         <!--* Resolution Category Column  -->
         <template #category-data="{ row }">
-          <UBadge color="orange" v-if="row.body.category?.tag">
+          <UBadge color="amber" v-if="row.body.category?.tag">
             {{ row.body.category.tag }} - {{ row.body.category.name }}
           </UBadge>
           <span v-else>null</span>
@@ -47,11 +51,11 @@
             to="/resolution/create" />
         </div>
         <div class="flex justify-center">
-          <UPagination v-model="page" :page-count="pageCount" :total="data?.length" />
+          <UPagination v-model="page" :page-count="pageCount" :total="data?.length || 0" />
         </div>
         <div class="flex justify-end p-3">
           <span class="text-gray-400 pr-3 text-sm pt-1">Einträge pro Seite:</span>
-          <USelect v-model="pageCount" :options="[10, 20, 50, 100]" />
+          <USelect v-model="pageCount" :options="pagePaginationOptions" />
         </div>
       </div>
     </div>
@@ -59,35 +63,23 @@
   <UNotifications />
 </template>
 
-<script setup>
+<script setup lang="ts">
 
-
+import { ResolutionState } from '~/types/Interfaces';
+import type { ICategory } from '~/types/models/category.schema';
+import type { IResolution } from '~/types/models/resolution.schema';
 
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
-const taost = useToast();
+const toast = useToast();
 
-const resolutions = computed(() => {
-  // Transform the date to a readable format
-  if (pending.value || error.value) return [];
-  return data.value.map((resolution) => {
-    const transformedResolution = { ...resolution };
-    transformedResolution.created = new Date(resolution.created).toLocaleString(
-      "de-DE",
-      {
-        dateStyle: "short",
-        timeStyle: "short",
-      },
-    );
-    return transformedResolution;
-  });
-});
 
 const page = ref(1);
 const pageCount = ref(10);
 
 const rows = computed(() => {
-  return resolutions.value.slice(
+  if (!data.value) return [];
+  return data.value.slice(
     (page.value - 1) * pageCount.value,
     page.value * pageCount.value,
   );
@@ -106,31 +98,36 @@ const columns = [
   { key: "actions", label: "Aktionen", sortable: false },
 ];
 
-const stateOptions = (row) => [[{ label: "Staged" }, { label: "Live" }]];
 
-const { data, error, pending, refresh } = useLazyFetch("/resolution", {
+const stateOptions = [[
+  { label: "Staged", icon: "i-heroicons-document-arrow-up" },
+  { label: "Live", icon: "i-heroicons-clipboard-document-check" },
+  { label: "Archived", icon: "i-heroicons-document-minus" },
+]];
+
+const pagePaginationOptions = [10, 20, 50, 100];
+
+const { data, error, pending, refresh } = useLazyFetch<IResolution[]>("/resolution", {
   query: {
     category: true,
   },
   baseURL: API_ENDPOINT,
   onRequestError: (err) => {
-    taost.add({
+    toast.add({
       timeout: 8000,
       title: "Fehler beim Laden der Beschlüsse",
       description: `Fehler: ${err.error.name} - ${err.error.message}`,
-      variant: "danger",
     });
   },
 });
 
-const { data: categories } = useLazyFetch("/category", {
+const { data: categories } = useLazyFetch<ICategory[]>("/category", {
   baseURL: API_ENDPOINT,
   onResponseError: (err) => {
-    taost.add({
+    toast.add({
       timeout: 8000,
       title: "Fehler beim Laden der Kategorien",
       description: `Fehler: ${err?.error?.name} - ${err?.error?.message}`,
-      variant: "danger",
     });
   },
 });
@@ -142,12 +139,18 @@ const emptyState = computed(() => {
 
 const categoriesItems = computed(() => {
   if (categories.value) {
-    return categories.value.map((category) => {
+    return categories.value.map((category: ICategory) => {
       return { label: `${category.tag} - ${category.name}` };
     });
   }
 });
 
+const capitalize = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
 
+const handleResolutionStateChange = ((resolution: IResolution, newState: ResolutionState) => {
+  console.log(resolution._id, newState);
+});
 
 </script>
