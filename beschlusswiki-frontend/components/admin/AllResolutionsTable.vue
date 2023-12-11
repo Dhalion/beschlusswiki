@@ -185,8 +185,14 @@ const { data: categories } = useLazyFetch<ICategory[]>("/category", {
 });
 
 const emptyState = computed(() => {
-  if (error.value) return { icon: 'i-heroicons-exclamation-triangle', label: 'Fehler beim Laden.' };
-  else return { icon: 'i-heroicons-circle-stack-20-solid', label: 'No items.' };
+  if (error.value) return {
+    icon: 'i-heroicons-exclamation-triangle',
+    label: 'Fehler beim Laden.'
+  };
+  else return {
+    icon: 'i-heroicons-circle-stack-20-solid',
+    label: 'No items.'
+  };
 });
 
 
