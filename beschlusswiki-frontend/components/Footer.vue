@@ -14,6 +14,7 @@
       Beschlusswiki {{ version }}
     </span>
   </div>
+  <UNotifications />
 </template>
 
 <script setup>
