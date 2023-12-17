@@ -1,7 +1,7 @@
 {
   "name": "nuxt-beschlusswiki",
   "private": true,
-  "version": "0.2.8-2293",
+  "version": "0.2.8-2529",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",

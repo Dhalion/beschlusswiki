@@ -93,3 +93,11 @@ export const resolutionStateToPatchAction: Record<
 	[ResolutionState.Archived]: PatchActions.ARCHIVE,
 	[ResolutionState.Rejected]: PatchActions.REJECT,
 };
+
+export enum ElasticStatus {
+	// Enum for the ElasticSearch Server State
+	// States are Available, Unavailable, and Unknown
+	AVAILABLE = "available",
+	UNAVAILABLE = "unavailable",
+	UNKNOWN = "unknown",
+}
