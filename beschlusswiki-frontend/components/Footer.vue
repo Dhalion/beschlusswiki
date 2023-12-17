@@ -1,6 +1,6 @@
 <template>
   <div class="bg-jusorot-700 w-full h-full mt-10 p-10 flex flex-col">
-    <div class="h-1/3 flex gap-4 justify-around justify-center justify-items-center">
+    <div class="h-1/3 flex gap-4 justify-around items-center align-middle mx-5 text-sm sm:text-md md:text-base">
       <NuxtLink href="/about"> Über das Beschlusswiki </NuxtLink>
       <NuxtLink href="/privacy"> Datenschutz </NuxtLink>
       <NuxtLink href="/impressum"> Impressum </NuxtLink>
@@ -11,8 +11,8 @@
       </div>
     </div>
     <span class="bg-jusorot-700 w-full flex justify-center text-center bottom mt-10">
-      Beschlusswiki {{ version }} <br />
-      &copy; 2023 Christopher Falkner</span>
+      Beschlusswiki {{ version }}
+    </span>
   </div>
 </template>
 
