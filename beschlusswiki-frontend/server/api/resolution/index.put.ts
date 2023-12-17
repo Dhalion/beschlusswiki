@@ -1,3 +1,4 @@
+import {CategorySchema} from "~/types/models/category.schema";
 import {ResolutionSchema} from "~/types/models/resolution.schema";
 import {type IUser, UserRoles} from "~/types/models/user.schema";
 
@@ -33,10 +34,16 @@ export default defineEventHandler(async (event) => {
 		}
 
 		if (!id) throw createError({statusCode: 400, message: "No id provided"});
-		const success = await ResolutionSchema.updateOne(
+
+		const before = await ResolutionSchema.findById(id);
+
+		if (!before)
+			throw createError({statusCode: 404, message: "Resolution not found"});
+
+		const success = await ResolutionSchema.findByIdAndUpdate(
 			{_id: id},
 			body.resolution,
-			{new: false}
+			{new: true}
 		);
 
 		if (!success)
@@ -44,6 +51,36 @@ export default defineEventHandler(async (event) => {
 				statusCode: 500,
 				message: "Error while updating resolution",
 			});
+		const beforeCategoryId = before.body.category
+			? String(before.body.category)
+			: null;
+		const afterCategoryId = success.body.category
+			? String(success.body.category)
+			: null;
+
+		const categoryChanged = beforeCategoryId !== afterCategoryId;
+
+		if (categoryChanged && afterCategoryId) {
+			console.log("Category changed");
+			if (beforeCategoryId) {
+				const removeOld = await CategorySchema.findByIdAndUpdate(
+					{_id: before.body.category},
+					{$pull: {resolutions: before._id}}
+				);
+				if (!removeOld) console.error("Error while removing old category");
+				console.log(
+					`Removed resolution ${before._id} from category ${before.body.category}`
+				);
+			}
+			const addNew = await CategorySchema.findByIdAndUpdate(
+				{_id: success.body.category},
+				{$push: {resolutions: success._id}}
+			);
+			if (!addNew) console.error("Error while adding new category");
+			console.log(
+				`Added resolution ${success._id} to category ${success.body.category}`
+			);
+		}
 
 		console.log(`Resolution ${id} updated`);
 
