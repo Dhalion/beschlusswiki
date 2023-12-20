@@ -7,5 +7,9 @@ export default defineAppConfig({
 		primary: "jusorot",
 		gray: "cool",
 		hellrosa: "hellrosa",
+		beere: "beere",
+		orange: "orange",
+		helllila: "helllila",
 	},
+	nuxtIcon: {},
 });

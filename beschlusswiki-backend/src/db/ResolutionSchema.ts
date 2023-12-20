@@ -1,6 +1,5 @@
 import {Schema, Types, Model, model, Document} from "mongoose";
 import crypto from "crypto";
-import {IUserDocument, UserModel} from "./UserSchema";
 
 // A resolution can be in one of three states
 // Staged: The resolution has been created but not yet approved
@@ -28,10 +27,7 @@ const resolutionSchema = new Schema(
 			tag: {type: String},
 			applicants: {type: Array},
 			year: {type: Number},
-			category: {
-				name: {type: String},
-				id: {type: String},
-			},
+			category: {type: Schema.Types.ObjectId, ref: "Category"}, // Refers to a category
 			text: {type: String},
 		},
 	},
@@ -60,8 +56,7 @@ resolutionSchema.methods.stringify = function () {
 		body.tag +
 		applicants.join("") +
 		body.year +
-		category.name +
-		category.id +
+		category +
 		body.text
 	).toString();
 
@@ -82,10 +77,7 @@ export interface IResolutionDocument extends Document {
 		tag: String;
 		applicants: Array<String>;
 		year: Number;
-		category: {
-			name: String;
-			id: String;
-		};
+		category: Types.ObjectId;
 		text: String;
 	};
 	createHash(): String;

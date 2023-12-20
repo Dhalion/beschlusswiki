@@ -1,0 +1,29 @@
+A - Leitantrag / Leitanträge
+A - Arbeit und Soziales
+A - Arbeitsprogramm
+B - Bildung und Ausbildung
+B - Beschäftigung & Gute Arbeit
+C - Chancengleicheheit, Bildung & Ausbildung
+D - Demokratie & Partizipation
+E - Europa
+F - Frieden & Internationales
+G - Gleichstellung, Feminismus & Gender
+I - Inneres, Justiz & Verbaucherschutz
+J - Jugendpolitik
+K - Kampf gegen Rechts
+K - Kommunales, Mieten & Öffentliche Daseinsvorsorge
+L - Links Leben
+M - Migration, Integration, Asyl- & Flüchtlingspolitik
+N - Netzpolitik, Medien, Datenschutz & Digitales
+O - Öffentliche Daseinsvorsorge, Mieten & Kommunales
+O - Organisation und Partei
+P - Pflege, Gesundheit & Soziales
+R - Rente, Generation & Familie
+R - Resolutionen
+S - Sonstiges
+U - Umwelt, Energie & Nachhaltigkeit
+V - Verkehr und Infrastruktur
+W - Wirtschaft, Finanzmärkte, Steuern & Kapitalismuskritik
+X - Organisationspolitik
+Z - Initiativanträge
+INI - Initiativanträge

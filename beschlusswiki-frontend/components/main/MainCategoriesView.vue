@@ -1,108 +1,42 @@
 <template>
-    <div class="flex flex-col items-center mt-10">
-        <!-- Category Cards Container -->
-        <div class="bg-white h-full text-black w-3/4 items-center
-            grid gap-4 grid-cols-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5
-        ">
-            <!-- Category Cards -->
-            <MainCategoryCard v-for="category in categories" :key="category.id" :categoryTitle="category.title"
-                :categoryImage="category.image" />
+  <div class="flex flex-col items-center mt-10">
+    <SharedLoadingSpinner v-if="pending" text="Loading Categories" />
+    <UAlert icon="i-heroicons-information-circle" title="Fehler beim Laden der Kategorien" :description="error"
+      variant="solid" color="primary" v-if="error" class="w-2/3" />
 
-        </div>
+    <UAlert icon="i-heroicons-information-circle" title="Keine Kategorien gefunden" :description="error" variant="solid"
+      color="primary" v-if="!pending && !categories" class="w-2/3" />
+    <!-- Category Cards Container -->
+    <div class="bg-white h-full text-black mx-5 items-center grid gap-6 grid-cols-2
+                  md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5" v-if="categories && !error">
+      <!-- Category Cards -->
+      <div v-for="category in categories" class="flex flex-col h-full">
+        <MainCategoryCard :title="category.name" :id="category._id" :tag="category.tag"
+          :resolutions="category.resolutions" />
+
+      </div>
     </div>
+  </div>
+  <UNotifications />
 </template>
 
-<script setup>
-const search = useSearch();
+<script setup lang="ts">
 
-const categories = [
-    {
-        title: "Bildung",
-        image: "Bildung.svg",
-        id: 1
-    },
-    {
-        title: "Europa und Internationales",
-        image: "EuropaUndInternationales.svg",
-        id: 2
-    },
-    {
-        title: "Gegen Rechts",
-        image: "GegenRechts.svg",
-        id: 3
-    },
-    {
-        title: "Arbeitsprogramme",
-        image: "Arbeitsprogramme.svg",
-        id: 4
-    },
-    {
-        title: "Digitales",
-        image: "Digitales.svg",
-        id: 5
-    },
-    {
-        title: "Einwanderung",
-        image: "Einwanderung.svg",
-        id: 6
-    },
-    {
-        title: "Familie",
-        image: "Familie.svg",
-        id: 7
-    },
-    {
-        title: "Feminismus",
-        image: "Feminismus.svg",
-        id: 8
-    },
-    {
-        title: "Gesundheit",
-        image: "Gesundheit.svg",
-        id: 9
-    },
-    {
-        title: "Justiz und Inneres",
-        image: "JustizUndInneres.svg",
-        id: 10
-    },
-    {
-        title: "Kommunales und Landespolitik",
-        image: "KommunalesUndLandespolitik.svg",
-        id: 11
-    },
-    {
-        title: "LGBTIQ",
-        image: "LGBTIQ.svg",
-        id: 12
-    },
-    {
-        title: "Partei und Jusos",
-        image: "ParteiUndJusos.svg",
-        id: 13
-    },
-    {
-        title: "Satzungsänderungen",
-        image: "Satzungsänderungen.svg",
-        id: 14
-    },
-    {
-        title: "Umwelt und Energie",
-        image: "UmweltUndEnergie.svg",
-        id: 15
-    },
-    {
-        title: "Verkehr und Infrastruktur",
-        image: "VerkehrUndInfrastruktur.svg",
-        id: 16
-    },
-    {
-        title: "Wirtschaft und Soziales",
-        image: "WirtschaftUndSoziales.svg",
-        id: 17
-    },
-]
+import type { ICategory } from '~/types/models/category.schema';
+
+const config = useRuntimeConfig();
+const toast = useToast();
+// const cardsContainerWidth = ref(window.innerWidth * .75);
 
 
-
+const { data: categories, error, pending, refresh } = useFetch<ICategory[]>("/api/category", {
+  baseURL: config.public.apiEndpoint,
+  onResponseError(err) {
+    toast.add({
+      title: "Fehler beim Laden der Kategorien",
+      description: err?.error?.message || "Unbekannter Fehler",
+      icon: "i-heroicons-error"
+    });
+  },
+});
 </script>

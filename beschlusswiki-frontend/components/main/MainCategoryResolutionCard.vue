@@ -1,0 +1,55 @@
+<template>
+  <NuxtLink :href="resolutionUrl"
+    class="w-full bg-slate-100 rounded-2xl p-2 xl:my-4 my-1 flex flex-row divide-x divide-gray-400 text-black shadow-inner hover:shadow-xl hover:bg-slate-150 hover:text-red transition-all transform-gpu hover:scale-x-105 duration-500 ease-out">
+    <!-- Resolution Tag and Year -->
+    <div class="xl:w-1/12 w-3/12 flex flex-col text-center xl:text-base text-sm" v-if="resolution">
+      <span>{{ resolution?.body?.tag }}</span>
+      <span>{{ resolution?.body?.year }}</span>
+    </div>
+    <!-- Resolution Title -->
+    <div class="flex w-full items-center xl:pl-5 pl-2 xl:mr-2 text-sm xl:text-base" v-if="resolution">
+      {{ resolution?.body?.title }}
+    </div>
+  </NuxtLink>
+</template>
+
+<script setup lang="ts">
+import type { IResolution } from '~/types/models/resolution.schema';
+
+const config = useRuntimeConfig();
+const toast = useToast();
+
+const props = defineProps({
+  id: {
+    type: String,
+    required: true,
+  },
+});
+
+
+
+const { data: resolution, pending, error, refresh } = useLazyFetch<IResolution>("/resolution", {
+  baseURL: config.public.apiEndpoint,
+  params: {
+    id: props.id,
+  },
+  onRequestError: (err) => {
+    toast.add({
+      title: "Fehler",
+      description: err.error.message,
+      icon: "i-heroicons-x-circle",
+      timeout: 5000,
+    });
+  },
+  onResponseError: (err) => {
+    toast.add({
+      title: "Fehler",
+      description: err.error?.message || "Unknown",
+      icon: "i-heroicons-x-circle",
+      timeout: 5000,
+    });
+  },
+});
+
+const resolutionUrl = computed(() => `/resolution/${props.id}`);
+</script>

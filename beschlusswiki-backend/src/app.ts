@@ -17,6 +17,7 @@ export const env = load({
 	SSL_KEY_PASSWORD: String,
 	SERVER_SECRET: String,
 	ENVIRONMENT: String,
+	ELASTIC_URI: String,
 });
 
 export const port = env.PORT || 3000;
@@ -30,11 +31,8 @@ const app = express();
 
 app.use(cors(corsOptions));
 
-app.use(corsDebug);
-
 app.use(express.json());
 
-// Enforce HTTPS
 app.use("/", router);
 
 // Heartbeat endpoint

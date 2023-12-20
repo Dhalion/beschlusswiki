@@ -1,8 +1,22 @@
 {
-    "files.associations": {
-        "*.css": "tailwindcss"
-    },
-    "editor.quickSuggestions": {
-        "strings": true
-    }
+	"files.associations": {
+		"*.css": "tailwindcss"
+	},
+	"editor.quickSuggestions": {
+		"strings": true
+	},
+	"tailwindCSS.experimental.configFile": "tailwind.config.js",
+	"tailwindCSS.includeLanguages": {},
+	"workbench.colorCustomizations": {
+		// "editor.background": "#ffffff"
+	},
+	"emeraldwalk.runonsave": {
+		"commands": [
+			{
+				"match": "\\.(vue|ts|js)$",
+				"isAsync": true,
+				"cmd": "npm version prerelease"
+			}
+		]
+	}
 }

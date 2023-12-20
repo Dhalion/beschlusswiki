@@ -14,6 +14,7 @@ export const getResolution = async (
 		const rId = req.query.rid?.toString();
 		const rCode = req.query.rcode?.toString();
 		const query = req.query.q?.toString();
+		const selectText = req.query.selectText?.toString();
 
 		if (query) {
 			const results = await ResolutionService.search(req.query);
@@ -48,7 +49,10 @@ export const getResolution = async (
 		}
 
 		// If no query parameters are given, return all resolutions
-		const results = await ResolutionService.findAll();
+		// Return Resolution text only if selectText is true
+		const results = await ResolutionService.findAll(
+			selectText == "true" ? true : false
+		);
 		return res.json(results).status(200).end();
 	} catch (error) {
 		// console.error(error);
@@ -86,19 +90,28 @@ export const postResolution = async (
 };
 
 //? Handles PUT /resolution
-//? Updates an existing resolution, creates a copy with reference to parent
+//? Updates an existing resolution, creates a copy with reference to parent if override is false
 export const putResolution = async (
 	req: express.Request,
 	res: express.Response
 ) => {
 	try {
 		const id = req.query.id?.toString();
+		const override = req.query?.override
+			? req.query.override.toString() == "true"
+			: false;
 		const resolution = req.body?.resolution;
 		if (!id || !resolution) {
 			return res.status(400).json({message: "Bad request"}).end();
 		}
-		await ResolutionService.updateById(id, resolution);
-		console.log("Resolution " + id + " updated");
+		if (override) {
+			await ResolutionService.overrideById(id, resolution);
+			console.log("Resolution " + id + " overriden");
+		} else {
+			await ResolutionService.updateById(id, resolution);
+			console.log("Resolution " + id + " updated");
+		}
+
 		return res.status(200).end();
 	} catch (error: any) {
 		console.error(error);
@@ -179,6 +192,3 @@ export const getHash = async (req: express.Request, res: express.Response) => {
 		return res.status(500).json({message: "Internal server error"});
 	}
 };
-
-// 12ab2023-DEMO1aaaaDemo1DEMO1Admin2023Demo00ffDemotext Lorem ipsum dolor sit amet.
-// 12ab2023-DEMO1aaaaDemo1DEMO1Admin2023Demo00ffDemotext Lorem ipsum dolor sit amet.

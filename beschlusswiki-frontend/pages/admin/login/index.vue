@@ -1,57 +1,86 @@
 <template>
-    <div class="bg-slate-800 w-1/3 mx-auto mt-16 p-8 rounded-3xl">
-        <UForm :state="state" class="text-slate-800 gap-y-3 flex flex-col" @submit="submit" :validate="validate">
-            <span class="text-gray-300 font-bold text-2xl">Anmelden</span>
+  <div class="bg-rosa text-black w-1/3 mx-auto mt-16 p-8 rounded-3xl">
+    <UForm :state="state" class="text-black gap-y-3 flex flex-col" :validate="validate" @submit="submit">
+      <span class="text-altrot font-bold text-2xl">Anmelden</span>
 
-            <span class="text-red-500 text-sm" v-if="state.error">
-                {{ state.error.message }}
-            </span>
+      <span v-if="state.error" class="text-red-500 text-sm">
+        {{ state.error.message }}
+      </span>
 
-            <UFormGroup name="email" label="Email oder Nutzername" required>
-                <UInput type="text" placeholder="E-Mail" v-model="state.email" icon="i-heroicons-envelope" />
-            </UFormGroup>
+      <UFormGroup name="email" label="Email oder Nutzername" required style="color: altrot;">
+        <UInput v-model="state.email" type="text" placeholder="E-Mail" icon="i-heroicons-envelope" />
+      </UFormGroup>
 
-            <UFormGroup label="Passwort" name="password" required>
-                <UInput type="password" placeholder="Passwort" v-model="state.password" icon="i-heroicons-lock-closed" />
-            </UFormGroup>
+      <UFormGroup label="Passwort" name="password" required>
+        <UInput v-model="state.password" type="password" placeholder="Passwort" icon="i-heroicons-lock-closed" />
+      </UFormGroup>
 
-            <UButton type="submit" class="mt-2" block>
-                Anmelden
-            </UButton>
-        </UForm>
-    </div>
+      <UButton type="submit" class="mt-2" block> Anmelden </UButton>
+    </UForm>
+  </div>
 </template>
 
 <script setup>
+import { useRoute } from "nuxt/app";
 
-const { signIn, signOut } = useAuth();
-
-const state = ref({
-    email: "abc@example.com",
-    password: "undefined",
-    error: undefined,
+definePageMeta({
+  auth: {
+    unauthenticatedOnly: true,
+    navigateAuthenticatedTo: "/admin",
+  },
 });
 
-const validate = (state) => {
-    const errors = [];
-    if (!state.email) errors.push({ path: "email", message: "Pflichtfeld" })
-    if (!state.password) errors.push({ path: "password", message: "Pflichtfeld" })
-    // Check email format per regex if field contains @
-    if (state.email && state.email.includes("@") && !state.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)) {
-        errors.push({ path: "email", message: "Ungültige E-Mail Adresse" })
-    }
-    return errors;
+const { status, data, signIn, signOut } = useAuth();
+
+const config = useRuntimeConfig();
+const route = useRoute();
+
+const state = ref({
+  email: "",
+  password: "",
+  error: undefined,
+});
+
+const redirect = route.query.redirect;
+
+if (status.value === "authenticated") {
+  navigateTo(redirect || "/admin");
 }
+
+
+const validate = (state) => {
+  const errors = [];
+  if (!state.email) errors.push({ path: "email", message: "Pflichtfeld" });
+  if (!state.password)
+    errors.push({ path: "password", message: "Pflichtfeld" });
+  // Check email format per regex if field contains @
+  if (
+    state.email &&
+    state.email.includes("@") &&
+    !state.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)
+  ) {
+    errors.push({ path: "email", message: "Ungültige E-Mail Adresse" });
+  }
+  return errors;
+};
 
 async function submit(event) {
-    console.log("submit");
-    try {
-        const res = await signIn(state.email, state.password);
-        console.log(res);
-    } catch (error) {
-        state.value.error = error;
-    }
-
+  try {
+    await signIn({
+      username: state.value.email,
+      password: state.value.password,
+    }, {
+      callbackUrl: redirect || "/admin/dashboard",
+    });
+  } catch (error) {
+    console.error(error);
+    state.value.error = error;
+  }
+  console.log("Auth Status: " + status.value);
+  if (status.value === "authenticated") {
+    // Leite den Benutzer zur gespeicherten URL zurück
+    console.log("Redirecting to: " + redirect);
+    navigateTo(redirect || "/admin/dashboard", { external: true });
+  }
 }
-
 </script>

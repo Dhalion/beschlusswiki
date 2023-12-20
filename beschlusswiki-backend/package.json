@@ -2,10 +2,10 @@
   "name": "beschlusswiki-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
     "start": "nodemon --inspect",
-    "debug": "nodemon --inspect src/app.ts",
+    "debug": "nodemon --inspect src/index.ts",
     "build": "rimraf dist && tsc",
     "vercel-build": "echo 'vercel-build'",
     "test": "jest --runInBand"

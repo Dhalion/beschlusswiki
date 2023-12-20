@@ -1,16 +1,17 @@
-import pkg from "./package.json";
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const version = require("./package.json").version;
+
 export default defineNuxtConfig({
-	devtools: {enabled: true},
+	devtools: {enabled: false},
 	components: true,
-	modules: ["@nuxt/ui", "@nuxt/content", "@sidebase/nuxt-auth"],
+	modules: ["@nuxt/ui", "@sidebase/nuxt-auth", "nuxt-mongoose"],
 
 	runtimeConfig: {
+		serverSecret: process.env.SERVER_SECRET,
+		elasticURI: process.env.ELASTIC_URI,
 		public: {
 			// omit PUBLIC due to NUXT .env syntax
 			apiEndpoint: process.env.API_ENDPOINT,
-			version: process.env.VERSION,
 		},
 	},
 
@@ -18,21 +19,37 @@ export default defineNuxtConfig({
 		"/**": {cors: true},
 	},
 
+	typescript: {
+		typeCheck: true,
+	},
+
+	// Mongoose Server Route
+	mongoose: {
+		uri: process.env.MONGO_URI,
+		options: {
+			dbName: process.env.MONGO_DB_NAME,
+		},
+		modelsDir: "~/types/models",
+	},
+
 	// Auth configuration
 	auth: {
 		globalAppMiddleware: false,
 		baseURL: process.env.NUXT_PUBLIC_API_ENDPOINT + "/auth",
+
 		provider: {
 			type: "local",
+			pages: {
+				login: "/admin/login",
+			},
 			endpoints: {
-				signIn: {path: "/signIn", method: "post"},
+				signIn: {path: "/login", method: "post"},
 				signOut: {path: "/signout", method: "post"},
-				signUp: {path: "/signup", method: "post"},
-				getSession: {path: "/user", method: "get"},
+				signUp: {path: "/register", method: "post"},
+				getSession: {path: "/session", method: "get"},
 			},
 		},
 	},
-
 	// Tailwind and CD Theming stuff
 	tailwindcss: {
 		config: {
