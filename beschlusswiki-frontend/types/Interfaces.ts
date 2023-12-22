@@ -50,12 +50,11 @@ export interface ICategoriesResponse {
 	categories: Array<ICategory>;
 }
 
-export interface SessionData {
-	accessToken: string;
-	refreshToken: string;
+export type SessionData = {
+	token: string;
 	user: IUser;
 	expires: Date;
-}
+};
 
 // A resolution can be in one of three states
 // Staged: The resolution has been created but not yet approved

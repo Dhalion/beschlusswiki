@@ -1,6 +1,7 @@
-import {UserSchema} from "~/types/models/user.schema";
+import {type IUser, UserSchema} from "~/types/models/user.schema";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import {type SessionData} from "~/types/Interfaces";
 
 export default defineEventHandler(async (event) => {
 	const config = useRuntimeConfig();
@@ -41,7 +42,14 @@ export default defineEventHandler(async (event) => {
 			expiresIn: "120min",
 		}
 	);
+	const sessionUser = user.toObject() as IUser;
+	delete sessionUser.authentication;
+	const sessionData: SessionData = {
+		token: token,
+		user: sessionUser,
+		expires: new Date(Date.now() + 120 * 60 * 1000),
+	};
 	console.log(`User ${user.username} has logged in`);
 
-	return {token: token};
+	return sessionData;
 });

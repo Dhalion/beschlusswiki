@@ -1,6 +1,5 @@
 import {defineMongooseModel} from "#nuxt/mongoose";
-import {type ObjectId} from "mongoose";
-import type {Type} from "typescript";
+import {type ObjectId, Types} from "mongoose";
 
 export enum UserRoles {
 	Admin = "admin",
@@ -9,13 +8,13 @@ export enum UserRoles {
 }
 
 export interface IUser {
-	_id: ObjectId;
+	_id: Types.ObjectId;
 	username: String;
 	email: string;
 	roles: UserRoles[];
 	status: boolean;
-	authentication: {
-		passwordHash: string;
+	authentication?: {
+		passwordHash?: string;
 	};
 }
 
