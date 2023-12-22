@@ -1,6 +1,8 @@
 <template>
-  <div class="text-black">
-    <div class="bg-slate-800 px-5 mx-10">
+  <div class="text-black mx-10">
+    <h2 class="text-3xl text-slate-600 py-3">Beschlüsse zum Freigeben</h2>
+
+    <div class="bg-slate-800 px-5">
       <UTable :rows="rows" :columns="columns" :empty-state="emptyState" :loading="pending"
         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }">
 

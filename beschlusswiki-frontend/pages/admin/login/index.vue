@@ -32,7 +32,6 @@ definePageMeta({
 
 const { status, data, signIn, signOut } = useAuth();
 
-const config = useRuntimeConfig();
 const route = useRoute();
 
 const state = ref({
@@ -76,10 +75,8 @@ async function submit(event) {
     console.error(error);
     state.value.error = error;
   }
-  console.log("Auth Status: " + status.value);
   if (status.value === "authenticated") {
     // Leite den Benutzer zur gespeicherten URL zurück
-    console.log("Redirecting to: " + redirect);
     navigateTo(redirect || "/admin/dashboard", { external: true });
   }
 }

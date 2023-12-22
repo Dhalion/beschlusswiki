@@ -1,51 +1,56 @@
 <template>
-  <div class="bg-slate-800 px-5 mx-10 text-black">
-    <UTable :rows="tableRows" :columns="tableColumns" :loading="pending"
-      :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :empty-state="emptyState">
+  <div class="text-black mx-10">
+    <h2 class="text-3xl text-slate-600 py-3">Nutzer</h2>
+    <div class="bg-slate-800 px-5 text-black">
+      <UTable :rows="tableRows" :columns="tableColumns" :loading="pending"
+        :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :empty-state="emptyState"
+        class="min-h-full">
 
-      <!--* Rollen Spalte *-->
-      <template #roles-data="{ row }">
-        <div class="flex flex-row gap-2">
-          <div v-for="role in row.roles" :key="role">
-            <UBadge size="sm"> {{ role }} </UBadge>
+        <!--* Rollen Spalte *-->
+        <template #roles-data="{ row }">
+          <div class="flex flex-row gap-2">
+            <div v-for="role in row.roles" :key="role">
+              <UBadge size="sm"> {{ role }} </UBadge>
+            </div>
           </div>
+        </template>
+
+        <!--* User Status Spalte *-->
+        <template #status-data="{ row }">
+          <!-- Dropdown to select staged/live -->
+          <UDropdown :items="statusOptions(row)" :popper="{ placement: 'bottom-start' }">
+            <UButton color="white" variant="solid" trail trailing-icon="i-heroicons-chevron-down-20-solid" size="xs">
+              {{ row.status ? "Aktiv" : "Inaktiv" }}
+            </UButton>
+          </UDropdown>
+        </template>
+
+        <!--* Aktionen Spalte *-->
+        <template #actions-data="{ row }">
+          <UPopover v-model="confirmationPopup">
+            <UButton icon="i-heroicons-trash" variant="link" color="gray" />
+            <template #panel="{ close }">
+              <AdminConfirmationPopup @confirm="handleUserDelete(row); close();" @cancel="close();"
+                title="Nutzer löschen?" />
+            </template>
+          </UPopover>
+        </template>
+      </UTable>
+
+
+      <div class="flex flex-row justify-between pt-5 items-center ">
+        <div class="flex gap-3">
+          <UButton label="Aktualisieren" variant="solid" color="primary" icon="i-heroicons-arrow-path"
+            @click="refresh()" />
+          <AdminCreateUserModal @user-created="refresh()" />
         </div>
-      </template>
-
-      <!--* User Status Spalte *-->
-      <template #status-data="{ row }">
-        <!-- Dropdown to select staged/live -->
-        <UDropdown :items="statusOptions(row)" :popper="{ placement: 'bottom-start' }">
-          <UButton color="white" variant="solid" trail trailing-icon="i-heroicons-chevron-down-20-solid" size="xs">
-            {{ row.status ? "Aktiv" : "Inaktiv" }}
-          </UButton>
-        </UDropdown>
-      </template>
-
-      <!--* Aktionen Spalte *-->
-      <template #actions-data="{ row }">
-        <UPopover v-model="confirmationPopup">
-          <UButton icon="i-heroicons-trash" variant="link" color="gray" />
-          <template #panel="{ close }">
-            <AdminConfirmationPopup @confirm="handleUserDelete(row); close();" @cancel="close();"
-              title="Nutzer löschen?" />
-          </template>
-        </UPopover>
-      </template>
-    </UTable>
-
-
-    <div class="flex flex-row justify-between pt-5 items-center ">
-      <div class="flex gap-3">
-        <UButton label="Aktualisieren" variant="solid" color="primary" icon="i-heroicons-arrow-path" @click="refresh()" />
-        <AdminCreateUserModal @user-created="refresh()" />
-      </div>
-      <div class="flex justify-center">
-        <UPagination v-model="page" :page-count="pageCount" :total="data?.length || 0" />
-      </div>
-      <div class="flex justify-end p-3">
-        <span class="text-gray-400 pr-3 text-sm pt-1">Einträge pro Seite:</span>
-        <USelect v-model="pageCount" :options="[10, 20, 50, 100]" />
+        <div class="flex justify-center">
+          <UPagination v-model="page" :page-count="pageCount" :total="data?.length || 0" />
+        </div>
+        <div class="flex justify-end p-3">
+          <span class="text-gray-400 pr-3 text-sm pt-1">Einträge pro Seite:</span>
+          <USelect v-model="pageCount" :options="[10, 20, 50, 100]" />
+        </div>
       </div>
     </div>
   </div>
@@ -54,7 +59,7 @@
 
 <script setup lang="ts">
 import type { IUser } from '~/types/models/user.schema';
-import { type ObjectId } from "mongoose";
+import { type Types } from "mongoose";
 
 
 const config = useRuntimeConfig();
@@ -202,9 +207,9 @@ async function handleUserDelete(row: IUser) {
   }
 }
 
-function removeUserFromTable(id: ObjectId) {
+function removeUserFromTable(id: Types.ObjectId) {
   if (!data.value) return;
-  const index = data.value.findIndex((user) => user._id === id);
+  const index = data.value.findIndex((user) => user._id == id);
   if (index !== -1) {
     data.value.splice(index, 1);
   }
