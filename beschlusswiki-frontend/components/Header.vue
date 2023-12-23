@@ -12,17 +12,29 @@
       <NuxtLink href="#" class="xl:text-2xl text-xl font-extrabold flex-nowrap text-white">
         Jusos Beschlusswiki
       </NuxtLink>
-
     </div>
+    <ClientOnly>
+      <UIcon :name="isDark ? 'i-heroicons-moon' : 'i-heroicons-sun'" color="gray" variant="ghost" aria-label="Theme"
+        @click="isDark = !isDark" class="text-2xl self-center m-3 hover:cursor-pointer" />
+    </ClientOnly>
   </nav>
 </template>
 
 <script setup lang="ts">
 
 const auth = useAuth();
+const colorMode = useColorMode();
 
 const authenticated = computed(() => auth.status.value === "authenticated");
 
+const isDark = computed({
+  get() {
+    return colorMode.value === 'dark'
+  },
+  set() {
+    colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+  }
+})
 
 const handleLogoClick = () => {
   // Fire Logo Clicked Event

@@ -2,7 +2,13 @@
 const version = require("./package.json").version;
 
 export default defineNuxtConfig({
-	devtools: {enabled: false},
+	devtools: {
+		enabled: false,
+
+		timeline: {
+			enabled: true,
+		},
+	},
 	components: true,
 	modules: ["@nuxt/ui", "@sidebase/nuxt-auth", "nuxt-mongoose"],
 
@@ -23,7 +29,7 @@ export default defineNuxtConfig({
 		typeCheck: true,
 	},
 
-	// Mongoose Server Route
+	//* Mongoose Server Route
 	mongoose: {
 		uri: process.env.MONGO_URI,
 		options: {
@@ -32,7 +38,7 @@ export default defineNuxtConfig({
 		modelsDir: "~/types/models",
 	},
 
-	// Auth configuration
+	//* Auth configuration
 	auth: {
 		globalAppMiddleware: false,
 		baseURL: process.env.NUXT_PUBLIC_API_ENDPOINT + "/auth",
@@ -48,9 +54,26 @@ export default defineNuxtConfig({
 				signUp: {path: "/register", method: "post"},
 				getSession: {path: "/session", method: "get"},
 			},
+			token: {
+				signInResponseTokenPointer: "/token",
+			},
+			sessionDataType: {
+				token: "string",
+				user: {
+					_id: "string",
+					username: "string",
+					email: "string",
+					roles: "array",
+					status: "boolean",
+				},
+				expires: "Date",
+			},
 		},
 	},
-	// Tailwind and CD Theming stuff
+	//* Tailwind and CD Theming stuff
+	colorMode: {
+		preference: "light",
+	},
 	tailwindcss: {
 		config: {
 			theme: {
@@ -80,7 +103,7 @@ export default defineNuxtConfig({
 						lila: "#7800b4",
 						bordeaux: "#500014",
 						creme: "#fad2b4",
-						traube: "960028",
+						traube: "#960028",
 					},
 				},
 			},
