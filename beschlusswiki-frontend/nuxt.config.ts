@@ -18,6 +18,7 @@ export default defineNuxtConfig({
 		public: {
 			// omit PUBLIC due to NUXT .env syntax
 			apiEndpoint: process.env.API_ENDPOINT,
+			version: version,
 		},
 	},
 

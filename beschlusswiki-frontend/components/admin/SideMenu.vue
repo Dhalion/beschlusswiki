@@ -64,7 +64,7 @@ const menuItems = [
   {
     name: "Dashboard",
     icon: "i-heroicons-home",
-    to: "/admin/dashboard"
+    to: "/admin"
   },
   {
     name: "Beschlüsse",

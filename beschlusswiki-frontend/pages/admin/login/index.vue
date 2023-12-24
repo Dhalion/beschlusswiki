@@ -69,7 +69,7 @@ async function submit(event) {
       username: state.value.email,
       password: state.value.password,
     }, {
-      callbackUrl: redirect || "/admin/dashboard",
+      callbackUrl: redirect || "/admin",
     });
   } catch (error) {
     console.error(error);
@@ -77,7 +77,7 @@ async function submit(event) {
   }
   if (status.value === "authenticated") {
     // Leite den Benutzer zur gespeicherten URL zurück
-    navigateTo(redirect || "/admin/dashboard", { external: true });
+    navigateTo(redirect || "/admin", { external: true });
   }
 }
 </script>

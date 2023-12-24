@@ -11,6 +11,11 @@ definePageMeta({
   layout: "admin",
 });
 
-</script>
+const colorMode = useColorMode();
 
-<style></style>
+const { status, data, signOut, getSession, token } = useAuth();
+
+function logout() {
+  signOut();
+}
+</script>

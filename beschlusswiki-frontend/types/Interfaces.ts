@@ -100,3 +100,33 @@ export enum ElasticStatus {
 	UNAVAILABLE = "unavailable",
 	UNKNOWN = "unknown",
 }
+
+/**
+ * Connection ready state
+ *
+ * - 0 = disconnected
+ * - 1 = connected
+ * - 2 = connecting
+ * - 3 = disconnecting
+ * - 99 = uninitialized
+ **/
+export enum MongoStatus {
+	DISCONNECTED = 0,
+	CONNECTED = 1,
+	CONNECTING = 2,
+	DISCONNECTING = 3,
+	UNINITIALIZED = 99,
+}
+
+export type ApiStatusData = {
+	db: MongoStatus;
+	es: ElasticStatus;
+	api: 1;
+};
+
+export enum AdminDashboardResolutionsDisplay {
+	ALL = "all",
+	STAGED = "staged",
+	NEW = "new",
+	MY = "my",
+}
