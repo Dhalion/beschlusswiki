@@ -74,7 +74,7 @@ const menuItems = [
   {
     name: "Neuen Beschluss erstellen",
     icon: "i-heroicons-document-plus",
-    to: "/admin/create",
+    to: "/resolution/create",
   },
   {
     name: "Beschlüsse zum Freigeben",
