@@ -1,6 +1,6 @@
 <template>
     <div class="text-black bg-slate-800 w-5/6 mx-auto">
-        <UForm :state="formState" :validate="validateForm" @submit="submitForm">
+        <UForm :state="formState" :validate="validateForm" @submit="submitForm(ResolutionState.Staged)">
             <div class="flex flex-col content-center p-4 gap-y-3">
 
                 <UFormGroup label="Titel" class="row-span-2 self-center w-full" name="title">
@@ -57,7 +57,7 @@
                 </UFormGroup>
 
                 <UAlert icon="i-heroicons-exclamation-circle" variant="solid" title="Fehler beim Einsenden"
-                    :description="postError" class="mt-5 bg-jusorot-600" v-if="postError" />
+                    :description="postError" class="my-5 bg-orange" v-if="postError" />
                 <UButtonGroup class="flex justify-center">
                     <UButton type="submit" size="xl" icon="i-heroicons-document-arrow-up" v-on:mouseover="startCountdown"
                         v-on:mouseleave="stopCountdown" :disabled="!confirmButtonActive" class="w-2/3">
@@ -92,7 +92,7 @@
 
 <script setup lang="ts">
 import type { FormError } from '@nuxt/ui/dist/runtime/types';
-import { type INewResolution, type ICategory, type IResolutionCreatedResponse } from '~/types/Interfaces';
+import { type INewResolution, type ICategory, type IResolutionCreatedResponse, ResolutionState } from '~/types/Interfaces';
 
 definePageMeta({
     middleware: "authentication"
@@ -101,6 +101,14 @@ definePageMeta({
 const config = useRuntimeConfig();
 const toast = useToast();
 const router = useRouter();
+const route = useRoute();
+const { status: authStatus,
+    data: authData,
+    lastRefreshedAt,
+    getSession,
+    signIn,
+    token,
+} = useAuth();
 
 
 const API_ENDPOINT = config.public.apiEndpoint;
@@ -186,12 +194,12 @@ const submitOptionsItems = [
     [{
         label: "Direkt veröffentlichen",
         icon: "i-heroicons-document-arrow-up",
-        onClick: () => submitForm(),
+        click: () => submitForm(ResolutionState.Live),
     },
     {
         label: "Beschluss als Entwurf speichern",
         icon: "i-heroicons-document-duplicate",
-        onClick: () => console.log("save"),
+        click: () => submitForm(ResolutionState.Draft),
     },]
 ];
 
@@ -245,18 +253,37 @@ const validateForm = (formState: INewResolution): FormError[] => {
     return errors;
 }
 
-async function submitForm() {
-    console.log("submitting form");
+async function submitForm(state: ResolutionState = ResolutionState.Staged) {
+    validateForm(formState.value);
+    // Ensure JWT is valid
+    const session = await getSession({ required: true });
+    if (!session) {
+        toast.add({
+            title: "Fehler beim Speichern",
+            description: "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.",
+            icon: "i-heroicons-exclamation-triangle",
+            actions: [
+                {
+                    label: "Anmelden",
+                    click: () => router.push(`/admin/login?redirect=${route.fullPath}`),
+                }],
+        });
+        return;
+    }
     showLoadingModal.value = true;
+    console.log(`Session Token: ${session.token}\nToken: ${token.value}`);
     // wait at least 1s
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("sending request");
     const { data, error } = await useLazyFetch<IResolutionCreatedResponse>("/resolution", {
         baseURL: API_ENDPOINT,
         method: "POST",
+        headers: {
+            "Authorization": token.value || "no token found",
+        },
         body: JSON.stringify({
             resolution: {
                 created: Date.now(),
+                state: state,
                 body: {
                     title: formState.value.body.title,
                     tag: formState.value.body.tag,

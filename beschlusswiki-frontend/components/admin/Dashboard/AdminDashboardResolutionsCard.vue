@@ -12,7 +12,7 @@
     <span v-if="!pending && data?.length == 0">No data</span>
     <ul>
       <li v-for="item in data" :key="item._id.toString()" v-if="data && !error && !pending" class="mb-2">
-        <UBadge size="xs" :color="resolutionStateColors[item.state]" class="mr-2">{{ capitalizeFirstLetter(item.state) }}
+        <UBadge size="xs" :color="resolutionStateColors[item.state] || 'fuchsia'" class="mr-2">{{ item.state || 'null' }}
         </UBadge>
         <NuxtLink :to="`/resolution/${item._id}`">
           {{ item.rcode }} - {{ item.body.title }}
@@ -49,6 +49,8 @@ const resolutionStateColors: Record<ResolutionState, string> = {
   [ResolutionState.Staged]: "yellow",
   [ResolutionState.Rejected]: "amber",
   [ResolutionState.Archived]: "grey",
+  [ResolutionState.Draft]: "blue",
+  // default: "grey",
 };
 
 const { data, pending, error, refresh } = await useFetch<IResolution[]>('/resolution', {
@@ -59,6 +61,7 @@ const { data, pending, error, refresh } = await useFetch<IResolution[]>('/resolu
 })
 
 function capitalizeFirstLetter(string: string) {
+  if (!string || !string[0]) return "null";
   return string[0].toUpperCase() + string.slice(1);
 }
 

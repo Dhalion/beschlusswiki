@@ -50,6 +50,12 @@ export type SessionData = {
 	expires: Date;
 };
 
+export type JWTSesssionData = {
+	exp: number;
+	iat: number;
+	user: IUser;
+};
+
 // A resolution can be in one of three states
 // Staged: The resolution has been created but not yet approved
 // Live: The resolution has been approved and is live
@@ -60,6 +66,7 @@ export enum ResolutionState {
 	Live = "live",
 	Archived = "archived",
 	Rejected = "rejected",
+	Draft = "draft",
 }
 
 export enum SearchEngine {
@@ -85,6 +92,7 @@ export const resolutionStateToPatchAction: Record<
 	[ResolutionState.Live]: PatchActions.SET_STATE_LIVE,
 	[ResolutionState.Archived]: PatchActions.ARCHIVE,
 	[ResolutionState.Rejected]: PatchActions.REJECT,
+	[ResolutionState.Draft]: PatchActions.SET_STATE_STAGED,
 };
 
 export enum ElasticStatus {
