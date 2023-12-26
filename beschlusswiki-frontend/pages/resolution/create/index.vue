@@ -1,6 +1,6 @@
 <template>
     <div class="text-black bg-slate-800 w-5/6 mx-auto">
-        <UForm :state="formState" :validate="validateForm" @submit="submitForm(ResolutionState.Staged)">
+        <UForm ref="form" :state="formState" :validate="validateForm" @submit="submitForm(ResolutionState.Staged)">
             <div class="flex flex-col content-center p-4 gap-y-3">
 
                 <UFormGroup label="Titel" class="row-span-2 self-center w-full" name="title">
@@ -59,8 +59,8 @@
                 <UAlert icon="i-heroicons-exclamation-circle" variant="solid" title="Fehler beim Einsenden"
                     :description="postError" class="my-5 bg-orange" v-if="postError" />
                 <UButtonGroup class="flex justify-center">
-                    <UButton type="submit" size="xl" icon="i-heroicons-document-arrow-up" v-on:mouseover="startCountdown"
-                        v-on:mouseleave="stopCountdown" :disabled="!confirmButtonActive" class="w-2/3">
+                    <UButton size="xl" type="submit" icon="i-heroicons-document-arrow-up" v-on:mouseover="startCountdown"
+                        v-on:mouseleave="stopCountdown" :disabled="!confirmButtonActive" class="w-2/3" @click="">
                         {{ confirmButtonText || CONFIRM_BUTTON_TEXT }}
                     </UButton>
                     <UDropdown :items="submitOptionsItems" :popper="{ placement: 'bottom-start' }">
@@ -102,6 +102,7 @@ const config = useRuntimeConfig();
 const toast = useToast();
 const router = useRouter();
 const route = useRoute();
+
 const { status: authStatus,
     data: authData,
     lastRefreshedAt,
@@ -122,8 +123,25 @@ const confirmButtonText = ref();
 const showLoadingModal = ref(false);
 const postError: Ref<String | undefined> = ref();
 
+const form = ref();
+const formState: Ref<INewResolution> = ref({
+    rid: "",
+    rcode: "",
+    created: new Date(),
+    state: "",
+    body: {
+        title: "Testtitel",
+        tag: "tag1",
+        applicants: ["Admin"],
+        year: 2023,
+        category: null,
+        text: "Testtext",
+    },
+    applicantsInput: "",
+});
 
 let countdown: any;
+
 
 
 function startCountdown() {
@@ -150,21 +168,7 @@ function stopCountdown() {
     confirmButtonText.value = CONFIRM_BUTTON_TEXT;
 }
 
-const formState: Ref<INewResolution> = ref({
-    rid: "",
-    rcode: "",
-    created: new Date(),
-    state: "",
-    body: {
-        title: "Testtitel",
-        tag: "tag1",
-        applicants: ["Admin"],
-        year: 2023,
-        category: null,
-        text: "Testtext",
-    },
-    applicantsInput: "",
-});
+
 
 const addApplicant = () => {
     if (formState.value.body.applicants.includes(formState.value.applicantsInput.trim()) || formState.value.applicantsInput.trim() == "") {
@@ -254,7 +258,8 @@ const validateForm = (formState: INewResolution): FormError[] => {
 }
 
 async function submitForm(state: ResolutionState = ResolutionState.Staged) {
-    validateForm(formState.value);
+    // Trigger form validation
+    const errors = await form.value.validate();
     // Ensure JWT is valid
     const session = await getSession({ required: true });
     if (!session) {
