@@ -1,6 +1,10 @@
 import {CategorySchema} from "~/types/models/category.schema";
 import {ResolutionSchema} from "~/types/models/resolution.schema";
-import {ResolutionState, SearchEngine} from "~/types/Interfaces";
+import {
+	AdminDashboardResolutionsDisplay,
+	ResolutionState,
+	SearchEngine,
+} from "~/types/Interfaces";
 import mongoose from "mongoose";
 
 export default defineEventHandler(async (event) => {
@@ -12,6 +16,8 @@ export default defineEventHandler(async (event) => {
 		const populateCategory =
 			getQuery(event)?.category == ("true" || 1) ? true : false;
 		const filter = getQuery(event)?.filter as ResolutionState;
+		const dashDisplay = getQuery(event)
+			.dashDisplay as AdminDashboardResolutionsDisplay;
 
 		const searchEngine =
 			getQuery(event)?.engine == "elastic"
@@ -102,6 +108,31 @@ export default defineEventHandler(async (event) => {
 
 			if (populateCategory) {
 				query.populate("body.category");
+			}
+
+			const result = await query.exec();
+
+			if (result) {
+				return result;
+			} else {
+				throw createError({statusCode: 404, message: "Resolution not found"});
+			}
+		}
+
+		if (dashDisplay) {
+			const query = ResolutionSchema.find({});
+
+			if (dashDisplay == AdminDashboardResolutionsDisplay.STAGED) {
+				query.where("state").equals(ResolutionState.Staged);
+			} else if (dashDisplay == AdminDashboardResolutionsDisplay.NEW) {
+				// Get the most recent 10 resolutions
+				query.sort({created: -1}).limit(10);
+			} else if (dashDisplay == AdminDashboardResolutionsDisplay.MY) {
+				// Not yet implemented
+				return createError({
+					statusCode: 501,
+					message: "Not yet implemented",
+				});
 			}
 
 			const result = await query.exec();

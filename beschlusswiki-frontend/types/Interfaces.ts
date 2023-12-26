@@ -1,5 +1,6 @@
 import {omit} from "@nuxt/ui/dist/runtime/utils";
 import type {IUser} from "./models/user.schema";
+import type {ICategory} from "./models/category.schema";
 
 //* Full Resolution Interface
 export interface INewResolution {
@@ -38,13 +39,6 @@ export interface IResolution {
 }
 
 export type IResolutionToSend = Omit<IResolution, "hash" | "user">;
-
-export interface ICategory {
-	_id: String;
-	name: String;
-	tag: String;
-	resolutions: Array<String>;
-}
 
 export interface ICategoriesResponse {
 	categories: Array<ICategory>;
@@ -130,3 +124,10 @@ export enum AdminDashboardResolutionsDisplay {
 	NEW = "new",
 	MY = "my",
 }
+
+export interface IResolutionCreatedResponse {
+	success: boolean;
+	id: string;
+}
+
+export type {ICategory};

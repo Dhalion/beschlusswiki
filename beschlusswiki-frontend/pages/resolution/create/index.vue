@@ -16,9 +16,17 @@
                     </UFormGroup>
                 </div>
 
-                <UFormGroup label="Kategorien" name="categories">
-                    <!-- <ResolutionCreateBadgeSelector v-model:selected="formState.body.category"
-                        :options="FETCHED_CATEGORIES" class="mt-2" /> -->
+                <UFormGroup label="Kategorien" name="categories" class="min-w-min md:w-1/2 lg:w-1/3">
+                    <USelectMenu v-model="formState.body.category" :options="categories">
+                        <template #label>
+                            {{ resolutionCategoryString }}
+                        </template>
+
+                        <template #option="{ option }">
+                            {{ option.tag }} - {{ option.name }}
+                        </template>
+                    </USelectMenu>
+
                 </UFormGroup>
 
                 <UFormGroup label="Antragsteller*innen" name="applicants">
@@ -50,10 +58,15 @@
 
                 <UAlert icon="i-heroicons-exclamation-circle" variant="solid" title="Fehler beim Einsenden"
                     :description="postError" class="mt-5 bg-jusorot-600" v-if="postError" />
-                <UButton type="submit" size="xl" block icon="i-heroicons-document-arrow-up" v-on:mouseover="startCountdown"
-                    v-on:mouseleave="stopCountdown" :disabled="!confirmButtonActive">
-                    {{ confirmButtonText || CONFIRM_BUTTON_TEXT }}
-                </UButton>
+                <UButtonGroup class="flex justify-center">
+                    <UButton type="submit" size="xl" icon="i-heroicons-document-arrow-up" v-on:mouseover="startCountdown"
+                        v-on:mouseleave="stopCountdown" :disabled="!confirmButtonActive" class="w-2/3">
+                        {{ confirmButtonText || CONFIRM_BUTTON_TEXT }}
+                    </UButton>
+                    <UDropdown :items="submitOptionsItems" :popper="{ placement: 'bottom-start' }">
+                        <UButton icon="i-heroicons-chevron-down" class="" />
+                    </UDropdown>
+                </UButtonGroup>
             </div>
         </UForm>
 
@@ -79,7 +92,7 @@
 
 <script setup lang="ts">
 import type { FormError } from '@nuxt/ui/dist/runtime/types';
-import { type INewResolution } from '~/types/Interfaces';
+import { type INewResolution, type ICategory, type IResolutionCreatedResponse } from '~/types/Interfaces';
 
 definePageMeta({
     middleware: "authentication"
@@ -87,6 +100,8 @@ definePageMeta({
 
 const config = useRuntimeConfig();
 const toast = useToast();
+const router = useRouter();
+
 
 const API_ENDPOINT = config.public.apiEndpoint;
 const FETCHED_CATEGORIES = ["kategorie1", "kategorie2", "kategorie3"];
@@ -151,9 +166,34 @@ const addApplicant = () => {
     applicantInput.value = "";
 };
 
+// Fetch categories
+const { data: categories } = await useLazyFetch<ICategory[]>("/category", {
+    baseURL: config.public.apiEndpoint,
+    method: "GET",
+});
+
+
+const resolutionCategoryString = computed(() => {
+    if (formState.value?.body?.tag && formState.value?.body.category?.name) return formState.value.body.category?.tag + " - " + formState.value.body.category?.name;
+    return "Nicht zugewiesen";
+});
+
 const removeApplicant = (applicant: String) => {
     formState.value.body.applicants = formState.value.body.applicants.filter((a) => a !== applicant);
 };
+
+const submitOptionsItems = [
+    [{
+        label: "Direkt veröffentlichen",
+        icon: "i-heroicons-document-arrow-up",
+        onClick: () => submitForm(),
+    },
+    {
+        label: "Beschluss als Entwurf speichern",
+        icon: "i-heroicons-document-duplicate",
+        onClick: () => console.log("save"),
+    },]
+];
 
 const validateForm = (formState: INewResolution): FormError[] => {
     const errors = [];
@@ -170,6 +210,14 @@ const validateForm = (formState: INewResolution): FormError[] => {
             message: "Tag darf nicht leer sein",
         });
     }
+    const tagLetters = formState.body?.tag?.match(/^[a-zA-Z]+/g)?.[0];
+    if (formState.body.category?.tag != tagLetters) {
+        errors.push({
+            path: "tag",
+            message: "Tag muss mit der Kategorie übereinstimmen",
+        });
+    }
+
     if (!formState.body?.year) {
         errors.push({
             path: "year",
@@ -179,7 +227,7 @@ const validateForm = (formState: INewResolution): FormError[] => {
     if (!formState.body?.category) {
         errors.push({
             path: "categories",
-            message: "Kategorien dürfen nicht leer sein",
+            message: "Kategorie darf nicht leer sein",
         });
     }
     if (!formState.body?.applicants) {
@@ -202,7 +250,8 @@ async function submitForm() {
     showLoadingModal.value = true;
     // wait at least 1s
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    const { data, error } = await useLazyFetch("/resolution", {
+    console.log("sending request");
+    const { data, error } = await useLazyFetch<IResolutionCreatedResponse>("/resolution", {
         baseURL: API_ENDPOINT,
         method: "POST",
         body: JSON.stringify({
@@ -245,6 +294,16 @@ async function submitForm() {
             timeout: 8000,
         });
         return;
+    }
+    if (data.value && data.value.success) {
+        toast.add({
+            title: "Beschluss erfolgreich erstellt",
+            description: "Der Beschluss wurde erfolgreich erstellt.",
+            icon: "i-heroicons-check-circle",
+            timeout: 8000,
+        });
+        showLoadingModal.value = false;
+        router.push(`/resolution/${data.value.id}`);
     }
 }
 
