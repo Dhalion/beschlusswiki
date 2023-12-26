@@ -25,7 +25,7 @@
           <!-- Dropdown to select staged/live -->
           <UDropdown :items="stateOptions(row._id.toString(), row.state)" :popper="{ placement: 'bottom-start' }">
             <UButton color="white" variant="solid" :label="capitalize(row.state)"
-              trailing-icon="i-heroicons-chevron-down-20-solid" size="xs">
+              trailing-icon="i-heroicons-chevron-down-20-solid" size="xs" :disabled="isContributor">
             </UButton>
             <template #actions-item="{ item }">
               <UButton color="white" variant="solid" :label="capitalize(item.label)" :icon="item.icon" size="xs"
@@ -41,11 +41,11 @@
               <UIcon name="i-heroicons-eye" />
             </NuxtLink>
 
-            <NuxtLink :to="`/edit?id=${row._id}`">
+            <NuxtLink :to="`/edit?id=${row._id}`" v-if="isAdmin || isEditor">
               <UIcon name=" i-heroicons-pencil" />
             </NuxtLink>
 
-            <NuxtLink class="hover:cursor-pointer">
+            <NuxtLink class="hover:cursor-pointer" v-if="isAdmin || isEditor">
               <UPopover v-model="confirmationPopup">
                 <UIcon name="i-heroicons-trash" />
                 <template #panel="{ close }">
@@ -113,6 +113,20 @@ if (!session) {
   });
 }
 
+const isAdmin = computed(() => {
+  if (!session) return false;
+  return session.user.roles.includes("admin");
+});
+
+const isEditor = computed(() => {
+  if (!session) return false;
+  return session.user.roles.includes("editor");
+});
+
+const isContributor = computed(() => {
+  if (!session) return false;
+  return session.user.roles.includes("contributor");
+});
 
 const rows = computed(() => {
   if (!data.value) return [];
