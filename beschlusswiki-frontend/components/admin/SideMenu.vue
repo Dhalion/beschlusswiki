@@ -1,6 +1,6 @@
 <template>
   <div>
-    <UIcon name="i-heroicons-bars-3" class="font-extrabold text-4xl my-auto ml-4 hover:cursor-pointer"
+    <UIcon name="i-heroicons-bars-3" class="font-extrabold text-4xl my-auto ml-4 hover:cursor-pointer text-white"
       @click="isOpen = true" />
     <USlideover v-model="isOpen" title="Side Menu" :overlay="false" side="left">
       <!--* USER INFORMATION  -->

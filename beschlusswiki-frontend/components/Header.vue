@@ -15,7 +15,7 @@
     </div>
     <ClientOnly>
       <UIcon :name="isDark ? 'i-heroicons-moon' : 'i-heroicons-sun'" color="gray" variant="ghost" aria-label="Theme"
-        @click="isDark = !isDark" class="text-2xl self-center m-3 hover:cursor-pointer" />
+        @click="isDark = !isDark" class="text-2xl self-center m-3 hover:cursor-pointer text-white" />
     </ClientOnly>
   </nav>
 </template>
