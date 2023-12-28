@@ -3,7 +3,7 @@
     <h2 class="text-3xl text-slate-600 py-3">Alle Beschlüsse</h2>
     <div class="bg-slate-800 px-5">
       <UTable :rows="rows" :columns="columns" :empty-state="emptyState" :loading="pending"
-        :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }">
+        :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" v-model:sort="sort">
 
         <!--* Resolution Category Column  -->
         <template #category-data="{ row }: { row: IResolution }">
@@ -84,7 +84,6 @@ import { ResolutionState, resolutionStateToPatchAction } from '~/types/Interface
 import type { ICategory } from '~/types/models/category.schema';
 import type { IResolution } from '~/types/models/resolution.schema';
 
-
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
 const toast = useToast();
@@ -128,13 +127,58 @@ const isContributor = computed(() => {
   return session.user.roles.includes("contributor");
 });
 
+const sort = ref({
+  column: "rcode",
+  direction: "asc",
+});
+
 const rows = computed(() => {
   if (!data.value) return [];
-  return data.value.slice(
-    (page.value - 1) * pageCount.value,
-    page.value * pageCount.value,
-  );
+
+  // Kopiere die Daten, um die Originaldaten nicht zu beeinträchtigen
+  let sortedData = [...data.value];
+  // Sortiere die Daten gemäß der aktuellen Sortierung
+  sortedData.sort((a: Record<string, any>, b: Record<string, any>) => {
+    const { column, direction } = sort.value;
+
+    if (typeof a[column] === 'string' && typeof b[column] === 'string') {
+      // Sortiere String-Felder
+      if (direction === 'asc') {
+        return a[column].localeCompare(b[column]);
+      } else {
+        return b[column].localeCompare(a[column]);
+      }
+    } else if (column === 'category' && a.body.category && b.body.category) {
+      // Sortiere 'body.category' nach dem body.category.tag feld
+      if (direction === 'asc') {
+        return a.body.category.tag.localeCompare(b.body.category.tag);
+      } else {
+        return b.body.category.tag.localeCompare(a.body.category.tag);
+      }
+    } else if (column === "createdBy") {
+      // Sortiere nach autor id
+      if (!a.createdBy || !b.createdBy) return 0;
+      if (direction === 'asc') {
+        return a.createdBy.localeCompare(b.createdBy);
+      } else {
+        return b.createdBy.localeCompare(a.createdBy);
+      }
+    }
+    else {
+      // Andere Fälle (z.B. Zahlen, Datum), keine Sortierung
+      return 0;
+    }
+  });
+
+  // Paginiere die sortierten Daten
+  const startIndex = (page.value - 1) * pageCount.value;
+  const endIndex = page.value * pageCount.value;
+  return sortedData.slice(startIndex, endIndex);
 });
+
+
+
+
 
 const columns = [
   { key: "rcode", label: "rcode", sortable: true },
