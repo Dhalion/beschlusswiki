@@ -1,7 +1,7 @@
 import {omit} from "@nuxt/ui/dist/runtime/utils";
 import type {IUser} from "./models/user.schema";
 import type {ICategory} from "./models/category.schema";
-
+import {ConnectionStates} from "mongoose";
 //* Full Resolution Interface
 export interface INewResolution {
 	rid: String;
@@ -103,26 +103,9 @@ export enum ElasticStatus {
 	UNKNOWN = "unknown",
 }
 
-/**
- * Connection ready state
- *
- * - 0 = disconnected
- * - 1 = connected
- * - 2 = connecting
- * - 3 = disconnecting
- * - 99 = uninitialized
- **/
-export enum MongoStatus {
-	DISCONNECTED = 0,
-	CONNECTED = 1,
-	CONNECTING = 2,
-	DISCONNECTING = 3,
-	UNINITIALIZED = 99,
-}
-
 export type ApiStatusData = {
-	db: MongoStatus;
-	es: ElasticStatus;
+	db: ConnectionStates;
+	es: ElasticStatusResponse | null;
 	api: 1;
 };
 
@@ -136,6 +119,47 @@ export enum AdminDashboardResolutionsDisplay {
 export interface IResolutionCreatedResponse {
 	success: boolean;
 	id: string;
+}
+
+export interface ElasticStatusResponse {
+	cluster_name: string;
+	status: string;
+	timed_out: boolean;
+	number_of_nodes: number;
+	number_of_data_nodes: number;
+	active_primary_shards: number;
+	active_shards: number;
+	relocating_shards: number;
+	initializing_shards: number;
+	unassigned_shards: number;
+	delayed_unassigned_shards: number;
+	number_of_pending_tasks: number;
+	number_of_in_flight_fetch: number;
+	task_max_waiting_in_queue_millis: number;
+	active_shards_percent_as_number: number;
+}
+
+export interface ElasticApiKeyResponse {
+	id: string;
+	name: string;
+	api_key: string;
+	encoded: string;
+}
+
+export type ElasticIndexInfo = {
+	count: number;
+	_shards: {
+		total: number;
+		successful: number;
+		skipped: number;
+		failed: number;
+	};
+};
+
+export interface ElasticIndexInfoResponse {
+	statusCode: number;
+	message: string;
+	data: ElasticIndexInfo;
 }
 
 export type {ICategory};

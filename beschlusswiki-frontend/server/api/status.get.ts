@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
-import {ElasticStatus} from "~/types/Interfaces";
+import {
+	type ApiStatusData,
+	type ElasticStatusResponse,
+} from "~/types/Interfaces";
 
 /**
  * Connection ready state
@@ -10,10 +13,10 @@ import {ElasticStatus} from "~/types/Interfaces";
  * - 3 = disconnecting
  * - 99 = uninitialized
  */
-export default defineEventHandler(() => {
+export default defineEventHandler(async (): Promise<ApiStatusData> => {
 	return {
 		db: mongoose.connection.readyState,
-		es: ElasticStatus.UNKNOWN,
+		es: null,
 		api: 1,
 	};
 });

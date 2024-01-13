@@ -13,10 +13,9 @@
         Jusos Beschlusswiki
       </NuxtLink>
     </div>
-    <ClientOnly>
-      <UIcon :name="isDark ? 'i-heroicons-moon' : 'i-heroicons-sun'" color="gray" variant="ghost" aria-label="Theme"
-        @click="isDark = !isDark" class="text-2xl self-center m-3 hover:cursor-pointer text-white" />
-    </ClientOnly>
+
+    <UIcon :name="isDark ? 'i-heroicons-moon' : 'i-heroicons-sun'" color="gray" variant="ghost" aria-label="Theme"
+      @click="isDark = !isDark" class="text-2xl self-center m-3 hover:cursor-pointer text-white" />
   </nav>
 </template>
 
@@ -41,11 +40,6 @@ const handleLogoClick = () => {
   useEvent("logoClicked");
 }
 
-const props = defineProps({
-  admin: {
-    type: Boolean,
-    required: false,
-  }
-})
+
 
 </script>

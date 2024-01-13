@@ -15,12 +15,13 @@
 
 <script setup lang="ts">
 
+
 const config = useRuntimeConfig();
 const toast = useToast();
 
 const props = defineProps({
   resolution: {
-    type: Object,
+    type: Object as PropType<IReducedResolution>,
     required: true,
   },
 });
@@ -35,23 +36,23 @@ interface IReducedResolution {
 }
 
 
-const { data: resolution, pending, error, refresh } = useLazyFetch("/resolution", {
-  baseURL: config.public.apiEndpoint,
-  params: {
-    id: props.resolution._id,
-  },
-  transform: (data) => data as IReducedResolution,
+// const { data: resolution, pending, error, refresh } = useLazyFetch("/resolution", {
+//   baseURL: config.public.apiEndpoint,
+//   params: {
+//     id: props.resolution._id,
+//   },
+//   transform: (data) => data as IReducedResolution,
 
-  onResponseError: (err) => {
-    if (err.response?.status == 503) return;
-    toast.add({
-      title: "Fehler",
-      description: err.error?.message || "Unknown",
-      icon: "i-heroicons-x-circle",
-      timeout: 5000,
-    });
-  },
-});
+//   onResponseError: (err) => {
+//     if (err.response?.status == 503) return;
+//     toast.add({
+//       title: "Fehler",
+//       description: err.error?.message || "Unknown",
+//       icon: "i-heroicons-x-circle",
+//       timeout: 5000,
+//     });
+//   },
+// });
 
 const resolutionUrl = computed(() => `/resolution/${props.resolution._id}`);
 </script>

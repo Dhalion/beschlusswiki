@@ -13,11 +13,15 @@ export default defineNuxtConfig({
 	modules: ["@nuxt/ui", "@sidebase/nuxt-auth", "nuxt-mongoose"],
 
 	runtimeConfig: {
-		serverSecret: process.env.SERVER_SECRET,
-		elasticURI: process.env.ELASTIC_URI,
+		// Secret for server-side
+		serverSecret: process.env.NUXT_SEVER_SECRET,
+		elasticManageKey: process.env.NUXT_ELASTIC_MANAGE_API_KEY,
 		public: {
+			// Public for client-side
 			// omit PUBLIC due to NUXT .env syntax
-			apiEndpoint: process.env.API_ENDPOINT,
+			elasticUrl: process.env.NUXT_PUBLIC_ELASTIC_URL,
+			elasticIndex: process.env.NUXT_PUBLIC_ELASTIC_INDEX,
+			apiEndpoint: process.env.NUXT_PUBLIC_API_ENDPOINT,
 			version: version,
 		},
 	},

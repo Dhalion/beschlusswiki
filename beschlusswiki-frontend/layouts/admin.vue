@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white min-h-screen flex flex-col">
-    <Header admin="true" />
+    <Header />
     <div class="flex-grow snap-y">
       <slot />
 

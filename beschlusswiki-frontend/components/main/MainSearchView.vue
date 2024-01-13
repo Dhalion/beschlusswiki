@@ -14,7 +14,7 @@
           {{ searchResults.length }}
           {{ searchResults.length === 1 ? "Beschluss" : "Beschlüsse" }} gefunden
           <span class="text-xs align-baseline">
-            (Engine: {{ searchEngine.toUpperCase() }})
+            (Engine: {{ resultsFrom }})
           </span>
           <!-- state: {{ elastic.elasticStatus.value.state }} -->
           <!-- last check: {{ new Date(elastic.elasticStatus.value.lastCheck).toLocaleTimeString() }} -->
@@ -31,7 +31,7 @@
     <div v-if="error" class="flex justify-center p-20 mx-auto text-slate-600">
       <span>
         Fehler bei der Suche. Bitte versuche es später erneut.
-        {{ search.error }}
+        {{ error }}
       </span>
     </div>
   </div>
@@ -40,57 +40,24 @@
 
 <script setup lang="ts">
 import debounce from "lodash.debounce";
-import { ElasticStatus, SearchEngine } from "~/types/Interfaces";
-
+import { SearchEngine } from "~/types/Interfaces";
 
 const config = useRuntimeConfig();
-const API_ENDPOINT = config.public.apiEndpoint;
-const search = useSearch();
 const toast = useToast();
 
 const props = defineProps(["modelValue"]);
-const elastic = useElastic();
-
-onMounted(async () => {
-  await elastic.checkElasticStatus();
-});
 
 
-const searchEngine = computed(() => {
-  if (elastic.elasticStatus.value.state === ElasticStatus.AVAILABLE) {
-    return SearchEngine.ELASTICSEARCH;
-  } else {
-    return SearchEngine.MONGO;
-  }
-});
 
-
-const queryParams = reactive({
-  query: props.modelValue,
-  engine: searchEngine
-});
-
-
-const { data: searchResults, status, error, refresh } = await useFetch("/api/resolution", {
-  baseURL: API_ENDPOINT,
-  query: queryParams,
-  key: Date.now().toLocaleString(),
-  onResponseError(err) {
-    toast.add({
-      title: "Fehler bei der Suche",
-      description: err?.error?.message || "Unbekannter Fehler",
-      icon: "i-heroicons-error"
-    });
-  },
-});
-
+const { results: searchResults, pending, error, search, resultsFrom } =
+  await useSearch(props.modelValue, { engine: SearchEngine.ELASTICSEARCH });
 
 
 watch(
   () => props.modelValue,
-  debounce((value) => {
-    queryParams.query = value;
-    refresh();
+  debounce(async (value) => {
+    // console.log("debounced search", value);
+    await search(value);
   }, 250)
 );
 

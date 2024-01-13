@@ -100,6 +100,12 @@ const menuItems = [
     to: "/admin/dashboard"
   },
   {
+    name: "Elasticsearch",
+    icon: "i-heroicons-magnifying-glass-circle",
+    to: "/admin/elasticsearch",
+    role: [UserRoles.Admin]
+  },
+  {
     name: "Einstellungen",
     icon: "i-heroicons-cog",
     to: "/admin/dashboard"

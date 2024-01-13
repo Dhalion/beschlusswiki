@@ -31,7 +31,8 @@
 </template>
 
 <script setup lang="ts">
-import { type ApiStatusData, MongoStatus, ElasticStatus } from "~/types/Interfaces";
+import { type ApiStatusData, ElasticStatus } from "~/types/Interfaces";
+import { ConnectionStates } from "mongoose";
 
 const config = useRuntimeConfig();
 
@@ -71,25 +72,24 @@ const apiStatus = computed(() => {
 });
 
 const dbStatus = computed(() => {
-    if (!data.value) {
+    if (!data.value || !data.value?.db) {
         return {
             color: "gray",
             text: "unknown"
         };
     }
     switch (data.value.db) {
-        case MongoStatus.CONNECTED:
+        case ConnectionStates.connected:
             return {
                 color: "green",
                 text: "connected"
             };
-        case MongoStatus.CONNECTING:
+        case ConnectionStates.connecting:
             return {
                 color: "yellow",
                 text: "connecting"
             };
-
-        case MongoStatus.DISCONNECTED:
+        case ConnectionStates.disconnecting:
             return {
                 color: "red",
                 text: "disconnected"
@@ -109,7 +109,7 @@ const esStatus = computed(() => {
             text: "unknown"
         };
     }
-    switch (data.value.es) {
+    switch (data.value.es?.status) {
         case ElasticStatus.AVAILABLE:
             return {
                 color: "green",
