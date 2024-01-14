@@ -1,7 +1,7 @@
 {
   "name": "nuxt-beschlusswiki",
   "private": true,
-  "version": "0.2.9-3907",
+  "version": "0.2.9-3908",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -32,6 +32,7 @@
     "lodash.debounce": "^4.0.8",
     "markdown-it": "^14.0.0",
     "mitt": "^3.0.1",
-    "nuxt-mongoose": "^1.0.3"
+    "nuxt-mongoose": "^1.0.3",
+    "@nuxtjs/web-vitals": "latest"
   }
 }

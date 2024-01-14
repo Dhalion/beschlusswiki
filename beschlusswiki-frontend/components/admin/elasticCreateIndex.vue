@@ -9,8 +9,7 @@
                 Erstellen
             </UButton>
             <UAlert v-if="req.error.value" title="Fehler" color="red" variant="solid"
-                icon="i-heroicons-exclamation-triangle" class="mt-2"
-                :description="req.error.value.statusCode + req.error?.value?.message || 'N/A'" />
+                icon="i-heroicons-exclamation-triangle" class="mt-2" :description="errorDescription" />
         </template>
 
     </UAlert>
@@ -19,7 +18,6 @@
 <script setup lang="ts">
 const config = useRuntimeConfig();
 const indexName = ref(config.public.elasticIndex);
-
 
 const req = await useFetch("/api/elastic/createIndex", {
     method: "POST",
@@ -32,6 +30,12 @@ const req = await useFetch("/api/elastic/createIndex", {
     },
 });
 
+const errorDescription = computed(() => {
+    if (req.error.value) {
+        return req.error.value.statusCode + req.error?.value?.message || "N/A";
+    }
+    return "none";
+});
 
 
 </script>
