@@ -15,7 +15,7 @@
 
     <!--* Status Helpers -->
     <SharedLoadingSpinner v-if="pending" text="Lade Kategorie" />
-    <UAlert v-if="error" title="Kategorie konnte nicht geladen werden!" :description="error" color="primary"
+    <UAlert v-if="error" title="Kategorie konnte nicht geladen werden!" :description="error.message" color="primary"
       icon="i-heroicons-exclamation-circle" variant="solid" />
 
     <!--* Content  -->

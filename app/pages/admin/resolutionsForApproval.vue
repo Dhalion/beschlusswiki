@@ -32,7 +32,7 @@
             to="/resolution/create" />
         </div>
         <div class="flex justify-center">
-          <UPagination v-model="page" :page-count="pageCount" :total="data?.length" />
+          <UPagination v-model="page" :page-count="pageCount" :total="data?.length ?? 0" />
         </div>
         <div class="flex justify-end p-3">
           <span class="text-gray-400 pr-3 text-sm pt-1">Einträge pro Seite:</span>
@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { PatchActions } from '~/types/Interfaces';
+import { PatchActions, type SortObject } from '~/types/Interfaces';
 import type { IResolution } from '~/types/models/resolution.schema';
 import { ResolutionState } from '~/types/Interfaces';
 
@@ -57,7 +57,7 @@ const resolutionHandler = useResolutionHandler();
 const page = ref(1);
 const pageCount = ref(10);
 
-const sort = ref({
+const sort = ref<SortObject>({
   column: "rcode",
   direction: "asc",
 });

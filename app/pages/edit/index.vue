@@ -42,7 +42,7 @@
             name="applicantInput" /> -->
           <UButton icon="i-heroicons-plus" size="xs" @click="addApplicant">Hinzufügen</UButton>
         </div>
-        <UBadge v-for=" applicant  in  resolution.body.applicants " :key="applicant" size="sm" class="mr-2 mt-2">
+        <UBadge v-for="applicant in resolution.body.applicants" :key="applicant" size="sm" class="mr-2 mt-2">
           <span class="pr-1 text-xs">
             {{ applicant }}
           </span>
@@ -69,8 +69,8 @@
         </div>
       </UFormGroup>
 
-      <UAlert icon="i-heroicons-exclamation-circle" variant="solid" title="Fehler beim Einsenden" :description="postError"
-        class="mt-5 bg-jusorot-600" v-if="postError" />
+      <UAlert icon="i-heroicons-exclamation-circle" variant="solid" title="Fehler beim Einsenden"
+        :description="postError?.message" class="mt-5 bg-jusorot-600" v-if="postError" />
 
     </div>
   </UForm>
@@ -107,6 +107,7 @@ const { status: authStatus,
   lastRefreshedAt,
   getSession,
   signIn,
+  token
 } = useAuth();
 
 const config = useRuntimeConfig();
@@ -114,6 +115,7 @@ const route = useRoute();
 const router = useRouter();
 const overrideCheck = ref(true);
 const toast = useToast();
+
 
 
 // Fetch resolution
@@ -128,9 +130,19 @@ const { data: resolution, error, pending, refresh } = await useLazyFetch<IResolu
 });
 
 // Fetch categories
-const { data: categories } = await useLazyFetch<ICategory[]>("/category", {
+const { data: fetchedCategories } = await useLazyFetch<ICategory[]>("/category", {
   baseURL: config.public.apiEndpoint,
   method: "GET",
+});
+
+const categories = computed(() => {
+  if (!fetchedCategories) return [];
+  return fetchedCategories.value?.map((category) => {
+    return {
+      tag: category.tag,
+      name: category.name,
+    };
+  });
 });
 
 const validate = (resolution: IResolution): FormError[] => {
@@ -149,45 +161,9 @@ async function submit() {
     return;
   }
 
-  // Ensure JWT is valid
-  const session = await getSession({ required: true });
-  if (!session) {
-    toast.add({
-      title: "Fehler beim Speichern",
-      description: "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.",
-      icon: "i-heroicons-exclamation-triangle",
-      actions: [
-        {
-          label: "Anmelden",
-          click: () => router.push(`/admin/login?redirect=${route.fullPath}`),
-        }],
-    });
-    return;
-  }
   const headers = useRequestHeaders(['cookie']) as HeadersInit
+  postRefresh();
 
-  const { data, error } = await useLazyFetch("/resolution", {
-    query: {
-      id: route.query.id,
-      override: overrideCheck.value,
-    },
-    headers: {
-      "Authorization": `Bearer ${session}`,
-    },
-    baseURL: config.public.apiEndpoint,
-    method: "PUT",
-    body: JSON.stringify({ "resolution": resolution.value }),
-    onResponse: (response) => {
-      if (response.response.status == 200) {
-        toast.add({
-          title: "Beschluss gespeichert",
-          description: "Der Beschluss wurde erfolgreich gespeichert.",
-          icon: "i-heroicons-check-circle",
-        });
-        refresh();
-      }
-    },
-  });
   if (error.value) {
     console.error(error);
     toast.add({
@@ -200,11 +176,42 @@ async function submit() {
 }
 
 
+const { data: postData, error: postError, refresh: postRefresh } = await useLazyFetch("/resolution", {
+  immediate: false,
+  query: {
+    id: route.query.id,
+    override: overrideCheck.value,
+  },
+  headers: {
+    "Authorization": `Bearer ${token.value}`,
+  },
+  baseURL: config.public.apiEndpoint,
+  method: "PUT",
+  body: JSON.stringify({ "resolution": resolution.value }),
+  onResponse: (response) => {
+    if (response.response.status == 200) {
+      toast.add({
+        title: "Beschluss gespeichert",
+        description: "Der Beschluss wurde erfolgreich gespeichert.",
+        icon: "i-heroicons-check-circle",
+      });
+      refresh();
+    }
+  },
+});
 
 const resolutionCategoryString = computed(() => {
   if (resolution.value?.body?.tag && resolution.value?.body.category?.name) return resolution.value.body.category?.tag + " - " + resolution.value.body.category?.name;
   return "Nicht zugewiesen";
 });
+
+function addApplicant() {
+  //TODO: Add applicant to resolution
+}
+
+function removeApplicant(applicant: string) {
+  //TODO: Remove applicant from resolution
+}
 
 
 </script>

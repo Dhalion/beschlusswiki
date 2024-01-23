@@ -9,8 +9,8 @@
         </div>
       </template>
       <UAlert v-if="esError" title="Verbindungsfehler" color="amber" variant="solid"
-        icon="i-heroicons-exclamation-triangle" :description="esError?.cause || 'N/A'" />
-      <UTable :rows="esStatusRows" :empty-state="pending" />
+        icon="i-heroicons-exclamation-triangle" :description="esError.message || 'N/A'" />
+      <UTable :rows="esStatusRows" :empty-state="{ icon: 'i-heroicons-circle-stack-20-solid', label: 'No items.' }" />
     </UCard>
 
     <UCard class="w-2/3">

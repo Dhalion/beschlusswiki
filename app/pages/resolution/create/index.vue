@@ -22,7 +22,7 @@
                             {{ resolutionCategoryString }}
                         </template>
 
-                        <template #option="{ option }">
+                        <template #option="{ option }: { option: ICategory }">
                             {{ option.tag }} - {{ option.name }}
                         </template>
                     </USelectMenu>
@@ -31,11 +31,12 @@
 
                 <UFormGroup label="Antragsteller*innen" name="applicants">
                     <div class="flex gap-x-2">
-                        <UInput v-model="formState.applicantsInput" placeholder="Resolution Applicants" class="w-1/4"
-                            name="applicantInput" />
+                        <UInput v-model="formState.applicantsInput.toString" placeholder="Resolution Applicants"
+                            class="w-1/4" name="applicantInput" />
                         <UButton icon="i-heroicons-plus" size="xs" @click="addApplicant">Hinzufügen</UButton>
                     </div>
-                    <UBadge v-for="applicant in formState.body.applicants" :key="applicant" size="sm" class="mr-2 mt-2">
+                    <UBadge v-for="applicant in formState.body.applicants" :key="applicant.toString()" size="sm"
+                        class="mr-2 mt-2">
                         <span class="pr-1 text-xs">
                             {{ applicant }}
                         </span>
@@ -57,7 +58,7 @@
                 </UFormGroup>
 
                 <UAlert icon="i-heroicons-exclamation-circle" variant="solid" title="Fehler beim Einsenden"
-                    :description="postError" class="my-5 bg-orange" v-if="postError" />
+                    :description="postError.toString()" class="my-5 bg-orange" v-if="postError" />
                 <UButtonGroup class="flex justify-center">
                     <UButton size="xl" type="submit" icon="i-heroicons-document-arrow-up" v-on:mouseover="startCountdown"
                         v-on:mouseleave="stopCountdown" :disabled="!confirmButtonActive" class="w-2/3" @click="">
@@ -134,11 +135,13 @@ const formState: Ref<INewResolution> = ref({
         tag: "tag1",
         applicants: ["Admin"],
         year: 2023,
-        category: null,
+        category: undefined,
         text: "Testtext",
     },
     applicantsInput: "",
 });
+
+const selectedCategory = ref(null);
 
 let countdown: any;
 
@@ -179,9 +182,21 @@ const addApplicant = () => {
 };
 
 // Fetch categories
-const { data: categories } = await useLazyFetch<ICategory[]>("/category", {
+const { data: fetchedCategories } = await useLazyFetch<ICategory[]>("/category", {
     baseURL: config.public.apiEndpoint,
     method: "GET",
+});
+
+const categories = computed(() => {
+    if (fetchedCategories.value) {
+        return fetchedCategories.value.map((category) => {
+            return {
+                tag: category.tag,
+                name: category.name,
+            };
+        });
+    }
+    return [];
 });
 
 

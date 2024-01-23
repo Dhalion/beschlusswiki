@@ -1,5 +1,5 @@
 <template>
-    <UAlert>
+    <UAlert title="Index nicht gefunden">
         <template #title>
             <h3 class="text-xl font-bold">Index nicht gefunden</h3>
         </template>

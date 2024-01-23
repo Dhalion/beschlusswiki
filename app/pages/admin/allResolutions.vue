@@ -80,7 +80,7 @@
   
 <script setup lang="ts">
 
-import { ResolutionState, resolutionStateToPatchAction } from '~/types/Interfaces';
+import { ResolutionState, resolutionStateToPatchAction, type SortObject } from '~/types/Interfaces';
 import type { ICategory } from '~/types/models/category.schema';
 import type { IResolution } from '~/types/models/resolution.schema';
 
@@ -127,7 +127,7 @@ const isContributor = computed(() => {
   return session.user.roles.includes("contributor");
 });
 
-const sort = ref({
+const sort = ref<SortObject>({
   column: "rcode",
   direction: "asc",
 });

@@ -19,3 +19,5 @@
 ✅ Main Page Category View  
 ⬜ Resolution View: Category Badge  
 ⬜ Resolution View: Applicant Badge
+⬜ Create Resolution: Add/Remove Applicants
+

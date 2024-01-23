@@ -14,6 +14,8 @@
 </template>
 
 <script setup lang="ts">
+import type { IReducedResolution } from '~/types/Interfaces';
+
 
 
 const config = useRuntimeConfig();
@@ -26,14 +28,7 @@ const props = defineProps({
   },
 });
 
-interface IReducedResolution {
-  _id: string;
-  body: {
-    title: string;
-    tag: string;
-    year: number;
-  };
-}
+
 
 
 // const { data: resolution, pending, error, refresh } = useLazyFetch("/resolution", {

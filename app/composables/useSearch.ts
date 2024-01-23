@@ -1,4 +1,8 @@
-import {SearchEngine, type ElasticApiKeyResponse} from "~/types/Interfaces";
+import {
+	SearchEngine,
+	type ElasticApiKeyResponse,
+	type IReducedResolution,
+} from "~/types/Interfaces";
 import type {IResolution} from "~/types/models/resolution.schema";
 
 type useSearchOptions = {
@@ -12,7 +16,7 @@ export async function useSearch(
 	options?: useSearchOptions
 ) {
 	const config = useRuntimeConfig();
-	const results = ref(<IResolution[]>[]);
+	const results = ref(<IReducedResolution[]>[]);
 	const error = ref<string | null>("");
 	const pending = ref(false);
 	const elasticAvailable = ref(false);
@@ -69,7 +73,9 @@ export async function useSearch(
 		pending.value = false;
 	};
 
-	async function searchMongo(query: Ref<string>): Promise<IResolution[]> {
+	async function searchMongo(
+		query: Ref<string>
+	): Promise<IReducedResolution[]> {
 		const {data, pending, error, refresh} = await useFetch("/api/resolution", {
 			baseURL: config.public.apiEndpoint,
 			query: {
@@ -84,7 +90,9 @@ export async function useSearch(
 		return [];
 	}
 
-	async function searchElastic(query: Ref<string>): Promise<IResolution[]> {
+	async function searchElastic(
+		query: Ref<string>
+	): Promise<IReducedResolution[]> {
 		// console.log(`Searching elastic for ${query}`);
 		const {data, pending, error, refresh} = await useFetch<any>("/_search", {
 			baseURL: config.public.elasticUrl + "/" + config.public.elasticIndex,

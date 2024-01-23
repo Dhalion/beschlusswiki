@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
 
 		switch (action) {
 			case PatchActions.ACCEPT: {
-				const success = await ResolutionSchema.updateOne(
+				const success = await ResolutionSchema.findOneAndUpdate(
 					{_id: id},
 					{state: ResolutionState.Live},
 					{new: false}
@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
 				break;
 			}
 			case PatchActions.ARCHIVE: {
-				const success = await ResolutionSchema.updateOne(
+				const success = await ResolutionSchema.findOneAndUpdate(
 					{_id: id},
 					{state: ResolutionState.Archived},
 					{new: false}
@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
 				break;
 			}
 			case PatchActions.REJECT: {
-				const success = await ResolutionSchema.updateOne(
+				const success = await ResolutionSchema.findOneAndUpdate(
 					{_id: id},
 					{state: ResolutionState.Rejected},
 					{new: false}
@@ -79,7 +79,7 @@ export default defineEventHandler(async (event) => {
 				break;
 			}
 			case PatchActions.SET_STATE_LIVE: {
-				const success = await ResolutionSchema.updateOne(
+				const success = await ResolutionSchema.findOneAndUpdate(
 					{_id: id},
 					{state: ResolutionState.Live},
 					{new: false}
@@ -93,7 +93,7 @@ export default defineEventHandler(async (event) => {
 				break;
 			}
 			case PatchActions.SET_STATE_STAGED: {
-				const success = await ResolutionSchema.updateOne(
+				const success = await ResolutionSchema.findOneAndUpdate(
 					{_id: id},
 					{state: ResolutionState.Staged},
 					{new: false}

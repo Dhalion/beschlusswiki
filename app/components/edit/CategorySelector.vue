@@ -8,7 +8,7 @@
             </template>
         </USelectMenu>
         <div class="flex gap-x-2">
-            <UBadge v-for="selection in props.selected" :key="selection" size="xs">
+            <UBadge v-for="selection in props.selected" :key="selection._id.toString()" size="xs">
                 <span class="pr-1">
                     {{ capitalize(selection.name) }}
                 </span>

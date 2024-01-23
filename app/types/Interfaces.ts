@@ -4,37 +4,37 @@ import type {ICategory} from "./models/category.schema";
 import {ConnectionStates} from "mongoose";
 //* Full Resolution Interface
 export interface INewResolution {
-	rid: String;
-	rcode: String;
+	rid: string;
+	rcode: string;
 	created: Date;
-	state: String;
+	state: string;
 	body: {
-		title: String;
-		tag: String;
-		applicants: Array<String>;
-		year: Number;
-		category: ICategory | null;
-		text: String;
+		title: string;
+		tag: string;
+		applicants: Array<string>;
+		year: number;
+		category: ICategory | undefined;
+		text: string;
 	};
-	applicantsInput: String;
+	applicantsInput: string;
 }
 
 export interface IResolution {
-	_id: String;
-	rid: String;
-	rcode: String;
+	_id: string;
+	rid: string;
+	rcode: string;
 	created: Date;
-	user: String;
-	parent: String;
-	state: String;
-	hash?: String;
+	user: string;
+	parent: string;
+	state: string;
+	hash?: string;
 	body: {
-		title: String;
-		tag: String;
-		applicants: Array<String>;
-		year: Number;
-		category: ICategory | null;
-		text: String;
+		title: string;
+		tag: string;
+		applicants: Array<string>;
+		year: number;
+		category: ICategory | undefined;
+		text: string;
 	};
 }
 
@@ -94,6 +94,15 @@ export const resolutionStateToPatchAction: Record<
 	[ResolutionState.Rejected]: PatchActions.REJECT,
 	[ResolutionState.Draft]: PatchActions.SET_STATE_STAGED,
 };
+
+export interface IReducedResolution {
+	_id: string;
+	body: {
+		title: string;
+		tag: string;
+		year: number;
+	};
+}
 
 export enum ElasticStatus {
 	// Enum for the ElasticSearch Server State
@@ -161,5 +170,10 @@ export interface ElasticIndexInfoResponse {
 	message: string;
 	data: ElasticIndexInfo;
 }
+
+export type SortObject = {
+	column: string;
+	direction: "asc" | "desc";
+};
 
 export type {ICategory};
