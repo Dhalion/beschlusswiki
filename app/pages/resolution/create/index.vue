@@ -31,8 +31,8 @@
 
                 <UFormGroup label="Antragsteller*innen" name="applicants">
                     <div class="flex gap-x-2">
-                        <UInput v-model="formState.applicantsInput.toString" placeholder="Resolution Applicants"
-                            class="w-1/4" name="applicantInput" />
+                        <UInput v-model="formState.applicantsInput" placeholder="Resolution Applicants" class="w-1/4"
+                            name="applicantInput" />
                         <UButton icon="i-heroicons-plus" size="xs" @click="addApplicant">Hinzufügen</UButton>
                     </div>
                     <UBadge v-for="applicant in formState.body.applicants" :key="applicant.toString()" size="sm"
@@ -86,7 +86,6 @@
                 </div>
             </UCard>
         </UModal>
-
     </div>
     <UNotifications />
 </template>
@@ -141,10 +140,8 @@ const formState: Ref<INewResolution> = ref({
     applicantsInput: "",
 });
 
-const selectedCategory = ref(null);
 
 let countdown: any;
-
 
 
 function startCountdown() {
@@ -171,8 +168,6 @@ function stopCountdown() {
     confirmButtonText.value = CONFIRM_BUTTON_TEXT;
 }
 
-
-
 const addApplicant = () => {
     if (formState.value.body.applicants.includes(formState.value.applicantsInput.trim()) || formState.value.applicantsInput.trim() == "") {
         return;
@@ -191,6 +186,7 @@ const categories = computed(() => {
     if (fetchedCategories.value) {
         return fetchedCategories.value.map((category) => {
             return {
+                _id: category._id,
                 tag: category.tag,
                 name: category.name,
             };
