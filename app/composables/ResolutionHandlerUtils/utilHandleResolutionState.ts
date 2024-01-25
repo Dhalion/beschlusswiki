@@ -36,8 +36,8 @@ export async function utilHandleResolutionState(
 		});
 	} else {
 		toast.add({
-			title: "Beschluss akzeptiert",
-			description: `Der Beschluss ${id} wurde erfolgreich ${translate(action)}`,
+			title: "Beschluss bearbeitet",
+			description: `Der Beschluss ${id} wurde ${translate(action)}`,
 			timeout: 5000,
 		});
 	}
