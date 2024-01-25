@@ -61,7 +61,7 @@
                     :description="postError.toString()" class="my-5 bg-orange" v-if="postError" />
                 <UButtonGroup class="flex justify-center">
                     <UButton size="xl" type="submit" icon="i-heroicons-document-arrow-up" v-on:mouseover="startCountdown"
-                        v-on:mouseleave="stopCountdown" :disabled="!confirmButtonActive" class="w-2/3" @click="">
+                        v-on:mouseleave="stopCountdown" :disabled="!confirmButtonActive" class="w-2/3">
                         {{ confirmButtonText || CONFIRM_BUTTON_TEXT }}
                     </UButton>
                     <UDropdown :items="submitOptionsItems" :popper="{ placement: 'bottom-start' }">
