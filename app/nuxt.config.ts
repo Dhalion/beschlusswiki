@@ -43,6 +43,13 @@ export default defineNuxtConfig({
 		modelsDir: "~/types/models",
 	},
 
+	//* Vercel KV Store
+	nitro: {
+		storage: {
+			data: {driver: "vercelKV"},
+		},
+	},
+
 	//* Auth configuration
 	auth: {
 		globalAppMiddleware: false,

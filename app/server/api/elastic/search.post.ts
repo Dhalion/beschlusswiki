@@ -1,4 +1,6 @@
 export default defineEventHandler(async (event) => {
+	const config = useRuntimeConfig();
+	const kv = useStorage("data");
 	try {
 		const query = getQuery(event)?.query as string;
 
@@ -9,7 +11,17 @@ export default defineEventHandler(async (event) => {
 			});
 		}
 
-		const config = useRuntimeConfig();
+		// Query the KV cache
+		const result = await kv.getItem(query, {type: "json"});
+		console.log(result);
+
+		// If the item exists, return it. Add cache hit header
+		if (result) {
+			setResponseHeader(event, "X-Cache", "HIT");
+			return result;
+		}
+
+		// If the item doesn't exist, query elastic, then store the result in the KV cache
 
 		const res = await fetch(
 			`${config.public.elasticUrl}/${config.public.elasticIndex}/_search`,
@@ -37,7 +49,10 @@ export default defineEventHandler(async (event) => {
 			});
 		}
 
-		return res.json();
+		kv.setItem(query, await res.json(), {type: "json"});
+
+		setResponseHeader(event, "X-Cache", "MISS");
+		return await res.json();
 	} catch (error: Error | any) {
 		console.error(error);
 		return createError({
