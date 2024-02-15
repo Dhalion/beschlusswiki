@@ -1,7 +1,10 @@
-import {omit} from "@nuxt/ui/dist/runtime/utils";
+// import { omit } from "@nuxt/ui/dist/runtime/utils";
+
 import type {IUser} from "./models/user.schema";
 import type {ICategory} from "./models/category.schema";
-import {ConnectionStates} from "mongoose";
+import {ConnectionStates, type Types} from "mongoose";
+import type {Type} from "typescript";
+import type {IApplicant} from "./models/applicants.schema";
 //* Full Resolution Interface
 export interface INewResolution {
 	rid: string;
@@ -11,29 +14,28 @@ export interface INewResolution {
 	body: {
 		title: string;
 		tag: string;
-		applicants: Array<string>;
+		applicants: Array<Types.ObjectId>;
 		year: number;
 		category: ICategory | undefined;
 		text: string;
 	};
-	applicantsInput: string;
 }
 
 export interface IResolution {
-	_id: string;
+	_id: Types.ObjectId;
 	rid: string;
 	rcode: string;
 	created: Date;
-	user: string;
+	user: Types.ObjectId | IUser;
 	parent: string;
-	state: string;
+	state: ResolutionState;
 	hash?: string;
 	body: {
 		title: string;
 		tag: string;
-		applicants: Array<string>;
+		applicants: Array<Types.ObjectId> | Array<IApplicant> | undefined;
 		year: number;
-		category: ICategory | undefined;
+		category: Types.ObjectId | ICategory | undefined;
 		text: string;
 	};
 }
@@ -102,6 +104,13 @@ export interface IReducedResolution {
 		tag: string;
 		year: number;
 	};
+}
+
+export interface ISimpleResolution {
+	_id: string;
+	title: string;
+	tag: string;
+	year: number;
 }
 
 export enum ElasticStatus {
@@ -175,5 +184,10 @@ export type SortObject = {
 	column: string;
 	direction: "asc" | "desc";
 };
+
+export interface INewApplicant {
+	name: string;
+	resolutions: Array<Types.ObjectId>;
+}
 
 export type {ICategory};

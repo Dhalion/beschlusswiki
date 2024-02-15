@@ -15,13 +15,16 @@
 
   <!-- Category and Origin Bar -->
   <div class="bg-beere flex justify-between items-center p-1 px-3 h-6">
-    <span class="text-xs font-sans text-white antialiased" v-if="category?.name">
-      <NuxtLink :to="`/category?id=${category?._id}`" class="hover:underline">
-        {{ category?.name }}
+    <span class="text-xs font-sans text-white antialiased" v-if="category">
+      <NuxtLink :to="`/category?id=${category._id}`" class="hover:underline">
+        {{ category.name }}
       </NuxtLink>
     </span>
-    <span v-for="applicant in applicants"
-      class="px-3 my-1 py-1 bg-hellrosa text-beere rounded-full text-sm tracking-wide">Bayern</span>
+    <span class="text-xs font-sans text-white antialiased" v-if="applicants" v-for="applicant in applicants">
+      <NuxtLink :to="`/applicant?id=${applicant._id}`" class="hover:underline">
+        {{ applicant.name }}
+      </NuxtLink>
+    </span>
   </div>
 
   <!-- Resolution not live Warning -->
@@ -32,9 +35,9 @@
 </template>
 
 <script setup lang="ts">
-
-import type { ICategory } from '~/types/models/category.schema';
+import { type ICategory } from '~/types/Interfaces';
 import type { IResolution } from '~/types/models/resolution.schema';
+import type { IApplicant } from '~/types/models/applicants.schema';
 
 const { resolution } = defineProps({
   resolution: {
@@ -57,20 +60,19 @@ const warningMessage = computed(() => {
 });
 
 const category = computed(() => {
-  if (resolution.body.category === null) {
+  if (resolution.body.category && resolution.body instanceof Object) {
+    return resolution.body.category as ICategory;
+  } else {
     return null;
-  } else
-    if ("name" in resolution.body.category) {
-      return resolution.body.category;
-    } else {
-      return null;
-    }
+  }
 });
 
+const applicants = computed(() => {
+  if (resolution.body.applicants && resolution.body.applicants instanceof Array) {
+    return resolution.body.applicants as IApplicant[];
+  } else {
+    return [];
+  }
+});
 
-const applicants = () => {
-  resolution.body.applicants.forEach((applicant) => {
-    return applicant;
-  });
-};
 </script>

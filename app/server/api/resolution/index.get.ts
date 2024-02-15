@@ -15,9 +15,12 @@ export default defineEventHandler(async (event) => {
 		const selectText = getQuery(event)?.text == ("true" || 1) ? true : false;
 		const populateCategory =
 			getQuery(event)?.category == ("true" || 1) ? true : false;
+		const populateApplicants =
+			getQuery(event)?.applicants == ("true" || 1) ? true : false;
 		const filter = getQuery(event)?.filter as ResolutionState;
 		const dashDisplay = getQuery(event)
 			.dashDisplay as AdminDashboardResolutionsDisplay;
+		const simple = getQuery(event)?.simple == ("true" || 1) ? true : false;
 
 		const searchEngine =
 			getQuery(event)?.engine == "elastic"
@@ -29,6 +32,19 @@ export default defineEventHandler(async (event) => {
 		// 		searchQuery || "none"
 		// 	} and selectText: ${selectText}`
 		// );
+
+		if (simple) {
+			// fetch all resolutions but only title tag and year
+			const query = ResolutionSchema.find({}).select(
+				"body.title body.tag body.year"
+			);
+			const result = await query.exec();
+			if (result) {
+				return result;
+			} else {
+				throw createError({statusCode: 404, message: "Resolution not found"});
+			}
+		}
 
 		if (searchQuery) {
 			// Search Resolution
@@ -108,6 +124,10 @@ export default defineEventHandler(async (event) => {
 
 			if (populateCategory) {
 				query.populate("body.category");
+			}
+
+			if (populateApplicants) {
+				query.populate("body.applicants");
 			}
 
 			const result = await query.exec();

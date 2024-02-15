@@ -2,26 +2,9 @@ import {defineMongooseModel} from "#nuxt/mongoose";
 import {Types} from "mongoose";
 import {CategorySchema, type ICategory} from "./category.schema";
 import {ResolutionState} from "../Interfaces";
+import {type IResolution as IResolutionInterface} from "../Interfaces";
 
-export interface IResolution {
-	_id: Types.ObjectId;
-	rid: string;
-	rcode: string;
-	created: Date;
-	createdBy: Types.ObjectId;
-	approvedBy: Types.ObjectId;
-	parent: Types.ObjectId;
-	state: ResolutionState;
-	hash: string;
-	body: {
-		title: string;
-		tag: string;
-		applicants: string[];
-		year: number;
-		category: Types.ObjectId | ICategory;
-		text: string | null;
-	};
-}
+export type IResolution = IResolutionInterface;
 
 export const ResolutionSchema = defineMongooseModel({
 	name: "Resolution",
@@ -37,7 +20,7 @@ export const ResolutionSchema = defineMongooseModel({
 		body: {
 			title: {type: String},
 			tag: {type: String},
-			applicants: {type: Array},
+			applicants: [{type: Types.ObjectId, ref: "Applicant"}],
 			year: {type: Number},
 			category: {type: Types.ObjectId, ref: CategorySchema}, // Refers to a category
 			text: {type: String, select: false},
