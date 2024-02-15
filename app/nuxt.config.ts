@@ -9,6 +9,7 @@ export default defineNuxtConfig({
 			enabled: true,
 		},
 	},
+
 	components: true,
 	modules: ["@nuxt/ui", "@sidebase/nuxt-auth", "nuxt-mongoose"],
 
@@ -28,6 +29,9 @@ export default defineNuxtConfig({
 
 	routeRules: {
 		"/**": {cors: true},
+		"/edit": {
+			ssr: false,
+		},
 	},
 
 	typescript: {

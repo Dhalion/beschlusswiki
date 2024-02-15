@@ -24,7 +24,7 @@
       </div>
 
       <UFormGroup label="Kategorien" name="categories" class="min-w-min md:w-1/2 lg:w-1/3">
-        <USelectMenu v-model="resolution.body.category" :options="categories">
+        <USelectMenu v-if="fetchedCategories" v-model="resolution.body.category" :options="fetchedCategories">
           <template #label>
             {{ resolutionCategoryString }}
           </template>
@@ -37,18 +37,19 @@
       </UFormGroup>
 
       <UFormGroup label="Antragsteller*innen" name="applicants">
-        <div class="flex gap-x-2">
-          <!-- <UInput v-model="" placeholder="Resolution Applicants" class="w-1/4"
-            name="applicantInput" /> -->
-          <UButton icon="i-heroicons-plus" size="xs" @click="addApplicant">Hinzufügen</UButton>
-        </div>
-        <UBadge v-for="applicant in resolution.body.applicants" :key="applicant" size="sm" class="mr-2 mt-2">
-          <span class="pr-1 text-xs">
-            {{ applicant }}
-          </span>
-          <UIcon name="i-heroicons-x-mark" class="text-lg hover:cursor-pointer hover:bg-gray-50"
-            @click="removeApplicant(applicant)" />
-        </UBadge>
+        <USelectMenu multiple searchable v-model="resolution.body.applicants" :options="applicantsOptions" by="_id">
+          <template #label>
+            <span v-if="resolution.body.applicants?.length">
+              {{ resolution.body.applicants.length }} Antragsteller*innen ausgewählt
+            </span>
+            <span v-else>
+              Keine Antragsteller*innen ausgewählt
+            </span>
+          </template>
+          <template #option="{ option }: { option: IApplicant }">
+            {{ option.name }}
+          </template>
+        </USelectMenu>
       </UFormGroup>
 
 
@@ -69,8 +70,8 @@
         </div>
       </UFormGroup>
 
-      <UAlert icon="i-heroicons-exclamation-circle" variant="solid" title="Fehler beim Einsenden"
-        :description="postError?.message" class="mt-5 bg-jusorot-600" v-if="postError" />
+      <UAlert icon="i-heroicons-exclamation-circle" variant="solid" title="Fehler beim Einsenden" :description="postError"
+        class="mt-5 bg-jusorot-600" v-if="postError" />
 
     </div>
   </UForm>
@@ -95,8 +96,9 @@
 
 <script setup lang="ts">
 
-import type { FormError } from '@nuxt/ui/dist/runtime/types';
+import type { FormError, FormSubmitEvent } from '#ui/types';
 import { type IResolution, type ICategory, type IResolutionToSend } from '~/types/Interfaces';
+import type { IApplicant } from '~/types/models/applicants.schema';
 
 definePageMeta({
   middleware: ['authentication'],
@@ -116,17 +118,19 @@ const router = useRouter();
 const overrideCheck = ref(true);
 const toast = useToast();
 
+const postError = ref<string | null>(null);
 
 
 // Fetch resolution
-const { data: resolution, error, pending, refresh } = await useLazyFetch<IResolution>("/resolution", {
+const { data: resolution, error, pending, refresh } = await useLazyFetch<IResolution>("/api/resolution", {
+  baseURL: config.public.apiEndpoint,
+  method: "GET",
   query: {
     id: route.query.id,
     text: true,
     category: true,
+    applicants: true,
   },
-  baseURL: config.public.apiEndpoint,
-  method: "GET",
 });
 
 // Fetch categories
@@ -135,24 +139,46 @@ const { data: fetchedCategories } = await useLazyFetch<ICategory[]>("/category",
   method: "GET",
 });
 
-const categories = computed(() => {
-  if (!fetchedCategories) return [];
-  return fetchedCategories.value?.map((category) => {
-    return {
-      tag: category.tag,
-      name: category.name,
-    };
-  });
+const { data: fetchedApplicants } = await useLazyFetch<IApplicant[]>("/api/applicants", {
+  baseURL: config.public.apiEndpoint,
+  method: "GET",
+});
+
+
+const applicantsOptions = computed(() => {
+  if (fetchedApplicants.value && fetchedApplicants.value.length > 0) {
+    return fetchedApplicants.value.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+  }
+  return [];
 });
 
 const validate = (resolution: IResolution): FormError[] => {
   const errors: FormError[] = [];
+  if (!resolution.body.title) {
+    errors.push({ path: "title", message: "Der Titel darf nicht leer sein." });
+  }
+  if (!resolution.body.tag) {
+    errors.push({ path: "tag", message: "Der Tag darf nicht leer sein." });
+  }
+  if (!resolution.body.year) {
+    errors.push({ path: "year", message: "Das Jahr darf nicht leer sein." });
+  }
+
+  if (resolution.body?.category instanceof Object) {
+    const category = resolution.body.category as ICategory;
+    // resolutionTag = resolution.body.tag but remove numbers
+    const resolutionTag = resolution.body.tag.replace(/\d/g, '');
+    if (category.tag !== resolutionTag) {
+      errors.push({ path: "categories", message: "Der Tag und die Kategorie stimmen nicht überein." });
+    }
+  }
   return errors;
 }
 
 async function submit() {
-  const resolutionToSend = resolution.value;
-  if (!resolutionToSend) {
+  if (!resolution.value) {
     toast.add({
       title: "Fehler beim Speichern",
       description: "Der Beschluss ist leer.",
@@ -161,57 +187,46 @@ async function submit() {
     return;
   }
 
-  const headers = useRequestHeaders(['cookie']) as HeadersInit
-  postRefresh();
+  const response: Response = await $fetch("/resolution", {
+    baseURL: config.public.apiEndpoint,
+    method: "PUT",
+    headers: {
+      "Authorization": token.value || "",
+    },
+    query: {
+      id: route.query.id,
+      override: overrideCheck.value,
+    },
+    body: { resolution: resolution.value },
+  });
 
-  if (error.value) {
-    console.error(error);
+
+
+  if (response.status !== 200) {
+    postError.value = response.status + " - " + response.statusText;
     toast.add({
       title: "Fehler beim Speichern",
-      description: error.value?.message || "Ein unbekannter Fehler ist aufgetreten.",
+      description: response.statusText || "Ein unbekannter Fehler ist aufgetreten.",
       icon: "i-heroicons-exclamation-triangle",
     });
     return;
   }
+  toast.add({
+    title: "Beschluss gespeichert",
+    description: "Der geänderte Beschluss wurde erfolgreich gespeichert.",
+    icon: "i-heroicons-check-circle",
+  });
 }
 
 
-const { data: postData, error: postError, refresh: postRefresh } = await useLazyFetch("/resolution", {
-  immediate: false,
-  query: {
-    id: route.query.id,
-    override: overrideCheck.value,
-  },
-  headers: {
-    "Authorization": `Bearer ${token.value}`,
-  },
-  baseURL: config.public.apiEndpoint,
-  method: "PUT",
-  body: JSON.stringify({ "resolution": resolution.value }),
-  onResponse: (response) => {
-    if (response.response.status == 200) {
-      toast.add({
-        title: "Beschluss gespeichert",
-        description: "Der Beschluss wurde erfolgreich gespeichert.",
-        icon: "i-heroicons-check-circle",
-      });
-      refresh();
-    }
-  },
-});
-
 const resolutionCategoryString = computed(() => {
-  if (resolution.value?.body?.tag && resolution.value?.body.category?.name) return resolution.value.body.category?.tag + " - " + resolution.value.body.category?.name;
+  if (resolution.value?.body.category instanceof Object) {
+    const category = resolution.value.body.category as ICategory;
+    return category.tag + " - " + category.name;
+  }
   return "Nicht zugewiesen";
 });
 
-function addApplicant() {
-  //TODO: Add applicant to resolution
-}
-
-function removeApplicant(applicant: string) {
-  //TODO: Remove applicant from resolution
-}
 
 
 </script>

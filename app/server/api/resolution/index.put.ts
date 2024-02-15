@@ -1,3 +1,4 @@
+import {type IResolution} from "~/types/Interfaces";
 import {CategorySchema} from "~/types/models/category.schema";
 import {ResolutionSchema} from "~/types/models/resolution.schema";
 import {type IUser, UserRoles} from "~/types/models/user.schema";
@@ -40,11 +41,26 @@ export default defineEventHandler(async (event) => {
 		if (!before)
 			throw createError({statusCode: 404, message: "Resolution not found"});
 
+		console.log(body.resolution);
+
+		// update resolution with new data, make sure child objects are connected
 		const success = await ResolutionSchema.findByIdAndUpdate(
 			{_id: id},
-			body.resolution,
+			{
+				...body.resolution,
+				$set: {
+					"body.category": body.resolution.category,
+					"body.applicants": body.resolution.applicants,
+				},
+			},
 			{new: true}
 		);
+
+		// const success = await ResolutionSchema.findByIdAndUpdate(
+		// 	{_id: id},
+		// 	body.resolution,
+		// 	{new: true}
+		// );
 
 		if (!success)
 			throw createError({
@@ -84,7 +100,8 @@ export default defineEventHandler(async (event) => {
 
 		console.log(`Resolution ${id} updated`);
 
-		return {success: true};
+		setResponseStatus(event, 200);
+		return {status: 200};
 	} catch (e) {
 		console.error(e);
 		throw createError({statusCode: 500, message: "Internal Server Error"});

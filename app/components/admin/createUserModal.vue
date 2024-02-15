@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FormError, FormSubmitEvent } from '@nuxt/ui/dist/runtime/types';
+import type { FormError, FormSubmitEvent } from '#ui/types'
 
 const toast = useToast();
 const config = useRuntimeConfig();

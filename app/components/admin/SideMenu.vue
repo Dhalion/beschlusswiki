@@ -95,6 +95,12 @@ const menuItems = [
     role: [UserRoles.Editor, UserRoles.Admin]
   },
   {
+    name: "Antragsteller*innen",
+    icon: "i-heroicons-users",
+    to: "/admin/applicants/list",
+    role: [UserRoles.Editor, UserRoles.Admin]
+  },
+  {
     name: "Profil",
     icon: "i-heroicons-user-circle",
     to: "/admin/dashboard"

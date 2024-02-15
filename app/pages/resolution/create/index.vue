@@ -26,23 +26,22 @@
                             {{ option.tag }} - {{ option.name }}
                         </template>
                     </USelectMenu>
-
                 </UFormGroup>
 
                 <UFormGroup label="Antragsteller*innen" name="applicants">
-                    <div class="flex gap-x-2">
-                        <UInput v-model="formState.applicantsInput" placeholder="Resolution Applicants" class="w-1/4"
-                            name="applicantInput" />
-                        <UButton icon="i-heroicons-plus" size="xs" @click="addApplicant">Hinzufügen</UButton>
-                    </div>
-                    <UBadge v-for="applicant in formState.body.applicants" :key="applicant.toString()" size="sm"
-                        class="mr-2 mt-2">
-                        <span class="pr-1 text-xs">
-                            {{ applicant }}
-                        </span>
-                        <UIcon name="i-heroicons-x-mark" class="text-lg hover:cursor-pointer hover:bg-gray-50"
-                            @click="removeApplicant(applicant)" />
-                    </UBadge>
+                    <USelectMenu multiple searchable v-model="formState.body.applicants" :options="applicantsOptions">
+                        <template #label>
+                            <span v-if="formState.body.applicants.length">
+                                {{ formState.body.applicants.length }} Antragsteller*innen ausgewählt
+                            </span>
+                            <span v-else>
+                                Keine Antragsteller*innen ausgewählt
+                            </span>
+                        </template>
+                        <template #option="{ option }: { option: IApplicant }">
+                            {{ option.name }}
+                        </template>
+                    </USelectMenu>
                 </UFormGroup>
 
                 <UFormGroup label="Beschlusstext" name="text">
@@ -91,8 +90,9 @@
 </template>
 
 <script setup lang="ts">
-import type { FormError } from '@nuxt/ui/dist/runtime/types';
+import type { FormError, FormSubmitEvent } from '#ui/types'
 import { type INewResolution, type ICategory, type IResolutionCreatedResponse, ResolutionState } from '~/types/Interfaces';
+import type { IApplicant } from '~/types/models/applicants.schema';
 
 definePageMeta({
     middleware: "authentication"
@@ -113,11 +113,9 @@ const { status: authStatus,
 
 
 const API_ENDPOINT = config.public.apiEndpoint;
-const FETCHED_CATEGORIES = ["kategorie1", "kategorie2", "kategorie3"];
 const CONFIRM_COUNTDOWN = 1.0;
 const CONFIRM_BUTTON_TEXT = "Beschluss einreichen";
 
-const applicantInput = ref(CONFIRM_BUTTON_TEXT);
 const confirmButtonActive = ref(false);
 const confirmButtonText = ref();
 const showLoadingModal = ref(false);
@@ -132,12 +130,11 @@ const formState: Ref<INewResolution> = ref({
     body: {
         title: "Testtitel",
         tag: "tag1",
-        applicants: ["Admin"],
+        applicants: [],
         year: 2023,
         category: undefined,
         text: "Testtext",
     },
-    applicantsInput: "",
 });
 
 
@@ -168,16 +165,15 @@ function stopCountdown() {
     confirmButtonText.value = CONFIRM_BUTTON_TEXT;
 }
 
-const addApplicant = () => {
-    if (formState.value.body.applicants.includes(formState.value.applicantsInput.trim()) || formState.value.applicantsInput.trim() == "") {
-        return;
-    }
-    formState.value.body.applicants.push(formState.value.applicantsInput.trim());
-    applicantInput.value = "";
-};
+
 
 // Fetch categories
 const { data: fetchedCategories } = await useLazyFetch<ICategory[]>("/category", {
+    baseURL: config.public.apiEndpoint,
+    method: "GET",
+});
+
+const { data: fetchedApplicants } = await useLazyFetch<IApplicant[]>("/api/applicants", {
     baseURL: config.public.apiEndpoint,
     method: "GET",
 });
@@ -196,14 +192,20 @@ const categories = computed(() => {
 });
 
 
+const applicantsOptions = computed(() => {
+    if (fetchedApplicants.value && fetchedApplicants.value.length > 0) {
+        return fetchedApplicants.value.sort((a, b) => {
+            return a.name.localeCompare(b.name);
+        });
+    }
+    return [];
+});
+
 const resolutionCategoryString = computed(() => {
     if (formState.value?.body?.tag && formState.value?.body.category?.name) return formState.value.body.category?.tag + " - " + formState.value.body.category?.name;
     return "Nicht zugewiesen";
 });
 
-const removeApplicant = (applicant: String) => {
-    formState.value.body.applicants = formState.value.body.applicants.filter((a) => a !== applicant);
-};
 
 const submitOptionsItems = [
     [{

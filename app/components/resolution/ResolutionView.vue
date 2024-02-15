@@ -27,6 +27,7 @@ const { data, pending, error, refresh } = await useFetch("/resolution", {
     id: resolutionId,
     text: true,
     category: true,
+    applicants: true,
   },
 });
 </script>
