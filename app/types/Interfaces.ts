@@ -40,6 +40,13 @@ export interface IResolution {
 	};
 }
 
+export type ResolutionSearchResult = {
+	total: number;
+	took: number;
+	page?: number;
+	results: Array<ISimpleResolution>;
+};
+
 export type IResolutionToSend = Omit<IResolution, "hash" | "user">;
 
 export interface ICategoriesResponse {

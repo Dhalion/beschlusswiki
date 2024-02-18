@@ -2,19 +2,20 @@
   <div class="flex w-full mt-2 px-5">
 
     <!--* LODING BANNER  -->
-    <div v-if="!searchResults && error" class="flex flex-grow py-40 justify-center items-center">
+    <div v-if="isLoading" class="flex flex-grow py-40 justify-center items-center">
       <div
         class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite] text-jusorot-600">
       </div>
     </div>
     <!--* SEARCH RESULTS -->
-    <div v-if="searchResults && !error" class="flex flex-col justify-center w-full">
+    <!-- <span class="text-black">{{ searchResults }}</span> -->
+    <div v-if="searchResults && !error && !isLoading" class="flex flex-col justify-center w-full">
       <div class="flex items-baseline">
         <span class="text-slate-500 mt-3 text-xs xl:text-base">
-          {{ searchResults.length }}
-          {{ searchResults.length === 1 ? "Beschluss" : "Beschlüsse" }} gefunden
+          {{ total }}
+          {{ total === 1 ? "Beschluss" : "Beschlüsse" }} in {{ took || "null" }} gefunden. (Zeige {{ searchResults.length
+          }} von {{ total }})
           <span class="text-xs align-baseline">
-            (Engine: {{ resultsFrom }})
           </span>
           <!-- state: {{ elastic.elasticStatus.value.state }} -->
           <!-- last check: {{ new Date(elastic.elasticStatus.value.lastCheck).toLocaleTimeString() }} -->
@@ -28,39 +29,69 @@
     <span class="text-black">{{}}</span>
 
     <!--* ERROR BANNER  -->
-    <div v-if="error" class="flex justify-center p-20 mx-auto text-slate-600">
-      <span>
-        Fehler bei der Suche. Bitte versuche es später erneut.
-        {{ error }}
-      </span>
-    </div>
+    <UAlert v-if="error" class="mt-5" title="Fehler bei der Suche"
+      :description="'Bitte versuche es später erneut. ' + error" icon="i-heroicons-exclamation-circle" variant="soft"
+      color="primary" />
   </div>
   <UNotifications />
 </template>
 
 <script setup lang="ts">
 import debounce from "lodash.debounce";
-import { SearchEngine } from "~/types/Interfaces";
+import { type ResolutionSearchResult, type ISimpleResolution } from "~/types/Interfaces";
 
 const config = useRuntimeConfig();
 const toast = useToast();
 
 const props = defineProps(["modelValue"]);
+const isLoading = ref(true);
+const searchResults = ref<ISimpleResolution[]>([]);
+const error = ref<string | null>(null);
+const total = ref(0);
+const took = ref<string | null>(null);
 
 
+const search = async (query: string) => {
+  console.log("searching for:", query);
+  if (!query) return;
+  isLoading.value = true;
+  const start = Date.now();
+  const response = await $fetch("/api/resolution/search", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    query: {
+      query,
+    },
+  });
+  const requestTook = Date.now() - start;
 
-const { results: searchResults, pending, error, search, resultsFrom } =
-  await useSearch(props.modelValue, { engine: SearchEngine.ELASTICSEARCH });
+  // try to parse the response to a ResolutionSearchResult
+  if (response) {
+    const result = response as ResolutionSearchResult;
+    if (result.results) {
+      searchResults.value = result.results;
+      total.value = result.total;
+      took.value = `${requestTook} ms`;
+    }
+  }
+  isLoading.value = false;
+
+};
 
 
-watch(
-  () => props.modelValue,
-  debounce(async (value) => {
-    // console.log("debounced search", value);
-    await search(value);
-  }, 250)
-);
+watch(() => props.modelValue, debounce((query) => {
+  if (!query) return;
+  search(query);
+}, 200));
 
+onMounted(() => {
+  console.log("mounted");
+  if (props.modelValue) {
+    search(props.modelValue);
+  }
+});
 
 
 </script>
