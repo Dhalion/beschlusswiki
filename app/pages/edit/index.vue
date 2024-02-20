@@ -98,7 +98,7 @@
 
 import type { FormError, FormSubmitEvent } from '#ui/types';
 import { type IResolution, type ICategory, type IResolutionToSend } from '~/types/Interfaces';
-import type { IApplicant } from '~/types/models/applicants.schema';
+import type { IApplicant } from '~/types/models/applicant.schema';
 
 definePageMeta({
   middleware: ['authentication'],
@@ -187,7 +187,7 @@ async function submit() {
     return;
   }
 
-  const response: Response = await $fetch("/resolution", {
+  const res = await $fetch("/api/resolution", {
     baseURL: config.public.apiEndpoint,
     method: "PUT",
     headers: {
@@ -200,7 +200,7 @@ async function submit() {
     body: { resolution: resolution.value },
   });
 
-
+  const response = res as Response;
 
   if (response.status !== 200) {
     postError.value = response.status + " - " + response.statusText;

@@ -92,7 +92,7 @@
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from '#ui/types'
 import { type INewResolution, type ICategory, type IResolutionCreatedResponse, ResolutionState } from '~/types/Interfaces';
-import type { IApplicant } from '~/types/models/applicants.schema';
+import type { IApplicant } from '~/types/models/applicant.schema';
 
 definePageMeta({
     middleware: "authentication"

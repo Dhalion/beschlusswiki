@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { type ICategory } from '~/types/Interfaces';
 import type { IResolution } from '~/types/models/resolution.schema';
-import type { IApplicant } from '~/types/models/applicants.schema';
+import type { IApplicant } from '~/types/models/applicant.schema';
 
 const { resolution } = defineProps({
   resolution: {

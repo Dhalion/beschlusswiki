@@ -4,7 +4,7 @@ import type {IUser} from "./models/user.schema";
 import type {ICategory} from "./models/category.schema";
 import {ConnectionStates, type Types} from "mongoose";
 import type {Type} from "typescript";
-import type {IApplicant} from "./models/applicants.schema";
+import type {IApplicant} from "./models/applicant.schema";
 //* Full Resolution Interface
 export interface INewResolution {
 	rid: string;
@@ -39,6 +39,13 @@ export interface IResolution {
 		text: string;
 	};
 }
+
+export type ResolutionSearchResult = {
+	total: number;
+	took: number;
+	page?: number;
+	results: Array<ISimpleResolution>;
+};
 
 export type IResolutionToSend = Omit<IResolution, "hash" | "user">;
 
