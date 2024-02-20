@@ -1,4 +1,4 @@
-import {ApplicantSchema} from "~/types/models/applicants.schema";
+import {ApplicantSchema} from "~/types/models/applicant.schema";
 import {type IUser, UserRoles} from "~/types/models/user.schema";
 
 const ALLOWED_ROLES = [UserRoles.Admin, UserRoles.Editor];

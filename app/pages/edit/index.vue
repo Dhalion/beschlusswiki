@@ -98,7 +98,7 @@
 
 import type { FormError, FormSubmitEvent } from '#ui/types';
 import { type IResolution, type ICategory, type IResolutionToSend } from '~/types/Interfaces';
-import type { IApplicant } from '~/types/models/applicants.schema';
+import type { IApplicant } from '~/types/models/applicant.schema';
 
 definePageMeta({
   middleware: ['authentication'],

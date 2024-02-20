@@ -2,7 +2,7 @@ import {type INewApplicant} from "~/types/Interfaces";
 import {
 	ApplicantSchema,
 	type IApplicant,
-} from "~/types/models/applicants.schema";
+} from "~/types/models/applicant.schema";
 import {ResolutionSchema} from "~/types/models/resolution.schema";
 import {type IUser} from "~/types/models/user.schema";
 

@@ -1,4 +1,4 @@
-import {ApplicantSchema} from "~/types/models/applicants.schema";
+import {ApplicantSchema} from "~/types/models/applicant.schema";
 
 export default defineEventHandler(async (event) => {
 	const config = useRuntimeConfig();

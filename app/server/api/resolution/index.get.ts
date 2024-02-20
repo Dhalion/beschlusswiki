@@ -1,4 +1,3 @@
-import {CategorySchema} from "~/types/models/category.schema";
 import {ResolutionSchema} from "~/types/models/resolution.schema";
 import {
 	AdminDashboardResolutionsDisplay,

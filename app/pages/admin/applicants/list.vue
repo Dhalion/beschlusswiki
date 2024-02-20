@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IApplicant } from '~/types/models/applicants.schema';
+import type { IApplicant } from '~/types/models/applicant.schema';
 
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
