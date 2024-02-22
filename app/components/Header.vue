@@ -9,7 +9,7 @@
           @click="handleLogoClick" />
       </NuxtLink>
       <!-- Navbar Heading "Jusos Beschlusswiki" centered, semi-bold -->
-      <NuxtLink href="#" class="xl:text-2xl text-xl font-extrabold flex-nowrap text-white">
+      <NuxtLink href="/" @click="handleLogoClick" class="xl:text-2xl text-xl font-extrabold flex-nowrap text-white">
         Jusos Beschlusswiki
       </NuxtLink>
     </div>
