@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
 		if (!user) {
 			throw createError({statusCode: 400, message: "No user provided"});
 		}
-		bodyResolution.user = user._id;
+		bodyResolution.createdBy = user._id;
 
 		const resolution = await ResolutionSchema.create(bodyResolution);
 
