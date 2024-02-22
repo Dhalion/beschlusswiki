@@ -103,7 +103,8 @@ const menuItems = [
   {
     name: "Profil",
     icon: "i-heroicons-user-circle",
-    to: "/admin/dashboard"
+    to: "/admin/dashboard",
+    role: [] // effectively disabled
   },
   {
     name: "Elasticsearch",
@@ -114,7 +115,8 @@ const menuItems = [
   {
     name: "Einstellungen",
     icon: "i-heroicons-cog",
-    to: "/admin/dashboard"
+    to: "/admin/dashboard",
+    role: [] // effectively disabled
   }
 ];
 
