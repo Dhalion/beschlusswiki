@@ -197,4 +197,12 @@ export interface INewApplicant {
 	resolutions: Array<Types.ObjectId>;
 }
 
+export type searchObject = {
+	query: string | undefined;
+	categories: ICategory[];
+	applicants: IApplicant[];
+	fromYear: string;
+	toYear: string;
+};
+
 export type {ICategory};

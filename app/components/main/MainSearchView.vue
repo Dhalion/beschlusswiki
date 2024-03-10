@@ -13,8 +13,9 @@
       <div class="flex items-baseline">
         <span class="text-slate-500 mt-3 text-xs xl:text-base">
           {{ total }}
-          {{ total === 1 ? "Beschluss" : "Beschlüsse" }} in {{ took || "null" }} gefunden. (Zeige {{ searchResults.length
-          }} von {{ total }})
+          {{ total === 1 ? "Beschluss" : "Beschlüsse" }} in {{ took || "null" }} gefunden. (Zeige {{
+      searchResults.length
+    }} von {{ total }})
           <span class="text-xs align-baseline">
           </span>
           <!-- state: {{ elastic.elasticStatus.value.state }} -->
@@ -38,12 +39,12 @@
 
 <script setup lang="ts">
 import debounce from "lodash.debounce";
-import { type ResolutionSearchResult, type ISimpleResolution } from "~/types/Interfaces";
+import { type ResolutionSearchResult, type ISimpleResolution, type searchObject } from "~/types/Interfaces";
 
 const config = useRuntimeConfig();
 const toast = useToast();
 
-const props = defineProps(["modelValue"]);
+const props = defineProps(["search"]);
 const isLoading = ref(true);
 const searchResults = ref<ISimpleResolution[]>([]);
 const error = ref<string | null>(null);
@@ -51,9 +52,9 @@ const total = ref(0);
 const took = ref<string | null>(null);
 
 
-const search = async (query: string) => {
-  console.log("searching for:", query);
-  if (!query) return;
+const search = async (searchParams: searchObject) => {
+  console.log("searching for:", searchParams.query);
+  if (!search) return;
   isLoading.value = true;
   const start = Date.now();
   const response = await $fetch("/api/resolution/search", {
@@ -62,7 +63,11 @@ const search = async (query: string) => {
       "Content-Type": "application/json",
     },
     query: {
-      query,
+      query: searchParams.query,
+      categories: searchParams.categories,
+      applicants: searchParams.applicants,
+      fromYear: searchParams.fromYear,
+      toYear: searchParams.toYear,
     },
   });
   const requestTook = Date.now() - start;
@@ -81,15 +86,15 @@ const search = async (query: string) => {
 };
 
 
-watch(() => props.modelValue, debounce((query) => {
-  if (!query) return;
-  search(query);
+watch(() => props.search, debounce((search) => {
+  if (!search) return;
+  search(search);
 }, 200));
 
 onMounted(() => {
   console.log("mounted");
-  if (props.modelValue) {
-    search(props.modelValue);
+  if (props.search) {
+    search(props.search);
   }
 });
 

@@ -4,20 +4,20 @@
       <h1 class="text-beere xl:text-5xl text-3xl mt-10 font-bold">Anträge suchen</h1>
       <!-- Searchbar -->
       <div class="flex flex-col mt-8 xl:mt-10 xl:w-1/2 w-10/12">
-        <input v-model="searchInput" color="jusorot"
+        <input v-model="search.query" color="jusorot"
           class=" bg-white text-black p-3 rounded-xl shadow-xl border-cool-200 border-2 text-sm focus:outline-none hover:ring hover:ring-beere focus:ring focus:ring-beere focus:scale-105 transition-transform hover:scale-105 duration-300 ease-in-out"
-          placeholder="Titel oder Stichwort" @input="handleSearchInput" />
+          placeholder="Titel oder Stichwort" />
 
         <!-- Erweiterte Suche -->
         <UAccordion color="cool" variant="link" :items="advancedSearchItems" class="mb-5">
           <template #advanced-search>
             <div v-if="!categoriesPending && !categoriesError">
               <UFormGroup label="Kategorie(n)">
-                <USelectMenu v-model="advancedSearch.categories" v-if="categoriesData" :options="categoriesData"
-                  multiple searchable>
+                <USelectMenu v-model="search.categories" v-if="categoriesData" :options="categoriesData" multiple
+                  searchable>
                   <template #label>
-                    <span v-if="advancedSearch.categories.length" class="truncate">
-                      {{ advancedSearch.categories.map((category) => `${category.tag} - ${category.name}`).join(", ") }}
+                    <span v-if="search.categories.length" class="truncate">
+                      {{ search.categories.map((category) => `${category.tag} - ${category.name}`).join(", ") }}
                     </span>
                     <span v-else>Kategorie(n) wählen</span>
                   </template>
@@ -31,18 +31,18 @@
               <UFormGroup label="Zeitraum">
                 <div class="flex flex-row gap-3">
                   <span class="text-center self-center">Von</span>
-                  <UInput type="number" v-model="advancedSearch.fromYear" />
+                  <UInput type="number" v-model="search.fromYear" />
                   <span class="text-center self-center">Bis</span>
-                  <UInput type="number" v-model="advancedSearch.toYear" />
+                  <UInput type="number" v-model="search.toYear" />
                 </div>
               </UFormGroup>
 
               <UFormGroup label="Antragsteller*innen">
-                <USelectMenu v-model="advancedSearch.applicants" v-if="applicantsData" :options="applicantsData"
-                  multiple searchable>
+                <USelectMenu v-model="search.applicants" v-if="applicantsData" :options="applicantsData" multiple
+                  searchable>
                   <template #label>
-                    <span v-if="advancedSearch.applicants.length" class="truncate">
-                      {{ advancedSearch.applicants.map((applicant) => applicant.name).join(", ") }}
+                    <span v-if="search.applicants.length" class="truncate">
+                      {{ search.applicants.map((applicant) => applicant.name).join(", ") }}
                     </span>
                     <span v-else>Antragsteller*innen wählen</span>
                   </template>
@@ -65,22 +65,19 @@
 import type { ICategory } from '~/types/Interfaces';
 import type { IApplicant } from '~/types/models/applicant.schema';
 
-
-
 const props = defineProps(["modelValue"]);
 const emit = defineEmits(["update:modelValue"]);
 
-const searchInput = ref(props.modelValue || "");
-const advancedSearch = ref({
+const route = useRoute();
+const router = useRouter();
+
+const search = ref({
+  query: props.modelValue.query || "",
   categories: <ICategory[]>[],
   applicants: <IApplicant[]>[],
-  fromYear: undefined,
-  toYear: undefined,
+  fromYear: "",
+  toYear: "",
 });
-
-const handleSearchInput = (event: Event) => {
-  emit("update:modelValue", searchInput.value);
-};
 
 const { data: categoriesData,
   pending: categoriesPending,
@@ -101,4 +98,51 @@ const advancedSearchItems = [{
   slot: "advanced-search",
 }]
 
+loadSearchFromUrlParams();
+
+watch(() => search, () => {
+  // save search params in url
+  console.log("Saving search params in url...")
+  const params = new URLSearchParams();
+  if (search.value.query) params.set("query", search.value.query);
+  if (search.value.categories.length) params.set("categories", search.value.categories.map((category) => category._id).join(","));
+  if (search.value.applicants.length) params.set("applicants", search.value.applicants.map((applicant) => applicant._id).join(","));
+  if (search.value.fromYear) params.set("fromYear", search.value.fromYear);
+  if (search.value.toYear) params.set("toYear", search.value.toYear);
+  history.pushState({}, "", `?${params}`);
+
+  console.log("Emitting update:modelValue event...")
+  emit("update:modelValue", search.value);
+}, { deep: true });
+
+
+function loadSearchFromUrlParams() {
+  // load params from url
+  console.log("Loading search params from url...")
+  const params = new URLSearchParams(route.query as any);
+  if (params.has("query")) search.value.query = params.get("query") || "";
+  if (params.has("categories")) {
+    const categoryIds = params.get("categories")?.split(",");
+    console.log("categoryIds", categoryIds);
+    if (categoryIds) {
+      search.value.categories = categoriesData.value?.filter((category) => {
+        return categoryIds.includes(category._id.toString());
+      }) || [];
+    }
+  }
+  if (params.has("applicants")) {
+    const applicantIds = params.get("applicants")?.split(",");
+    console.log("applicantIds", applicantIds);
+    if (applicantIds) {
+      search.value.applicants = applicantsData.value?.filter((applicant) => {
+        return applicantIds.includes(applicant._id.toString());
+      }) || [];
+    }
+  }
+  if (params.has("fromYear")) search.value.fromYear = params.get("fromYear") || "";
+  if (params.has("toYear")) search.value.toYear = params.get("toYear") || "";
+
+  emit("update:modelValue", search.value);
+
+};
 </script>
