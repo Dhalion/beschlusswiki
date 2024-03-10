@@ -38,17 +38,18 @@ enum UserRoles {
 
 const isOpen = ref(false);
 
+import { computed } from 'vue';
+
 const visibleMenuItems = computed(() => {
   return menuItems.filter((item) => {
-    if (item.role) {
-
+    if ((item as { role?: string[] }).role) {
       // Prüfen, ob item.role ein einzelner Wert ist
       if (Array.isArray(item.role)) {
         // Prüfen, ob irgendeine der Rollen in item.role in data?.value?.user.roles enthalten ist
         return item.role.some(role => data?.value?.user.roles.includes(role));
       } else {
         // Prüfen, ob der einzelne Wert in data?.value?.user.roles enthalten ist
-        return data?.value?.user.roles.includes(item.role);
+        return data?.value?.user.roles.includes(item?.role);
       }
     }
     return true;
