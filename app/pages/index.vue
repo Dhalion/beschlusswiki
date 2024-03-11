@@ -3,7 +3,7 @@
         <MainSearchHero v-model="search" />
         <!-- Show Categories only if user didnt input any search query -->
         <MainCategoriesView v-if="emptySearch" />
-        <MainSearchView v-if="!emptySearch" v-model:seach="search" />
+        <MainSearchView v-if="!emptySearch" v-model:search="search" />
     </div>
 </template>
 
@@ -22,6 +22,10 @@ const search = ref({
     fromYear: "",
     toYear: "",
 });
+
+watch(() => search.value, (newSearch) => {
+    console.log("search changed", newSearch);
+}, { deep: true });
 
 const emptySearch = computed(() => {
     let isEmpty = true;

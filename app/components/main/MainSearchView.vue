@@ -53,46 +53,49 @@ const took = ref<string | null>(null);
 
 
 const search = async (searchParams: searchObject) => {
-  console.log("searching for:", searchParams.query);
-  if (!search) return;
-  isLoading.value = true;
-  const start = Date.now();
-  const response = await $fetch("/api/resolution/search", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    query: {
-      query: searchParams.query,
-      categories: searchParams.categories,
-      applicants: searchParams.applicants,
-      fromYear: searchParams.fromYear,
-      toYear: searchParams.toYear,
-    },
-  });
-  const requestTook = Date.now() - start;
+  try {
+    console.log("searching for:", searchParams.query);
+    if (!search) return;
+    isLoading.value = true;
+    const start = Date.now();
+    const response = await $fetch("/api/resolution/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: {
+        query: searchParams.query,
+        categories: searchParams.categories.map((c) => c._id),
+        applicants: searchParams.applicants.map((a) => a._id),
+        fromYear: searchParams.fromYear,
+        toYear: searchParams.toYear,
+      },
+    });
+    const requestTook = Date.now() - start;
 
-  // try to parse the response to a ResolutionSearchResult
-  if (response) {
-    const result = response as ResolutionSearchResult;
-    if (result.results) {
-      searchResults.value = result.results;
-      total.value = result.total;
-      took.value = `${requestTook} ms`;
+    // try to parse the response to a ResolutionSearchResult
+    if (response) {
+      const result = response as ResolutionSearchResult;
+      if (result.results) {
+        searchResults.value = result.results;
+        total.value = result.total;
+        took.value = `${requestTook} ms`;
+      }
     }
+    isLoading.value = false;
+  } catch (e) {
+    console.error(e);
+    isLoading.value = false;
   }
-  isLoading.value = false;
-
 };
 
-
-watch(() => props.search, debounce((search) => {
-  if (!search) return;
-  search(search);
-}, 200));
+watch(() => props.search, debounce((searchObj) => {
+  console.log("searching debounced");
+  if (!searchObj) return;
+  search(searchObj);
+}, 200), { deep: true });
 
 onMounted(() => {
-  console.log("mounted");
   if (props.search) {
     search(props.search);
   }

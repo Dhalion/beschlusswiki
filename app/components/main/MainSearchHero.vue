@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-center flex-col mt-5">
     <div class="shadow-lg bg-rosa flex justify-center items-center flex-col mt-3 rounded-3xl xl:mx-5 mx-2">
-      <h1 class="text-beere xl:text-5xl text-3xl mt-10 font-bold">Anträge suchen</h1>
+      <h1 class="text-beere xl:text-5xl text-3xl mt-10 font-bold">Beschlüsse suchen</h1>
       <!-- Searchbar -->
       <div class="flex flex-col mt-8 xl:mt-10 xl:w-1/2 w-10/12">
         <input v-model="search.query" color="jusorot"
@@ -102,7 +102,6 @@ loadSearchFromUrlParams();
 
 watch(() => search, () => {
   // save search params in url
-  console.log("Saving search params in url...")
   const params = new URLSearchParams();
   if (search.value.query) params.set("query", search.value.query);
   if (search.value.categories.length) params.set("categories", search.value.categories.map((category) => category._id).join(","));
@@ -111,19 +110,16 @@ watch(() => search, () => {
   if (search.value.toYear) params.set("toYear", search.value.toYear);
   history.pushState({}, "", `?${params}`);
 
-  console.log("Emitting update:modelValue event...")
   emit("update:modelValue", search.value);
 }, { deep: true });
 
 
 function loadSearchFromUrlParams() {
   // load params from url
-  console.log("Loading search params from url...")
   const params = new URLSearchParams(route.query as any);
   if (params.has("query")) search.value.query = params.get("query") || "";
   if (params.has("categories")) {
     const categoryIds = params.get("categories")?.split(",");
-    console.log("categoryIds", categoryIds);
     if (categoryIds) {
       search.value.categories = categoriesData.value?.filter((category) => {
         return categoryIds.includes(category._id.toString());
@@ -132,7 +128,6 @@ function loadSearchFromUrlParams() {
   }
   if (params.has("applicants")) {
     const applicantIds = params.get("applicants")?.split(",");
-    console.log("applicantIds", applicantIds);
     if (applicantIds) {
       search.value.applicants = applicantsData.value?.filter((applicant) => {
         return applicantIds.includes(applicant._id.toString());
