@@ -54,6 +54,7 @@ const took = ref<string | null>(null);
 
 const search = async (searchParams: searchObject) => {
   try {
+    error.value = null;
     console.log("searching for:", searchParams.query);
     if (!search) return;
     isLoading.value = true;
@@ -83,8 +84,9 @@ const search = async (searchParams: searchObject) => {
       }
     }
     isLoading.value = false;
-  } catch (e) {
+  } catch (e: any) {
     console.error(e);
+    error.value = e.message || "Unbekannter Fehler";
     isLoading.value = false;
   }
 };
