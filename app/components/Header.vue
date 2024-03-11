@@ -1,5 +1,5 @@
 <template>
-  <nav class="bg-jusorot-700 w-full z-20 top-0 left-0  flex border-b shadow">
+  <nav class="bg-jusorot-700 w-full z-20 top-0 left-0  flex ">
     <div class="flex items-center justify-center">
       <AdminSideMenu v-if="authenticated" class="self-center items-center" />
     </div>

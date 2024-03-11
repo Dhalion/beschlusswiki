@@ -1,8 +1,8 @@
 <template>
   <UForm :state="resolution" :validate="validate" @submit="submit" v-if="resolution?.body.text"
-    class="bg-slate-800 w-4/5 mx-auto">
+    class="bg-slate-300 dark:bg-slate-800 w-4/5 mx-auto">
     <div class="flex justify-between px-4 pt-4 items-center">
-      <span class="text-lg font-semibold">Beschluss {{ resolution._id }}</span>
+      <span class="text-slate-700 dark:text-slate-200 text-lg font-semibold">Beschluss {{ resolution._id }}</span>
       <div>
         <UButton type="submit" class="" :disabled="pending" icon="i-heroicons-document-check" block>Speichern</UButton>
         <UCheckbox v-model="overrideCheck" label="Beschluss überschreiben" class="mt-2" />
@@ -65,13 +65,13 @@
             <UTextarea v-model="resolution.body.text" placeholder="Resolution Text" autoresize class="w-1/2 md:p-3"
               size="xl" />
             <div v-html="$mdRenderer.render(resolution.body.text)"
-              class="w-1/2 xl:w-3/5 p-2 md:p-5 prose bg-white leading-6" />
+              class="w-1/2 xl:w-3/5 p-2 md:p-5 prose bg-white dark:bg-gray-900 text-slate-800 dark:text-slate-400 leading-6" />
           </div>
         </div>
       </UFormGroup>
 
-      <UAlert icon="i-heroicons-exclamation-circle" variant="solid" title="Fehler beim Einsenden" :description="postError"
-        class="mt-5 bg-jusorot-600" v-if="postError" />
+      <UAlert icon="i-heroicons-exclamation-circle" variant="solid" title="Fehler beim Einsenden"
+        :description="postError" class="mt-5 bg-jusorot-600" v-if="postError" />
 
     </div>
   </UForm>

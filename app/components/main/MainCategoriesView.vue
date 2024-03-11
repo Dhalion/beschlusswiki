@@ -7,8 +7,8 @@
     <UAlert icon="i-heroicons-information-circle" title="Keine Kategorien gefunden" :description="error?.message"
       variant="solid" color="primary" v-if="!pending && !categories" class="w-2/3" />
     <!-- Category Cards Container -->
-    <div class="bg-white h-full text-black mx-5 items-center grid gap-6 grid-cols-2
-                  md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5" v-if="categories && !error">
+    <div class="h-full text-black mx-5 items-center grid gap-6 grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
+      2xl:grid-cols-5" v-if="categories && !error">
       <!-- Category Cards -->
       <div v-for="category in categories" class="flex flex-col h-full">
         <MainCategoryCard :title="category.name" :id="category._id.toString()" :tag="category.tag"

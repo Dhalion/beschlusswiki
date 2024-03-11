@@ -11,7 +11,7 @@
     <!-- <span class="text-black">{{ searchResults }}</span> -->
     <div v-if="searchResults && !error && !isLoading" class="flex flex-col justify-center w-full">
       <div class="flex items-baseline">
-        <span class="text-slate-500 mt-3 text-xs xl:text-base">
+        <span class="text-slate-500 dark:text-slate-300 mt-3 text-xs xl:text-base">
           {{ total }}
           {{ total === 1 ? "Beschluss" : "Beschlüsse" }} in {{ took || "null" }} gefunden. (Zeige {{
       searchResults.length

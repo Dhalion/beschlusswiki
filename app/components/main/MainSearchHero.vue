@@ -1,7 +1,8 @@
 <template>
   <div class="flex justify-center flex-col mt-5">
-    <div class="shadow-lg bg-rosa flex justify-center items-center flex-col mt-3 rounded-3xl xl:mx-5 mx-2">
-      <h1 class="text-beere xl:text-5xl text-3xl mt-10 font-bold">Beschlüsse suchen</h1>
+    <div
+      class="shadow-lg bg-rosa-300 dark:bg-rosa-200 flex justify-center items-center flex-col mt-3 rounded-3xl xl:mx-5 mx-2">
+      <h1 class="text-beere-600 dark:text-beere-500 xl:text-5xl text-3xl mt-10 font-bold">Beschlüsse suchen</h1>
       <!-- Searchbar -->
       <div class="flex flex-col mt-8 xl:mt-10 xl:w-1/2 w-10/12">
         <input v-model="search.query" color="jusorot"
@@ -9,7 +10,7 @@
           placeholder="Titel oder Stichwort" />
 
         <!-- Erweiterte Suche -->
-        <UAccordion color="cool" variant="link" :items="advancedSearchItems" class="mb-5">
+        <UAccordion color="slate" variant="link" :items="advancedSearchItems" class="mb-5">
           <template #advanced-search>
             <div v-if="!categoriesPending && !categoriesError">
               <UFormGroup label="Kategorie(n)">

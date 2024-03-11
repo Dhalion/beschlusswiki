@@ -5,7 +5,7 @@
       <slot />
 
       <div v-if="showScrollToTop"
-        class="rounded-full bg-jusorot-700 w-12 h-12 flex justify-center items-center hover:cursor-pointer fixed bottom-20 right-20 border-white border-2"
+        class="rounded-full bg-jusorot-700 w-12 h-12 flex justify-center items-center hover:cursor-pointer fixed bottom-20 right-20"
         @click="scrollToTop">
         <UIcon name="i-heroicons-arrow-up" class="text-xl font-extrabold text-white" />
       </div>
