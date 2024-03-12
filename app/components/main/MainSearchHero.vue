@@ -5,9 +5,12 @@
       <h1 class="text-beere-600 dark:text-beere-500 xl:text-5xl text-3xl mt-10 font-bold">Beschlüsse suchen</h1>
       <!-- Searchbar -->
       <div class="flex flex-col mt-8 xl:mt-10 xl:w-1/2 w-10/12">
-        <input v-model="search.query" color="jusorot"
-          class=" bg-white text-black p-3 rounded-xl shadow-xl border-cool-200 border-2 text-sm focus:outline-none hover:ring hover:ring-beere focus:ring focus:ring-beere focus:scale-105 transition-transform hover:scale-105 duration-300 ease-in-out"
-          placeholder="Titel oder Stichwort" />
+        <div class="flex flex-row">
+          <input v-model="search.query" color="jusorot"
+            class=" bg-white w-full text-black p-3 rounded-xl shadow-xl border-cool-200 border-2 text-sm focus:outline-none hover:ring hover:ring-beere focus:ring focus:ring-beere focus:scale-105 transition-transform hover:scale-105 duration-300 ease-in-out"
+            placeholder="Titel oder Stichwort" />
+          <MainHowToSearch />
+        </div>
 
         <!-- Erweiterte Suche -->
         <UAccordion color="slate" variant="link" :items="advancedSearchItems" class="mb-5">
