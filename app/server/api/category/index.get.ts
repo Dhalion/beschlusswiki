@@ -14,13 +14,24 @@ export default defineEventHandler(async (event) => {
 			);
 			const query = CategorySchema.findById(id);
 			if (populateResolutions) {
-				query.populate("resolutions");
+				// populate field resolutions in category
+				// only if resolution.state is "live"
+				query.populate({
+					path: "resolutions",
+					match: {state: "live"},
+				});
 			}
 			const category = await query.exec();
 			console.log(`Found category ${category?.name}`);
 			return category;
 		} else {
-			return await CategorySchema.find();
+			const query = CategorySchema.find();
+			query.populate({
+				path: "resolutions",
+				match: {state: "live"},
+				select: "_id",
+			});
+			return await query.exec();
 		}
 	} catch (e) {
 		throw createError({
