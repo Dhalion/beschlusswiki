@@ -2,9 +2,8 @@
   <NuxtLink :href="resolutionUrl"
     class="w-full flex mx-auto bg-white dark:bg-slate-700 dark:shadow-gray-800 rounded-xl shadow-md hover:shadow-xl overflow-hidden p-3">
     <!-- Resolution Tag and Year -->
-    <div
-      class="xl:w-1/12 w-1/12 mr-3 flex flex-col text-center text-2xl xl:text-3xl text-slate-700 dark:text-slate-200">
-      <span>{{ resolution?.tag }}</span>
+    <div class="xl:w-1/12 md:w-2/12 w-3/12 mr-3 flex flex-col text-2xl xl:text-3xl text-slate-700 dark:text-slate-200">
+      <span class="my-auto self-center">{{ resolution?.tag }}</span>
     </div>
     <!-- Resolution Title -->
     <div class="flex flex-col w-full items-start">
