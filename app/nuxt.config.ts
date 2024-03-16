@@ -31,7 +31,7 @@ export default defineNuxtConfig({
 	routeRules: {
 		"/**": {cors: true},
 		"/": {
-			swr: true,
+			isr: true,
 		},
 		"/category": {
 			isr: true,
