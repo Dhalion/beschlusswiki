@@ -38,7 +38,7 @@ const errorCode = ref<string | null>(null);
 
 const categoryId = router.currentRoute.value.query.id;
 
-const { data: category, pending, error } = useFetch<ICategory>("/category", {
+const { data: category, pending, error } = useFetch<ICategoryWithResolutions>("/category", {
   baseURL: config.public.apiEndpoint,
   params: {
     id: categoryId,

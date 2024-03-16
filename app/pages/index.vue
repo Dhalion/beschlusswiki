@@ -23,9 +23,21 @@ const search = ref({
     toYear: "",
 });
 
+onMounted(() => {
+    loadSearchFromUrlParams();
+});
+
+watch(() => route.query, (newQuery, oldQuery) => {
+    if (oldQuery?.query == undefined && newQuery.query) {
+        loadSearchFromUrlParams();
+    }
+});
+
+
 watch(() => search.value, (newSearch) => {
     console.log("search changed", newSearch);
 }, { deep: true });
+
 
 const emptySearch = computed(() => {
     let isEmpty = true;
@@ -57,5 +69,24 @@ useListen("logoClicked", () => {
     search.value.fromYear = "";
     search.value.toYear = "";
 });
+
+function loadSearchFromUrlParams() {
+    const params = route.query;
+    if (params.query) {
+        search.value.query = params.query as string;
+    }
+    if (params.categories) {
+        search.value.categories = JSON.parse(params.categories as string);
+    }
+    if (params.applicants) {
+        search.value.applicants = JSON.parse(params.applicants as string);
+    }
+    if (params.fromYear) {
+        search.value.fromYear = params.fromYear as string;
+    }
+    if (params.toYear) {
+        search.value.toYear = params.toYear as string;
+    }
+}
 
 </script>

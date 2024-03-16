@@ -102,21 +102,21 @@ const advancedSearchItems = [{
   slot: "advanced-search",
 }]
 
-loadSearchFromUrlParams();
 
 watch(() => search, () => {
   // save search params in url
-  const params = new URLSearchParams();
-  if (search.value.query) params.set("query", search.value.query);
-  if (search.value.categories.length) params.set("categories", search.value.categories.map((category) => category._id).join(","));
-  if (search.value.applicants.length) params.set("applicants", search.value.applicants.map((applicant) => applicant._id).join(","));
-  if (search.value.fromYear) params.set("fromYear", search.value.fromYear);
-  if (search.value.toYear) params.set("toYear", search.value.toYear);
-  history.pushState({}, "", `?${params}`);
+  const params: any = {};
+  if (search.value.query) params.query = search.value.query;
+  if (search.value.categories.length) params.categories = search.value.categories.map((category) => category._id).join(",");
+  if (search.value.applicants.length) params.applicants = search.value.applicants.map((applicant) => applicant._id).join(",");
+  if (search.value.fromYear) params.fromYear = search.value.fromYear;
+  if (search.value.toYear) params.toYear = search.value.toYear;
+
+  // Use router.push to change the URL
+  router.push({ path: router.currentRoute.value.path, query: params }).catch(err => { });
 
   emit("update:modelValue", search.value);
 }, { deep: true });
-
 
 function loadSearchFromUrlParams() {
   // load params from url
@@ -142,6 +142,5 @@ function loadSearchFromUrlParams() {
   if (params.has("toYear")) search.value.toYear = params.get("toYear") || "";
 
   emit("update:modelValue", search.value);
-
 };
 </script>
