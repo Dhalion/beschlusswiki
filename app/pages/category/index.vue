@@ -2,10 +2,10 @@
   <div class="flex flex-col sm:w-3/4 mx-3 sm:mx-auto mt-5 text-black">
     <!--* Header -->
     <div v-if="!pending && !error" class="flex justify-start mb-5">
-      <img src="../../assets/work-in-progress.png" class="h-14 mr-2 sm:mr-5 p-1" :alt="category?.name" />
+      <img src="../../assets/work-in-progress.png" class="h-14 mr-2 sm:mr-5 dark:invert p-1" :alt="category?.name" />
       <div>
-        <h1 class="text-gray-700 font-bold text-2xl">{{ category?.name }}</h1>
-        <span class="text-gray-500 text-sm font-light">
+        <h1 class="text-gray-700 dark:text-gray-300 font-bold text-2xl">{{ category?.name }}</h1>
+        <span class="text-gray-500 dark:text-gray-400 text-sm font-light">
           {{ category?.resolutions.length }}
           {{ category?.resolutions.length === 1 ? "Beschluss" : "Beschlüsse" }}
         </span>
