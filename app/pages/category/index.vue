@@ -18,8 +18,8 @@
       icon="i-heroicons-exclamation-circle" variant="solid" />
 
     <!--* Content  -->
-    <div v-for="resolution in category?.resolutions">
-      <MainCategoryResolutionCard :resolution="resolution" />
+    <div v-if="category?.resolutions" class="flex flex-col gap-y-3">
+      <MainCategoryResolutionCard v-for="resolution in category.resolutions" :resolution="resolution" />
     </div>
   </div>
   <UNotifications />
@@ -28,6 +28,7 @@
 <script setup lang="ts">
 import type { ICategory, IResolution } from '~/types/Interfaces';
 
+type ICategoryWithResolutions = ICategory & { resolutions: IResolution[] };
 
 const config = useRuntimeConfig();
 const router = useRouter();
@@ -37,7 +38,7 @@ const errorCode = ref<string | null>(null);
 
 const categoryId = router.currentRoute.value.query.id;
 
-const { data: category, pending, error, refresh } = useFetch<ICategory>("/category", {
+const { data: category, pending, error } = useFetch<ICategory>("/category", {
   baseURL: config.public.apiEndpoint,
   params: {
     id: categoryId,

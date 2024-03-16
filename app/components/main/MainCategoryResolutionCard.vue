@@ -1,14 +1,14 @@
 <template>
   <NuxtLink :href="resolutionUrl"
-    class="w-full bg-slate-100 rounded-2xl p-2 xl:my-4 my-1 flex flex-row divide-x divide-gray-400 text-black shadow-inner hover:shadow-xl hover:bg-slate-150 hover:text-red transition-all transform-gpu hover:scale-x-105 duration-500 ease-out">
+    class="w-full flex mx-auto bg-white rounded-xl shadow-md hover:shadow-xl overflow-hidden p-3">
     <!-- Resolution Tag and Year -->
-    <div class="xl:w-1/12 w-3/12 flex flex-col text-center xl:text-base text-sm" v-if="resolution">
+    <div class="xl:w-1/12 w-1/12 mr-3 flex flex-col text-center text-2xl xl:text-3xl text-slate-700">
       <span>{{ resolution?.body?.tag }}</span>
-      <span>{{ resolution?.body?.year }}</span>
     </div>
     <!-- Resolution Title -->
-    <div class="flex w-full items-center xl:pl-5 pl-2 xl:mr-2 text-sm xl:text-base" v-if="resolution">
-      {{ resolution?.body?.title }}
+    <div class="flex flex-col w-full items-start">
+      <span class="text-xs text-slate-500">{{ resolution?.body?.year }}</span>
+      <span> {{ resolution?.body?.title }} </span>
     </div>
   </NuxtLink>
 </template>
@@ -21,7 +21,7 @@ const toast = useToast();
 
 const props = defineProps({
   resolution: {
-    type: Object,
+    type: Object as PropType<IResolution>,
     required: true,
   },
 });

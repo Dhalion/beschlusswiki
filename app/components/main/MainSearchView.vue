@@ -23,8 +23,8 @@
 
         </span>
       </div>
-      <div v-for="resolution in searchResults">
-        <MainSearchResultResolutionCard :resolution="resolution" />
+      <div class="flex flex-col gap-y-3 mt-3">
+        <MainSearchResultResolutionCard v-for="resolution in searchResults" :resolution="resolution" />
       </div>
     </div>
     <span class="text-black">{{}}</span>

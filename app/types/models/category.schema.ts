@@ -1,11 +1,12 @@
 import {defineMongooseModel} from "#nuxt/mongoose";
 import {Types} from "mongoose";
+import type {IResolution} from "../Interfaces";
 
 export interface ICategory {
 	_id: Types.ObjectId;
 	name: string;
 	tag: string;
-	resolutions: Array<Types.ObjectId>;
+	resolutions: Array<Types.ObjectId> | Array<IResolution>;
 }
 
 export const CategorySchema = defineMongooseModel({

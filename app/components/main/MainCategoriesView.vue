@@ -13,7 +13,6 @@
       <div v-for="category in categories" class="flex flex-col h-full">
         <MainCategoryCard :title="category.name" :id="category._id.toString()" :tag="category.tag"
           :resolutions="category.resolutions" />
-
       </div>
     </div>
   </div>
