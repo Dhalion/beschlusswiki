@@ -20,36 +20,12 @@ const config = useRuntimeConfig();
 const toast = useToast();
 
 const props = defineProps({
-  id: {
-    type: String,
+  resolution: {
+    type: Object,
     required: true,
   },
 });
 
+const resolutionUrl = computed(() => `/resolution/${props.resolution._id}`);
 
-
-const { data: resolution, pending, error, refresh } = useLazyFetch<IResolution>("/resolution", {
-  baseURL: config.public.apiEndpoint,
-  params: {
-    id: props.id,
-  },
-  onRequestError: (err) => {
-    toast.add({
-      title: "Fehler",
-      description: err.error.message,
-      icon: "i-heroicons-x-circle",
-      timeout: 5000,
-    });
-  },
-  onResponseError: (err) => {
-    toast.add({
-      title: "Fehler",
-      description: err.error?.message || "Unknown",
-      icon: "i-heroicons-x-circle",
-      timeout: 5000,
-    });
-  },
-});
-
-const resolutionUrl = computed(() => `/resolution/${props.id}`);
 </script>
