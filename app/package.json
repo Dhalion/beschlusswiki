@@ -1,7 +1,7 @@
 {
   "name": "nuxt-beschlusswiki",
   "private": true,
-  "version": "0.2.11-4228",
+  "version": "0.2.12-4229",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -12,28 +12,28 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@nuxt/devtools": "^1.0.8",
+    "@nuxt/devtools": "^1.1.4",
     "@nuxtjs/eslint-module": "^4.1.0",
-    "@sidebase/nuxt-auth": "^0.6.7",
+    "@sidebase/nuxt-auth": "^0.7.0",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/lodash.debounce": "^4.0.9",
     "@types/markdown-it": "^13.0.7",
-    "nuxt": "^3.10.3",
-    "typescript": "^5.4.2",
-    "vue-tsc": "^1.8.27"
+    "nuxt": "^3.11.1",
+    "typescript": "^5.4.3",
+    "vue-tsc": "^2.0.7"
   },
   "dependencies": {
-    "@auth/core": "^0.26.3",
+    "@auth/core": "^0.28.1",
     "@nuxt/types": "^2.17.3",
-    "@nuxt/ui": "^2.14.2",
+    "@nuxt/ui": "^2.15.0",
     "@nuxtjs/web-vitals": "^0.2.6",
-    "@tailwindcss/typography": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.12",
     "@types/bcrypt": "^5.0.2",
     "@vercel/kv": "^1.0.1",
     "bcrypt": "^5.1.1",
     "jsonwebtoken": "^9.0.2",
     "lodash.debounce": "^4.0.8",
-    "markdown-it": "^14.0.0",
+    "markdown-it": "^14.1.0",
     "mitt": "^3.0.1",
     "nuxt-mongoose": "^1.0.5"
   }
