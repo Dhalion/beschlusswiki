@@ -29,7 +29,10 @@ export default defineNuxtConfig({
 	},
 
 	routeRules: {
-		"/**": {cors: true},
+		"/**": {
+			cors: true,
+			ssr: false,
+		},
 		"/edit": {
 			ssr: false,
 		},
