@@ -1,6 +1,10 @@
 import {defineMongooseModel} from "#nuxt/mongoose";
 import {Types} from "mongoose";
 import type {IResolution} from "../Interfaces";
+import {ResolutionSchema} from "./resolution.schema";
+import type {SchemaDefinition} from "nuxt/schema";
+
+ResolutionSchema.exists({});
 
 export interface ICategory {
 	_id: Types.ObjectId;
