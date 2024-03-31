@@ -31,7 +31,9 @@ export default defineNuxtConfig({
 	routeRules: {
 		"/**": {
 			cors: true,
-			ssr: false,
+		},
+		"/": {
+			isr: 3600,
 		},
 		"/edit": {
 			ssr: false,
