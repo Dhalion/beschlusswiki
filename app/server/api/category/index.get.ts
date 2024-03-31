@@ -34,6 +34,7 @@ export default defineEventHandler(async (event) => {
 			return await query.exec();
 		}
 	} catch (e) {
+		console.error(e);
 		throw createError({
 			statusCode: 500,
 		});

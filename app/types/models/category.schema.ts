@@ -2,9 +2,6 @@ import {defineMongooseModel} from "#nuxt/mongoose";
 import {Types} from "mongoose";
 import type {IResolution} from "../Interfaces";
 import {ResolutionSchema} from "./resolution.schema";
-import type {SchemaDefinition} from "nuxt/schema";
-
-ResolutionSchema.exists({});
 
 export interface ICategory {
 	_id: Types.ObjectId;
@@ -19,7 +16,7 @@ export const CategorySchema = defineMongooseModel({
 		name: {type: String, unique: true, required: true},
 		tag: {type: String, required: true},
 		// Resolutions: array of resolution ids
-		resolutions: [{type: Types.ObjectId, ref: "Resolution"}],
+		resolutions: [{type: Types.ObjectId, ref: ResolutionSchema}],
 	},
 	options: {strict: "throw"},
 });
