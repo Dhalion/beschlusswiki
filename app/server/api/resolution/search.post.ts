@@ -4,8 +4,6 @@ import {
 } from "~/types/Interfaces";
 import {ResolutionSchema} from "~/types/models/resolution.schema";
 import {Types} from "mongoose";
-import {type IApplicant} from "~/types/models/applicant.schema";
-import Id from "~/pages/resolution/[id].vue";
 
 export default defineEventHandler(async (event) => {
 	const config = useRuntimeConfig();

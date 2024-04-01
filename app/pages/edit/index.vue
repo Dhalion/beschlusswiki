@@ -3,8 +3,15 @@
     class="bg-slate-300 dark:bg-slate-800 w-4/5 mx-auto">
     <div class="flex justify-between px-4 pt-4 items-center">
       <span class="text-slate-700 dark:text-slate-200 text-lg font-semibold">Beschluss {{ resolution._id }}</span>
-      <div>
-        <UButton type="submit" class="" :disabled="pending" icon="i-heroicons-document-check" block>Speichern</UButton>
+      <div class="w-fit">
+        <UButtonGroup>
+          <UButton type="submit" class="" :disabled="pending" icon="i-heroicons-document-check" block>
+            Speichern
+          </UButton>
+          <UDropdown :items="dropdownItems">
+            <UButton icon="i-heroicons-chevron-down" />
+          </UDropdown>
+        </UButtonGroup>
         <UCheckbox v-model="overrideCheck" label="Beschluss überschreiben" class="mt-2" />
       </div>
     </div>
@@ -228,5 +235,49 @@ const resolutionCategoryString = computed(() => {
 });
 
 
+const dropdownItems = [[
+  {
+    label: "Beschluss löschen",
+    icon: "i-heroicons-trash",
+    action: () => {
+      console.log("delete");
+    },
+  },
+  {
+    label: "Beschluss indizieren",
+    icon: "i-heroicons-tag",
+    click: async () => {
+      console.log(`indexing ${resolution.value?._id}`);
+      await indexResolution();
+    },
+  }
+]]
+
+const indexResolution = async () => {
+  const response = await $fetch("/api/elastic/index", {
+    method: "POST",
+    baseURL: config.public.apiEndpoint,
+    headers: {
+      "Authorization": token.value || "",
+    },
+    body: {
+      ids: [resolution.value?._id],
+    },
+  });
+
+  if (response.statusCode !== 200) {
+    toast.add({
+      title: "Fehler beim Indizieren",
+      description: `Der Beschluss konnte nicht indiziert werden. (${response.statusCode})`,
+      icon: "i-heroicons-exclamation-triangle",
+    });
+    return;
+  }
+  toast.add({
+    title: "Beschluss indiziert",
+    description: "Der Beschluss wurde erfolgreich indiziert.",
+    icon: "i-heroicons-check-circle",
+  });
+}
 
 </script>
