@@ -18,6 +18,8 @@ export default defineNuxtConfig({
 		// Secret for server-side
 		serverSecret: process.env.NUXT_SEVER_SECRET,
 		elasticManageKey: process.env.NUXT_ELASTIC_MANAGE_API_KEY,
+		KV_REST_API_TOKEN: process.env.KV_REST_API_TOKEN,
+		KV_REST_API_URL: process.env.KV_REST_API_URL,
 		public: {
 			// Public for client-side
 			// omit PUBLIC due to NUXT .env syntax

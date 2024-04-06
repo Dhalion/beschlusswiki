@@ -114,6 +114,12 @@ const menuItems = [
     role: [UserRoles.Admin]
   },
   {
+    name: "Cache",
+    icon: "i-heroicons-archive-box",
+    to: "/admin/cache",
+    role: [UserRoles.Admin]
+  },
+  {
     name: "Einstellungen",
     icon: "i-heroicons-cog",
     to: "/admin/dashboard",
