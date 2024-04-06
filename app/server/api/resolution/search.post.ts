@@ -69,7 +69,7 @@ export default defineEventHandler(async (event) => {
 				const body = await res.json();
 				const result = generateSearchResultObjectFromElastic(body);
 				if (query && isSearchCachable) {
-					kv.setItem(query, result, {type: "json"});
+					kv.setItem(query, result, {type: "json", ex: 60 * 60 * 6});
 				}
 				setResponseStatus(event, 200);
 				setResponseHeader(event, "X-Cache", "MISS");
