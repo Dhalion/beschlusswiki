@@ -1,10 +1,17 @@
 <template>
   <UForm :state="resolution" :validate="validate" @submit="submit" v-if="resolution?.body.text"
-    class="bg-slate-800 w-4/5 mx-auto">
+    class="bg-slate-300 dark:bg-slate-800 w-4/5 mx-auto">
     <div class="flex justify-between px-4 pt-4 items-center">
-      <span class="text-lg font-semibold">Beschluss {{ resolution._id }}</span>
-      <div>
-        <UButton type="submit" class="" :disabled="pending" icon="i-heroicons-document-check" block>Speichern</UButton>
+      <span class="text-slate-700 dark:text-slate-200 text-lg font-semibold">Beschluss {{ resolution._id }}</span>
+      <div class="w-fit">
+        <UButtonGroup>
+          <UButton type="submit" class="" :disabled="pending" icon="i-heroicons-document-check" block>
+            Speichern
+          </UButton>
+          <UDropdown :items="dropdownItems">
+            <UButton icon="i-heroicons-chevron-down" />
+          </UDropdown>
+        </UButtonGroup>
         <UCheckbox v-model="overrideCheck" label="Beschluss überschreiben" class="mt-2" />
       </div>
     </div>
@@ -65,13 +72,13 @@
             <UTextarea v-model="resolution.body.text" placeholder="Resolution Text" autoresize class="w-1/2 md:p-3"
               size="xl" />
             <div v-html="$mdRenderer.render(resolution.body.text)"
-              class="w-1/2 xl:w-3/5 p-2 md:p-5 prose bg-white leading-6" />
+              class="w-1/2 xl:w-3/5 p-2 md:p-5 prose bg-white dark:bg-gray-900 text-slate-800 dark:text-slate-400 leading-6" />
           </div>
         </div>
       </UFormGroup>
 
-      <UAlert icon="i-heroicons-exclamation-circle" variant="solid" title="Fehler beim Einsenden" :description="postError"
-        class="mt-5 bg-jusorot-600" v-if="postError" />
+      <UAlert icon="i-heroicons-exclamation-circle" variant="solid" title="Fehler beim Einsenden"
+        :description="postError" class="mt-5 bg-jusorot-600" v-if="postError" />
 
     </div>
   </UForm>
@@ -228,5 +235,49 @@ const resolutionCategoryString = computed(() => {
 });
 
 
+const dropdownItems = [[
+  {
+    label: "Beschluss löschen",
+    icon: "i-heroicons-trash",
+    action: () => {
+      console.log("delete");
+    },
+  },
+  {
+    label: "Beschluss indizieren",
+    icon: "i-heroicons-tag",
+    click: async () => {
+      console.log(`indexing ${resolution.value?._id}`);
+      await indexResolution();
+    },
+  }
+]]
+
+const indexResolution = async () => {
+  const response = await $fetch("/api/elastic/index", {
+    method: "POST",
+    baseURL: config.public.apiEndpoint,
+    headers: {
+      "Authorization": token.value || "",
+    },
+    body: {
+      ids: [resolution.value?._id],
+    },
+  });
+
+  if (response.statusCode !== 200) {
+    toast.add({
+      title: "Fehler beim Indizieren",
+      description: `Der Beschluss konnte nicht indiziert werden. (${response.statusCode})`,
+      icon: "i-heroicons-exclamation-triangle",
+    });
+    return;
+  }
+  toast.add({
+    title: "Beschluss indiziert",
+    description: "Der Beschluss wurde erfolgreich indiziert.",
+    icon: "i-heroicons-check-circle",
+  });
+}
 
 </script>

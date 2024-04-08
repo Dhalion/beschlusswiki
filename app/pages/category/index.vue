@@ -1,12 +1,11 @@
 <template>
   <div class="flex flex-col sm:w-3/4 mx-3 sm:mx-auto mt-5 text-black">
-
     <!--* Header -->
     <div v-if="!pending && !error" class="flex justify-start mb-5">
-      <img src="../../assets/work-in-progress.png" class="h-14 mr-2 sm:mr-5 p-1" :alt="category?.name" />
+      <img src="../../assets/work-in-progress.png" class="h-14 mr-2 sm:mr-5 dark:invert p-1" :alt="category?.name" />
       <div>
-        <h1 class="text-gray-700 font-bold text-2xl">{{ category?.name }}</h1>
-        <span class="text-gray-500 text-sm font-light">
+        <h1 class="text-gray-700 dark:text-gray-300 font-bold text-2xl">{{ category?.name }}</h1>
+        <span class="text-gray-500 dark:text-gray-400 text-sm font-light">
           {{ category?.resolutions.length }}
           {{ category?.resolutions.length === 1 ? "Beschluss" : "Beschlüsse" }}
         </span>
@@ -19,14 +18,17 @@
       icon="i-heroicons-exclamation-circle" variant="solid" />
 
     <!--* Content  -->
-    <div v-for="resolution in category?.resolutions" :key="resolution">
-      <MainCategoryResolutionCard :id="resolution" />
+    <div v-if="category?.resolutions" class="flex flex-col gap-y-3">
+      <MainCategoryResolutionCard v-for="resolution in category.resolutions" :resolution="resolution" />
     </div>
   </div>
   <UNotifications />
 </template>
 
 <script setup lang="ts">
+import type { ICategory, IResolution } from '~/types/Interfaces';
+
+type ICategoryWithResolutions = ICategory & { resolutions: IResolution[] };
 
 const config = useRuntimeConfig();
 const router = useRouter();
@@ -36,19 +38,12 @@ const errorCode = ref<string | null>(null);
 
 const categoryId = router.currentRoute.value.query.id;
 
-interface ICategory {
-  _id: string;
-  name: string;
-  tag: string;
-  resolutions: string[];
-}
-
-const { data: category, pending, error, refresh } = useLazyFetch("/category", {
+const { data: category, pending, error } = useFetch<ICategoryWithResolutions>("/category", {
   baseURL: config.public.apiEndpoint,
   params: {
-    id: categoryId
+    id: categoryId,
+    populateResolutions: true,
   },
-  transform: (data) => data as ICategory,
   onRequestError: (err) => {
     console.error(err);
     errorCode.value = err.error.message || "Unknown";

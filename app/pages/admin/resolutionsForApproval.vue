@@ -6,6 +6,15 @@
       <UTable :rows="rows" :columns="columns" :empty-state="emptyState" :loading="pending"
         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" v-model:sort="sort">
 
+        <template #createdBy-data="{ row }: { row: IResolution }">
+          {{ row.createdBy instanceof Object ? capitalize((row.createdBy as IUser).username) : "System" }}
+        </template>
+
+        <!--* Resolution Date Column  -->
+        <template #created-data="{ row }: { row: IResolution }">
+          <span>{{ new Date(row.created).toLocaleDateString() }}</span>
+        </template>
+
         <!--* ACTIONS COLUMN  -->
         <template #actions-data="{ row }: { row: IResolution }">
           <div class="flex justify-start gap-x-5 text-lg">
@@ -48,6 +57,8 @@
 import { PatchActions, type SortObject } from '~/types/Interfaces';
 import type { IResolution } from '~/types/models/resolution.schema';
 import { ResolutionState } from '~/types/Interfaces';
+import capitalize from '~/utilities';
+import type { IUser } from '~/types/models/user.schema';
 
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;

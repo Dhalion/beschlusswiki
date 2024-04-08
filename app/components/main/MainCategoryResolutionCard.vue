@@ -1,14 +1,15 @@
 <template>
   <NuxtLink :href="resolutionUrl"
-    class="w-full bg-slate-100 rounded-2xl p-2 xl:my-4 my-1 flex flex-row divide-x divide-gray-400 text-black shadow-inner hover:shadow-xl hover:bg-slate-150 hover:text-red transition-all transform-gpu hover:scale-x-105 duration-500 ease-out">
+    class="w-full flex mx-auto bg-white dark:bg-slate-700 dark:shadow-gray-800 rounded-xl shadow-md hover:shadow-xl overflow-hidden p-3">
     <!-- Resolution Tag and Year -->
-    <div class="xl:w-1/12 w-3/12 flex flex-col text-center xl:text-base text-sm" v-if="resolution">
-      <span>{{ resolution?.body?.tag }}</span>
-      <span>{{ resolution?.body?.year }}</span>
+    <div
+      class="xl:w-1/12 md:w-2/12 w-3/12 mr-3 flex flex-col text-center text-2xl xl:text-3xl text-slate-700 dark:text-slate-200">
+      <span class="my-auto self-center">{{ resolution?.body?.tag }}</span>
     </div>
     <!-- Resolution Title -->
-    <div class="flex w-full items-center xl:pl-5 pl-2 xl:mr-2 text-sm xl:text-base" v-if="resolution">
-      {{ resolution?.body?.title }}
+    <div class="flex flex-col w-full items-start">
+      <span class="text-xs text-slate-500 dark:text-slate-400">{{ resolution?.body?.year }}</span>
+      <span class="text-slate-800 dark:text-slate-200"> {{ resolution?.body?.title }} </span>
     </div>
   </NuxtLink>
 </template>
@@ -16,40 +17,13 @@
 <script setup lang="ts">
 import type { IResolution } from '~/types/models/resolution.schema';
 
-const config = useRuntimeConfig();
-const toast = useToast();
-
 const props = defineProps({
-  id: {
-    type: String,
+  resolution: {
+    type: Object as PropType<IResolution>,
     required: true,
   },
 });
 
+const resolutionUrl = computed(() => `/resolution/${props.resolution._id}`);
 
-
-const { data: resolution, pending, error, refresh } = useLazyFetch<IResolution>("/resolution", {
-  baseURL: config.public.apiEndpoint,
-  params: {
-    id: props.id,
-  },
-  onRequestError: (err) => {
-    toast.add({
-      title: "Fehler",
-      description: err.error.message,
-      icon: "i-heroicons-x-circle",
-      timeout: 5000,
-    });
-  },
-  onResponseError: (err) => {
-    toast.add({
-      title: "Fehler",
-      description: err.error?.message || "Unknown",
-      icon: "i-heroicons-x-circle",
-      timeout: 5000,
-    });
-  },
-});
-
-const resolutionUrl = computed(() => `/resolution/${props.id}`);
 </script>

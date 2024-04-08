@@ -1,13 +1,13 @@
 <template>
-  <div class="bg-rosa text-black w-1/3 mx-auto mt-16 p-8 rounded-3xl">
+  <div class="bg-rosa-200 text-black w-1/3 mx-auto mt-16 p-8 rounded-3xl">
     <UForm :state="state" class="text-black gap-y-3 flex flex-col" :validate="validate" @submit="submit">
-      <span class="text-altrot font-bold text-2xl">Anmelden</span>
+      <span class="text-altrot-800 font-bold text-2xl">Anmelden</span>
 
       <span v-if="state.error" class="text-red-500 text-sm">
         {{ state.error.message }}
       </span>
 
-      <UFormGroup name="email" label="Email oder Nutzername" required style="color: altrot;">
+      <UFormGroup name="email" label="Email oder Nutzername" required style="color: altrot-800;">
         <UInput v-model="state.email" type="text" placeholder="E-Mail" icon="i-heroicons-envelope" />
       </UFormGroup>
 

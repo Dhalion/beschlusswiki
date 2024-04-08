@@ -4,8 +4,8 @@
       <template #header>
         <div class="flex items-center">
           <h2 class="text-xl font-bold">Elasticsearch Status</h2>
-          <UIcon name="i-heroicons-arrow-path" class="text-2xl text-slate-100 ml-2 hover:cursor-pointer"
-            @click="esRefresh()" />
+          <UIcon name="i-heroicons-arrow-path"
+            class="text-2xl text-slate-500 dark:text-slate-100 ml-2 hover:cursor-pointer" @click="esRefresh()" />
         </div>
       </template>
       <UAlert v-if="esError" title="Verbindungsfehler" color="amber" variant="solid"
@@ -17,14 +17,15 @@
       <template #header>
         <div class="flex items-center">
           <h2 class="text-xl font-bold">{{ INDEX_NAME }} Index</h2>
-          <UIcon name="i-heroicons-arrow-path" class="text-2xl text-slate-100 ml-2 hover:cursor-pointer"
-            @click="indexRefresh()" />
+          <UIcon name="i-heroicons-arrow-path"
+            class="text-2xl text-slate-500 dark:text-slate-100 ml-2 hover:cursor-pointer" @click="indexRefresh()" />
         </div>
       </template>
       <UAlert v-if="indexError && indexError.statusCode != 404" title="Verbindungsfehler" color="amber" variant="solid"
         icon="i-heroicons-exclamation-triangle" :description="indexError.message || 'N/A'" />
       <AdminElasticCreateIndex v-if="indexError?.statusCode == 404" />
-      <UAlert v-if="indexPending" title="Lade Daten" color="blue" variant="solid" icon="i-heroicons-information-circle" />
+      <UAlert v-if="indexPending" title="Lade Daten" color="blue" variant="solid"
+        icon="i-heroicons-information-circle" />
       <UAlert v-if="indexData?.statusCode == 204 && !indexPending" title="Index leer" color="amber" variant="solid"
         icon="i-heroicons-exclamation-triangle" />
 
@@ -88,7 +89,7 @@ const { data: indexData, error: indexError, pending: indexPending, refresh: inde
     },
   });
 
-const esStatusRows = [
+const esStatusRows = computed(() => [
   {
     parameter: "Cluster Name",
     value: esData.value?.cluster_name ?? "N/A",
@@ -145,7 +146,7 @@ const esStatusRows = [
     parameter: "Active Shards Percent",
     value: esData.value?.active_shards_percent_as_number ?? "N/A",
   },
-];
+]);
 
 
 </script>

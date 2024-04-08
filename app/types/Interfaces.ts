@@ -26,7 +26,7 @@ export interface IResolution {
 	rid: string;
 	rcode: string;
 	created: Date;
-	user: Types.ObjectId | IUser;
+	createdBy: Types.ObjectId | IUser;
 	parent: string;
 	state: ResolutionState;
 	hash?: string;
@@ -196,5 +196,13 @@ export interface INewApplicant {
 	name: string;
 	resolutions: Array<Types.ObjectId>;
 }
+
+export type searchObject = {
+	query: string | undefined;
+	categories: ICategory[];
+	applicants: IApplicant[];
+	fromYear: string;
+	toYear: string;
+};
 
 export type {ICategory};

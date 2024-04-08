@@ -9,7 +9,7 @@
     <UButton icon="i-heroicons-pencil-square" size="xl" variant="link" :to="`/edit?id=${resolutionId}`" />
   </div>
   <div class="leading-6 antialiased sm:w-3/4 w-5/6 mx-auto pb-10 mt-3">
-    <span class="prose text-base" v-html="parsedResolution" />
+    <span class="prose text-base text-gray-800 dark:text-slate-400" v-html="parsedResolution" />
   </div>
   <UNotifications />
 </template>

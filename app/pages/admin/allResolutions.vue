@@ -5,6 +5,10 @@
       <UTable :rows="rows" :columns="columns" :empty-state="emptyState" :loading="pending"
         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" v-model:sort="sort">
 
+        <template #createdBy-data="{ row }: { row: IResolution }">
+          {{ row.createdBy instanceof Object ? capitalize((row.createdBy as IUser).username) : "System" }}
+        </template>
+
         <!--* Resolution Category Column  -->
         <template #category-data="{ row }: { row: IResolution }">
           <NuxtLink :to="row.body.category ? `/category?id=${row.body.category._id}` : '#'">
@@ -83,6 +87,7 @@
 import { ResolutionState, resolutionStateToPatchAction, type SortObject } from '~/types/Interfaces';
 import type { ICategory } from '~/types/models/category.schema';
 import type { IResolution } from '~/types/models/resolution.schema';
+import type { IUser } from '~/types/models/user.schema';
 
 const config = useRuntimeConfig();
 const API_ENDPOINT = config.public.apiEndpoint;
@@ -223,6 +228,8 @@ const pagePaginationOptions = [10, 20, 50, 100];
 const { data, error, pending, refresh } = useLazyFetch<IResolution[]>("/resolution", {
   query: {
     category: true,
+    user: true,
+    applicants: true,
   },
   baseURL: API_ENDPOINT,
   onRequestError: (err) => {
@@ -258,7 +265,7 @@ const emptyState = computed(() => {
 
 
 
-const capitalize = (str: string) => {
+const capitalize = (str: string | String) => {
   if (typeof str !== "string") return "";
   if (str.length < 1) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);

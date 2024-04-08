@@ -5,6 +5,16 @@
       <UTable :rows="tableRows" :columns="tableColumns" :loading="pending"
         :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :empty-state="emptyState">
 
+        <!--* Resolution Category Column  -->
+        <template #name-data="{ row }: { row: ICategory }">
+          <NuxtLink :to="row._id ? `/category?id=${row._id}` : '#'">
+            <UBadge color="amber" v-if="row.tag">
+              {{ row.tag }} - {{ row.name }}
+            </UBadge>
+            <span v-else>null</span>
+          </NuxtLink>
+        </template>
+
         <template #length-data="{ row }">
           {{ row.resolutions.length || 0 }}
         </template>

@@ -11,10 +11,11 @@
     <!-- <span class="text-black">{{ searchResults }}</span> -->
     <div v-if="searchResults && !error && !isLoading" class="flex flex-col justify-center w-full">
       <div class="flex items-baseline">
-        <span class="text-slate-500 mt-3 text-xs xl:text-base">
+        <span class="text-slate-500 dark:text-slate-300 mt-3 text-xs xl:text-base">
           {{ total }}
-          {{ total === 1 ? "Beschluss" : "Beschlüsse" }} in {{ took || "null" }} gefunden. (Zeige {{ searchResults.length
-          }} von {{ total }})
+          {{ total === 1 ? "Beschluss" : "Beschlüsse" }} in {{ took || "null" }} gefunden. (Zeige {{
+      searchResults.length
+    }} von {{ total }})
           <span class="text-xs align-baseline">
           </span>
           <!-- state: {{ elastic.elasticStatus.value.state }} -->
@@ -22,8 +23,8 @@
 
         </span>
       </div>
-      <div v-for="resolution in searchResults">
-        <MainSearchResultResolutionCard :resolution="resolution" />
+      <div class="flex flex-col gap-y-3 mt-3">
+        <MainSearchResultResolutionCard v-for="resolution in searchResults" :resolution="resolution" />
       </div>
     </div>
     <span class="text-black">{{}}</span>
@@ -38,12 +39,12 @@
 
 <script setup lang="ts">
 import debounce from "lodash.debounce";
-import { type ResolutionSearchResult, type ISimpleResolution } from "~/types/Interfaces";
+import { type ResolutionSearchResult, type ISimpleResolution, type searchObject } from "~/types/Interfaces";
 
 const config = useRuntimeConfig();
 const toast = useToast();
 
-const props = defineProps(["modelValue"]);
+const props = defineProps(["search"]);
 const isLoading = ref(true);
 const searchResults = ref<ISimpleResolution[]>([]);
 const error = ref<string | null>(null);
@@ -51,45 +52,54 @@ const total = ref(0);
 const took = ref<string | null>(null);
 
 
-const search = async (query: string) => {
-  console.log("searching for:", query);
-  if (!query) return;
-  isLoading.value = true;
-  const start = Date.now();
-  const response = await $fetch("/api/resolution/search", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    query: {
-      query,
-    },
-  });
-  const requestTook = Date.now() - start;
+const search = async (searchParams: searchObject) => {
+  try {
+    error.value = null;
+    console.log("searching for:", searchParams.query);
+    if (!search) return;
+    isLoading.value = true;
+    const start = Date.now();
+    const response = await $fetch("/api/resolution/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: {
+        query: searchParams.query,
+        categories: searchParams.categories.map((c) => c._id),
+        applicants: searchParams.applicants.map((a) => a._id),
+        fromYear: searchParams.fromYear,
+        toYear: searchParams.toYear,
+      },
+    });
+    const requestTook = Date.now() - start;
 
-  // try to parse the response to a ResolutionSearchResult
-  if (response) {
-    const result = response as ResolutionSearchResult;
-    if (result.results) {
-      searchResults.value = result.results;
-      total.value = result.total;
-      took.value = `${requestTook} ms`;
+    // try to parse the response to a ResolutionSearchResult
+    if (response) {
+      const result = response as ResolutionSearchResult;
+      if (result.results) {
+        searchResults.value = result.results;
+        total.value = result.total;
+        took.value = `${requestTook} ms`;
+      }
     }
+    isLoading.value = false;
+  } catch (e: any) {
+    console.error(e);
+    error.value = e.message || "Unbekannter Fehler";
+    isLoading.value = false;
   }
-  isLoading.value = false;
-
 };
 
-
-watch(() => props.modelValue, debounce((query) => {
-  if (!query) return;
-  search(query);
-}, 200));
+watch(() => props.search, debounce((searchObj) => {
+  console.log("searching debounced");
+  if (!searchObj) return;
+  search(searchObj);
+}, 200), { deep: true });
 
 onMounted(() => {
-  console.log("mounted");
-  if (props.modelValue) {
-    search(props.modelValue);
+  if (props.search) {
+    search(props.search);
   }
 });
 

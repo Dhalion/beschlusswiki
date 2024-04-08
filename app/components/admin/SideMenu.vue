@@ -38,17 +38,18 @@ enum UserRoles {
 
 const isOpen = ref(false);
 
+import { computed } from 'vue';
+
 const visibleMenuItems = computed(() => {
   return menuItems.filter((item) => {
-    if (item.role) {
-
+    if ((item as { role?: string[] }).role) {
       // Prüfen, ob item.role ein einzelner Wert ist
       if (Array.isArray(item.role)) {
         // Prüfen, ob irgendeine der Rollen in item.role in data?.value?.user.roles enthalten ist
         return item.role.some(role => data?.value?.user.roles.includes(role));
       } else {
         // Prüfen, ob der einzelne Wert in data?.value?.user.roles enthalten ist
-        return data?.value?.user.roles.includes(item.role);
+        return data?.value?.user.roles.includes(item?.role);
       }
     }
     return true;
@@ -103,7 +104,8 @@ const menuItems = [
   {
     name: "Profil",
     icon: "i-heroicons-user-circle",
-    to: "/admin/dashboard"
+    to: "/admin/dashboard",
+    role: [] // effectively disabled
   },
   {
     name: "Elasticsearch",
@@ -112,9 +114,16 @@ const menuItems = [
     role: [UserRoles.Admin]
   },
   {
+    name: "Cache",
+    icon: "i-heroicons-archive-box",
+    to: "/admin/cache",
+    role: [UserRoles.Admin]
+  },
+  {
     name: "Einstellungen",
     icon: "i-heroicons-cog",
-    to: "/admin/dashboard"
+    to: "/admin/dashboard",
+    role: [] // effectively disabled
   }
 ];
 

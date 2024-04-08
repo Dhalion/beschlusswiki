@@ -20,6 +20,7 @@ export default defineEventHandler(async (event) => {
 		const dashDisplay = getQuery(event)
 			.dashDisplay as AdminDashboardResolutionsDisplay;
 		const simple = getQuery(event)?.simple == ("true" || 1) ? true : false;
+		const populateUser = getQuery(event)?.user == ("true" || 1) ? true : false;
 
 		const searchEngine =
 			getQuery(event)?.engine == "elastic"
@@ -173,6 +174,12 @@ export default defineEventHandler(async (event) => {
 		}
 		if (filter === ResolutionState.Staged) {
 			query.where("state").equals(ResolutionState.Staged);
+		}
+		if (populateApplicants) {
+			query.populate("body.applicants");
+		}
+		if (populateUser) {
+			query.populate("createdBy");
 		}
 		const result = query.exec();
 		if (result) {
