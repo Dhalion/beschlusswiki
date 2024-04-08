@@ -23,6 +23,19 @@ const search = ref({
     toYear: "",
 });
 
+
+
+const pageTitle = computed(() => {
+    if (search.value.query) {
+        return `Beschlusswiki: ${search.value.query}`;
+    }
+    return "Jusos Beschlusswiki";
+});
+
+useHead({
+    title: pageTitle,
+});
+
 onMounted(() => {
     loadSearchFromUrlParams();
 });
